@@ -1,0 +1,21 @@
+classDiagram
+    class User {
+        +string id
+        +string name
+        +string email
+        +login()
+        +logout()
+    }
+    class Book {
+        +string id
+        +string title
+        +string author
+    }
+    class Loan {
+        +string id
+        +Date borrowedAt
+        +Date dueAt
+        +returnBook()
+    }
+    User "1" --> "*" Loan : borrows
+    Loan "*" --> "1" Book : of
