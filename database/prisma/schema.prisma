@@ -1,0 +1,123 @@
+// Source of truth: specs/database-contracts.md
+// Deviations agreed with the user: accounts.username, refresh_token.token
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Account {
+  id            String         @id @default(uuid())
+  username      String         @unique
+  email         String         @unique
+  password      String
+  role          String
+  created_at    DateTime       @default(now())
+  user          User?
+  admin         Admin?
+  refreshTokens RefreshToken[]
+
+  @@map("accounts")
+}
+
+model User {
+  id           String       @id @default(uuid())
+  account_id   String       @unique
+  nama_lengkap String
+  no_hp        String
+  alamat       String
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @default(now())
+  account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  peminjaman   Peminjaman[]
+
+  @@map("users")
+}
+
+model Admin {
+  id           String       @id @default(uuid())
+  account_id   String       @unique
+  nama_lengkap String
+  no_hp        String
+  alamat       String
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @default(now())
+  account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  peminjaman   Peminjaman[]
+
+  @@map("admins")
+}
+
+model Category {
+  id            Int    @id @default(autoincrement())
+  nama_kategori String
+  jenis_buku    String
+  books         Book[]
+
+  @@map("categories")
+}
+
+model Book {
+  id                Int                @id @default(autoincrement())
+  categories_id     Int
+  judul             String
+  penulis           String
+  penerbit          String
+  tanggal_rilis     DateTime
+  stok              Int
+  category          Category           @relation(fields: [categories_id], references: [id], onDelete: Restrict)
+  detail_peminjaman DetailPeminjaman[]
+
+  @@map("books")
+}
+
+model Peminjaman {
+  id                       Int                @id @default(autoincrement())
+  user_id                  String
+  admin_id                 String
+  tanggal_peminjaman       DateTime           @default(now())
+  tanggal_batas_peminjaman DateTime
+  user                     User               @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  admin                    Admin              @relation(fields: [admin_id], references: [id], onDelete: Restrict)
+  pengembalian             Pengembalian[]
+  detail_peminjaman        DetailPeminjaman[]
+
+  @@map("peminjaman")
+}
+
+model Pengembalian {
+  id                   Int        @id @default(autoincrement())
+  peminjaman_id        Int
+  tanggal_dikembalikan DateTime
+  denda                Float
+  status_buku          String // "Baik" | "Rusak" | "Hilang"
+  peminjaman           Peminjaman @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
+
+  @@map("pengembalian")
+}
+
+model DetailPeminjaman {
+  id            Int        @id @default(autoincrement())
+  peminjaman_id Int
+  books_id      Int
+  peminjaman    Peminjaman @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
+  book          Book       @relation(fields: [books_id], references: [id], onDelete: Restrict)
+
+  @@map("detail_peminjaman")
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  account_id String
+  token      String
+  created_at DateTime @default(now())
+  expired_at DateTime
+  account    Account  @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@map("refresh_token")
+}
