@@ -1,0 +1,8 @@
+packages:
+  - docs/uml
+  - database
+onlyBuiltDependencies:
+  - bcrypt
+  - better-sqlite3
+  - prisma
+  - '@prisma/engines'
