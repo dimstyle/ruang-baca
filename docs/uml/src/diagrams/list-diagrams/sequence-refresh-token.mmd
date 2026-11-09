@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant AC as AuthController
+    participant AS as AuthService
+    participant DB as Database
+
+    C->>AC: POST /api/refresh_token (cookie refresh_token)
+    AC->>AS: refresh(refresh_token)
+    alt cookie tidak ada / JWT tidak valid
+        AS-->>AC: UnauthorizedException
+        AC-->>C: 401 "Unauthorized"
+    else JWT valid
+        AS->>AS: ekstrak sub dari refresh_token
+        AS->>DB: find refresh_token where token, account_id = sub, expired_at > now
+        alt tidak ditemukan / expired
+            AS-->>AC: NotFoundException
+            AC-->>C: 404 "token not found"
+        else ditemukan
+            AS->>AS: sign access_token {sub, email} dan refresh_token {sub} baru
+            AS->>DB: update refresh_token {token, expired_at}
+            AS-->>AC: {access_token, refresh_token}
+            AC-->>C: 200 Set-Cookie access_token, refresh_token (httpOnly)
+        end
+    end

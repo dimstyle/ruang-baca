@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant G as JwtStrategy (Guard)
+    participant AC as AuthController
+    participant AS as AuthService
+    participant DB as Database
+
+    C->>G: POST /api/logout (cookie access_token, refresh_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>AC: req.user = {sub, email}
+        AC->>AS: logout(sub, refresh_token)
+        AS->>DB: delete refresh_token where account_id = sub and token = refresh_token
+        alt error database
+            AS-->>AC: InternalServerErrorException
+            AC-->>C: 500 "Internal Server Error"
+        else sukses
+            AS-->>AC: ok
+            AC-->>C: 200 clear cookie access_token, refresh_token
+        end
+    end

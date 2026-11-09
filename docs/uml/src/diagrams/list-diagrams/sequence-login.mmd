@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant AC as AuthController
+    participant AS as AuthService
+    participant DB as Database
+
+    C->>AC: POST /api/login {email, password}
+    AC->>AC: ValidationPipe (LoginDto)
+    alt body tidak valid
+        AC-->>C: 400 Bad Request
+    else body valid
+        AC->>AS: login(dto)
+        AS->>DB: find accounts by email
+        alt account tidak ditemukan
+            AS-->>AC: NotFoundException
+            AC-->>C: 404 "user not found"
+        else bcrypt.compare gagal
+            AS-->>AC: UnauthorizedException
+            AC-->>C: 401 "username or password wrong"
+        else sukses
+            AS->>AS: sign access_token {sub, email} dan refresh_token {sub}
+            AS->>DB: insert refresh_token {account_id, token, expired_at}
+            AS-->>AC: {access_token, refresh_token}
+            AC-->>C: 200 Set-Cookie access_token, refresh_token (httpOnly)
+        end
+    end

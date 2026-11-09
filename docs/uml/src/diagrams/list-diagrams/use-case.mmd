@@ -1,0 +1,23 @@
+flowchart LR
+    user(["User"])
+    admin(["Admin"])
+
+    subgraph system["Ruang Baca"]
+        login(("Login"))
+        register(("Registration"))
+        logout(("Logout"))
+        refreshToken(("Refresh Token"))
+        profileManagement(("Profile Management"))
+    end
+
+    user --> login
+    user --> register
+    user --> logout
+    user --> refreshToken
+    user --> profileManagement
+    
+    admin --> login
+    admin --> register
+    admin --> logout
+    admin --> refreshToken
+    admin --> profileManagement
