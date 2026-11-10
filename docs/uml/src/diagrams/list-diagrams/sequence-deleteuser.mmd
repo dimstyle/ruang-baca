@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: DELETE /api/admins/deleteuser {id_user} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (UserIdDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: deleteUser(adminId, id_user)
+                AS->>DB: find users by id = id_user
+                alt user tidak ditemukan
+                    DB-->>AS: null
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "User not found"
+                else user ditemukan
+                    AS->>DB: delete accounts where id = user.account_id (cascade users)
+                    alt masih ada peminjaman / denda (P2003)
+                        DB-->>AS: foreign key constraint error
+                        AS-->>AC: ConflictException
+                        AC-->>C: 409 "user still has peminjaman or denda records"
+                    else error lain
+                        AS-->>AC: InternalServerErrorException
+                        AC-->>C: 500 "internal server error"
+                    else sukses
+                        DB-->>AS: deleted
+                        AS-->>AC: {message: "data has deleted"}
+                        AC-->>C: 200 {message: "data has deleted"}
+                    end
+                end
+            end
+        end
+    end

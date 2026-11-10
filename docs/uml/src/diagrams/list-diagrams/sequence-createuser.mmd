@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: POST /api/admins/createuser {id_user, full_name, nim, prodi, address, phone} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (CreateUserDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: createUser(adminId, dto)
+                AS->>DB: find accounts by id = id_user
+                alt account tidak ditemukan
+                    DB-->>AS: null
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "account not found"
+                else account ditemukan
+                    AS->>DB: insert users {account_id: id_user, full_name, nim, prodi, address, phone}
+                    alt user data sudah ada (P2002)
+                        DB-->>AS: unique constraint error
+                        AS-->>AC: ConflictException
+                        AC-->>C: 409 "user data already exists"
+                    else error lain
+                        AS-->>AC: InternalServerErrorException
+                        AC-->>C: 500 "internal server error"
+                    else sukses
+                        DB-->>AS: user
+                        AS-->>AC: {message: "user data has created"}
+                        AC-->>C: 201 {message: "user data has created"}
+                    end
+                end
+            end
+        end
+    end
