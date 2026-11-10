@@ -1,28 +1,40 @@
 sequenceDiagram
     autonumber
-    actor C as Client
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
     participant AC as AuthController
     participant AS as AuthService
     participant DB as Database
 
-    C->>AC: POST /api/registration {username, email, password}
-    AC->>AC: ValidationPipe (RegisterDto)
-    alt body tidak valid
-        AC-->>C: 400 Bad Request
-    else body valid
-        AC->>AS: register(dto)
-        AS->>AS: bcrypt.hash(password)
-        AS->>DB: insert accounts {username, email, password, role: "user"}
-        alt email / username sudah dipakai
-            DB-->>AS: unique constraint error
-            AS-->>AC: ConflictException
-            AC-->>C: 409 "email or username already used"
-        else error lain
-            AS-->>AC: InternalServerErrorException
-            AC-->>C: 500 "internal server error"
-        else sukses
-            DB-->>AS: account
-            AS-->>AC: ok
-            AC-->>C: 201 {message: "account created"}
+    C->>G: POST /api/auth/registration {username, email, password} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (RegisterDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: register(dto)
+                AS->>AS: bcrypt.hash(password)
+                AS->>DB: insert accounts {username, email, password, role: "user"}
+                alt email / username sudah dipakai
+                    DB-->>AS: unique constraint error
+                    AS-->>AC: ConflictException
+                    AC-->>C: 409 "email or username already used"
+                else error lain
+                    AS-->>AC: InternalServerErrorException
+                    AC-->>C: 500 "internal server error"
+                else sukses
+                    DB-->>AS: account
+                    AS-->>AC: ok
+                    AC-->>C: 201 {message: "account created"}
+                end
+            end
         end
     end

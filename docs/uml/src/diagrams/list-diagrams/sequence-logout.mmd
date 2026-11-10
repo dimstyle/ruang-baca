@@ -6,7 +6,7 @@ sequenceDiagram
     participant AS as AuthService
     participant DB as Database
 
-    C->>G: POST /api/logout (cookie access_token, refresh_token)
+    C->>G: POST /api/auth/logout (cookie access_token, refresh_token)
     G->>G: verify access_token dari cookie
     alt access_token tidak ada / tidak valid
         G-->>C: 401 "Unauthorized"

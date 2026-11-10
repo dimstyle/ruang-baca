@@ -5,7 +5,7 @@ sequenceDiagram
     participant AS as AuthService
     participant DB as Database
 
-    C->>AC: POST /api/login {email, password}
+    C->>AC: POST /api/auth/login {email, password}
     AC->>AC: ValidationPipe (LoginDto)
     alt body tidak valid
         AC-->>C: 400 Bad Request

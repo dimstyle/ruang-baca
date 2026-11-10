@@ -1,8 +1,11 @@
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaService } from '@ruangbaca/database';
 import type { Request, Response } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AdminGuard } from './guards/admin.guard';
 
 jest.mock('@ruangbaca/database', () => ({
   PrismaService: class {},
@@ -30,13 +33,27 @@ describe('AuthController', () => {
     jest.resetAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: authService }],
+      providers: [
+        { provide: AuthService, useValue: authService },
+        { provide: PrismaService, useValue: {} }, // needed by AdminGuard
+      ],
     }).compile();
 
     controller = module.get(AuthController);
   });
 
   describe('POST /registration', () => {
+    it('is restricted to authenticated admins', () => {
+      const guards = Reflect.getMetadata(
+        GUARDS_METADATA,
+        // only reading decorator metadata, the method is never called
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        AuthController.prototype.register,
+      ) as unknown[];
+      expect(guards).toContain(AdminGuard);
+      expect(guards).toHaveLength(2); // AuthGuard('jwt') runs first
+    });
+
     it('creates the account and returns the message', async () => {
       const dto = { username: 'budi', email: 'b@x.id', password: 'secret123' };
       await expect(controller.register(dto)).resolves.toEqual({

@@ -5,7 +5,7 @@ sequenceDiagram
     participant AS as AuthService
     participant DB as Database
 
-    C->>AC: POST /api/refresh_token (cookie refresh_token)
+    C->>AC: POST /api/auth/refresh_token (cookie refresh_token)
     AC->>AS: refresh(refresh_token)
     alt cookie tidak ada / JWT tidak valid
         AS-->>AC: UnauthorizedException

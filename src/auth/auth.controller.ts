@@ -18,6 +18,7 @@ import {
 } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { AdminGuard } from './guards/admin.guard';
 import type { AccessTokenPayload } from './strategies/jwt.strategy';
 
 const baseCookie: CookieOptions = {
@@ -26,11 +27,12 @@ const baseCookie: CookieOptions = {
   secure: process.env.NODE_ENV === 'production',
 };
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('registration')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   async register(@Body() dto: RegisterDto) {
     await this.authService.register(dto);
     return { message: 'account created' };
