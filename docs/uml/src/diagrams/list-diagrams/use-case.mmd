@@ -8,6 +8,10 @@ flowchart LR
         logout(("Logout"))
         refreshToken(("Refresh Token"))
         profileManagement(("Profile Management"))
+        createUser(("Create User"))
+        updateUser(("Update User"))
+        deleteUser(("Delete User"))
+        getUser(("Get User"))
     end
 
     user --> login
@@ -20,3 +24,7 @@ flowchart LR
     admin --> logout
     admin --> refreshToken
     admin --> profileManagement
+    admin --> createUser
+    admin --> updateUser
+    admin --> deleteUser
+    admin --> getUser
