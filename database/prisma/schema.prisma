@@ -26,15 +26,16 @@ model Account {
 }
 
 model User {
-  id           String       @id @default(uuid())
-  account_id   String       @unique
+  id           String        @id @default(uuid())
+  account_id   String        @unique
   nama_lengkap String
   no_hp        String
   alamat       String
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @default(now())
-  account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @default(now())
+  account      Account       @relation(fields: [account_id], references: [id], onDelete: Cascade)
   peminjaman   Peminjaman[]
+  daftar_denda DaftarDenda[]
 
   @@map("users")
 }
@@ -49,6 +50,7 @@ model Admin {
   updated_at   DateTime     @default(now())
   account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
   peminjaman   Peminjaman[]
+  laporan      Laporan[]
 
   @@map("admins")
 }
@@ -120,4 +122,28 @@ model RefreshToken {
   account    Account  @relation(fields: [account_id], references: [id], onDelete: Cascade)
 
   @@map("refresh_token")
+}
+
+model Laporan {
+  id                        Int           @id @default(autoincrement())
+  admin_id                  String
+  keterangan                String
+  total_denda               Int
+  tanggal_pembuatan_laporan DateTime
+  admin                     Admin         @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  daftar_denda              DaftarDenda[]
+
+  @@map("laporan")
+}
+
+model DaftarDenda {
+  id         Int     @id @default(autoincrement())
+  user_id    String
+  laporan_id Int
+  denda      Int
+  keterangan String
+  user       User    @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  laporan    Laporan @relation(fields: [laporan_id], references: [id], onDelete: Cascade)
+
+  @@map("daftar_denda")
 }
