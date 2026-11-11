@@ -65,52 +65,43 @@ model Category {
 }
 
 model Book {
-  id                Int                @id @default(autoincrement())
-  categories_id     Int
-  judul             String
-  penulis           String
-  penerbit          String
-  tanggal_rilis     DateTime
-  stok              Int
-  category          Category           @relation(fields: [categories_id], references: [id], onDelete: Restrict)
-  detail_peminjaman DetailPeminjaman[]
+  id            Int          @id @default(autoincrement())
+  categories_id Int
+  judul         String
+  penulis       String
+  penerbit      String
+  tanggal_rilis DateTime
+  stok          Int
+  category      Category     @relation(fields: [categories_id], references: [id], onDelete: Restrict)
+  peminjaman    Peminjaman[]
 
   @@map("books")
 }
 
 model Peminjaman {
-  id                       Int                @id @default(autoincrement())
+  id                       Int            @id @default(autoincrement())
   user_id                  String
   admin_id                 String
-  tanggal_peminjaman       DateTime           @default(now())
+  book_id                  Int
+  tanggal_peminjaman       DateTime       @default(now())
   tanggal_batas_peminjaman DateTime
-  user                     User               @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  admin                    Admin              @relation(fields: [admin_id], references: [id], onDelete: Restrict)
+  user                     User           @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  admin                    Admin          @relation(fields: [admin_id], references: [id], onDelete: Restrict)
+  book                     Book           @relation(fields: [book_id], references: [id], onDelete: Restrict)
   pengembalian             Pengembalian[]
-  detail_peminjaman        DetailPeminjaman[]
 
   @@map("peminjaman")
 }
 
 model Pengembalian {
-  id                   Int        @id @default(autoincrement())
+  id                   Int           @id @default(autoincrement())
   peminjaman_id        Int
   tanggal_dikembalikan DateTime
-  denda                Float
   status_buku          String // "Baik" | "Rusak" | "Hilang"
-  peminjaman           Peminjaman @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
+  peminjaman           Peminjaman    @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
+  daftar_denda         DaftarDenda[]
 
   @@map("pengembalian")
-}
-
-model DetailPeminjaman {
-  id            Int        @id @default(autoincrement())
-  peminjaman_id Int
-  books_id      Int
-  peminjaman    Peminjaman @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
-  book          Book       @relation(fields: [books_id], references: [id], onDelete: Restrict)
-
-  @@map("detail_peminjaman")
 }
 
 model RefreshToken {
@@ -125,25 +116,28 @@ model RefreshToken {
 }
 
 model Laporan {
-  id                        Int           @id @default(autoincrement())
-  admin_id                  String
-  keterangan                String
-  total_denda               Int
-  tanggal_pembuatan_laporan DateTime
-  admin                     Admin         @relation(fields: [admin_id], references: [id], onDelete: Cascade)
-  daftar_denda              DaftarDenda[]
+  id                         Int      @id @default(autoincrement())
+  admin_id                   String
+  keterangan                 String
+  total_denda                Int
+  tanggal_awal_peminjaman    DateTime
+  tanggal_akhir_peminjaman   DateTime
+  tanggal_awal_pengembalian  DateTime
+  tanggal_akhir_pengembalian DateTime
+  tanggal_pembuatan_laporan  DateTime
+  admin                      Admin    @relation(fields: [admin_id], references: [id], onDelete: Cascade)
 
   @@map("laporan")
 }
 
 model DaftarDenda {
-  id         Int     @id @default(autoincrement())
-  user_id    String
-  laporan_id Int
-  denda      Int
-  keterangan String
-  user       User    @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  laporan    Laporan @relation(fields: [laporan_id], references: [id], onDelete: Cascade)
+  id              Int          @id @default(autoincrement())
+  user_id         String
+  pengembalian_id Int
+  denda           Float
+  keterangan      String
+  user            User         @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  pengembalian    Pengembalian @relation(fields: [pengembalian_id], references: [id], onDelete: Restrict)
 
   @@map("daftar_denda")
 }
