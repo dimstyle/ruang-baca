@@ -36,16 +36,23 @@ export class AuthService {
           email: dto.email,
           password,
           role: 'user',
+          user: {
+            create: {
+              nama_lengkap: dto.nama_lengkap,
+              no_hp: dto.no_hp,
+              alamat: dto.alamat,
+            },
+          },
         },
       });
-      this.logger.log(`Account registered: ${account.id}`);
+      this.logger.log(`Account and user registered: ${account.id}`);
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === 'P2002'
       ) {
         this.logger.warn(`Registration rejected, duplicate: ${dto.email}`);
-        throw new ConflictException('email or username already used');
+        throw new ConflictException('user data already exists');
       }
       throw this.unexpected('register', e);
     }

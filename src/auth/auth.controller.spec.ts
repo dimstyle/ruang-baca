@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@ruangbaca/database';
@@ -54,12 +58,27 @@ describe('AuthController', () => {
       expect(guards).toHaveLength(2); // AuthGuard('jwt') runs first
     });
 
-    it('creates the account and returns the message', async () => {
-      const dto = { username: 'budi', email: 'b@x.id', password: 'secret123' };
+    const dto = {
+      username: 'budi',
+      email: 'b@x.id',
+      password: 'secret123',
+      nama_lengkap: 'Budi',
+      no_hp: '0812',
+      alamat: 'Jl. Mawar',
+    };
+
+    it('creates the account and user profile and returns the message', async () => {
       await expect(controller.register(dto)).resolves.toEqual({
         message: 'account created',
       });
       expect(authService.register).toHaveBeenCalledWith(dto);
+    });
+
+    it('propagates 409 user data already exists', async () => {
+      authService.register.mockRejectedValue(new ConflictException());
+      await expect(controller.register(dto)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
     });
   });
 

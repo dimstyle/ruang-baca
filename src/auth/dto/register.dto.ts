@@ -11,4 +11,16 @@ export class RegisterDto {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  nama_lengkap: string;
+
+  @IsString()
+  @IsNotEmpty()
+  no_hp: string;
+
+  @IsString()
+  @IsNotEmpty()
+  alamat: string;
 }
