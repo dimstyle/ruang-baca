@@ -6,9 +6,12 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Prisma, PrismaService } from '@ruangbaca/database';
 import { CreateDendaDto } from './dto/create-denda.dto';
+import { CreateLaporanDto } from './dto/create-laporan.dto';
+import { ReadListLaporanDto } from './dto/read-list-laporan.dto';
 import { UpdateDendaDto } from './dto/update-denda.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -209,6 +212,170 @@ export class AdminsService {
       `Denda fetched (${records.length} records) by admin ${adminId}`,
     );
     return records;
+  }
+
+  async createLaporan(
+    accountId: string,
+    dto: CreateLaporanDto,
+  ): Promise<void> {
+    const adminId = await this.resolveAdminId(accountId);
+    const awalPinjam = new Date(dto.tanggal_awal_peminjaman);
+    const akhirPinjam = new Date(dto.tanggal_akhir_peminjaman);
+    const awalKembali = new Date(dto.tanggal_awal_pengembalian);
+    const akhirKembali = new Date(dto.tanggal_akhir_pengembalian);
+    const tanggalBuat = new Date(dto.tanggal_pembuatan_laporan);
+
+    try {
+      const [record] = await this.prisma.$queryRawUnsafe<Array<{ id: number }>>(
+        queries.insertLaporan,
+        adminId,
+        dto.keterangan,
+        adminId,
+        awalKembali,
+        akhirKembali,
+        awalPinjam,
+        akhirPinjam,
+        awalKembali,
+        akhirKembali,
+        tanggalBuat,
+      );
+      this.logger.log(`Laporan created: ${record.id} by admin ${adminId}`);
+    } catch (e) {
+      throw this.unexpected('createLaporan', e);
+    }
+  }
+
+  async readLaporan(accountId: string, laporan_id: number) {
+    const adminId = await this.resolveAdminId(accountId);
+    const [laporan] = await this.prisma.$queryRawUnsafe<
+      Array<{
+        id: number;
+        admin_id: string;
+        email_admin: string;
+        username_admin: string;
+        nama_lengkap_admin: string;
+        keterangan: string;
+        total_denda: number;
+        tanggal_awal_peminjaman: Date;
+        tanggal_akhir_peminjaman: Date;
+        tanggal_awal_pengembalian: Date;
+        tanggal_akhir_pengembalian: Date;
+      }>
+    >(queries.findLaporanByIdAndAdmin, laporan_id, adminId);
+
+    if (!laporan) {
+      this.logger.warn(
+        `Read laporan rejected, not found: ${laporan_id} for admin ${adminId}`,
+      );
+      throw new NotFoundException('laporan not found');
+    }
+
+    try {
+      const peminjaman = await this.prisma.$queryRawUnsafe<
+        Array<{
+          email_user: string;
+          username_user: string;
+          nama_lengkap_user: string;
+          judul_buku: string;
+          penerbit: string;
+          tanggal_rilis: Date;
+          tanggal_peminjaman: Date;
+        }>
+      >(
+        queries.findPeminjamanForLaporan,
+        adminId,
+        laporan.tanggal_awal_peminjaman,
+        laporan.tanggal_akhir_peminjaman,
+      );
+
+      const pengembalian = await this.prisma.$queryRawUnsafe<
+        Array<{
+          email_user: string;
+          username_user: string;
+          nama_lengkap_user: string;
+          judul_buku: string;
+          penerbit: string;
+          tanggal_rilis: Date;
+          status_buku: string;
+          denda: number;
+          tanggal_pengembalian: Date;
+        }>
+      >(
+        queries.findPengembalianForLaporan,
+        adminId,
+        laporan.tanggal_awal_pengembalian,
+        laporan.tanggal_akhir_pengembalian,
+      );
+
+      this.logger.log(`Laporan fetched: ${laporan_id} by admin ${adminId}`);
+      return {
+        email_admin: laporan.email_admin,
+        username_admin: laporan.username_admin,
+        nama_lengkap_admin: laporan.nama_lengkap_admin,
+        keterangan: laporan.keterangan,
+        total_denda: Number(laporan.total_denda),
+        peminjaman,
+        pengembalian,
+      };
+    } catch (e) {
+      throw this.unexpected('readLaporan', e);
+    }
+  }
+
+  async readListLaporan(accountId: string, dto: ReadListLaporanDto = {}) {
+    const hasStart = Boolean(dto?.tanggal_awal_laporan);
+    const hasEnd = Boolean(dto?.tanggal_akhir_laporan);
+    if (hasStart !== hasEnd) {
+      this.logger.warn(
+        `Read list laporan rejected, incomplete date range by admin ${accountId}`,
+      );
+      throw new UnprocessableEntityException('Unprocessable Content');
+    }
+
+    const adminId = await this.resolveAdminId(accountId);
+    let records: Array<{
+      laporan_id: number;
+      tanggal_pembuatan_laporan: Date;
+    }>;
+
+    try {
+      if (hasStart && hasEnd) {
+        records = await this.prisma.$queryRawUnsafe(
+          queries.findLaporanByAdminAndDateRange,
+          adminId,
+          new Date(dto.tanggal_awal_laporan!),
+          new Date(dto.tanggal_akhir_laporan!),
+        );
+      } else {
+        records = await this.prisma.$queryRawUnsafe(
+          queries.findAllLaporanByAdmin,
+          adminId,
+        );
+      }
+    } catch (e) {
+      throw this.unexpected('readListLaporan', e);
+    }
+
+    if (records.length === 0) {
+      this.logger.warn(
+        `Read list laporan rejected, no laporan found for admin ${adminId}`,
+      );
+      throw new NotFoundException('laporan not found');
+    }
+
+    this.logger.log(
+      `List laporan fetched (${records.length} records) by admin ${adminId}`,
+    );
+    return records;
+  }
+
+  private async resolveAdminId(accountOrAdminId: string): Promise<string> {
+    const [admin] = await this.prisma.$queryRawUnsafe<Array<{ id: string }>>(
+      queries.findAdminByAccountId,
+      accountOrAdminId,
+      accountOrAdminId,
+    );
+    return admin?.id ?? accountOrAdminId;
   }
 
   private unexpected(action: string, e: unknown) {

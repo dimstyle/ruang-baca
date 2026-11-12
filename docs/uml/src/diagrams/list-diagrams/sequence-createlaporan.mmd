@@ -1,0 +1,36 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: POST /api/admins/createlaporan {keterangan, tanggal_awal_peminjaman, tanggal_akhir_peminjaman, tanggal_awal_pengembalian, tanggal_akhir_pengembalian, tanggal_pembuatan_laporan} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (CreateLaporanDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: createLaporan(accountId, dto)
+                AS->>DB: find admin by account_id = sub
+                AS->>DB: insert laporan (hitung total_denda = COALESCE(SUM(denda), 0) dari daftar_denda join pengembalian pada range tanggal_pengembalian)
+                alt error database
+                    AS-->>AC: InternalServerErrorException
+                    AC-->>C: 500 "Internal server error"
+                else sukses
+                    DB-->>AS: {id}
+                    AS-->>AC: ok
+                    AC-->>C: 201 {message: "Laporan created"}
+                end
+            end
+        end
+    end

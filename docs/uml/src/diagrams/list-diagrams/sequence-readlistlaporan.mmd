@@ -1,0 +1,44 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: GET /api/admins/readlistlaporan {tanggal_awal_laporan?, tanggal_akhir_laporan?} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AS: readListLaporan(accountId, dto)
+            alt salah satu tanggal_awal_laporan / tanggal_akhir_laporan tidak ada
+                AS-->>AC: UnprocessableEntityException
+                AC-->>C: 422 "Unprocessable Content"
+            else range tanggal lengkap atau kosong keduanya
+                AS->>DB: find admin by account_id = sub
+                alt range tanggal diisi
+                    AS->>DB: SELECT laporan_id, tanggal_pembuatan_laporan FROM laporan WHERE admin_id = ? AND tanggal_pembuatan_laporan BETWEEN ? AND ?
+                else range tanggal kosong
+                    AS->>DB: SELECT laporan_id, tanggal_pembuatan_laporan FROM laporan WHERE admin_id = ?
+                end
+                alt laporan kosong
+                    DB-->>AS: []
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "laporan not found"
+                else error database
+                    AS-->>AC: InternalServerErrorException
+                    AC-->>C: 500 "Internal server error"
+                else sukses
+                    DB-->>AS: [{laporan_id, tanggal_pembuatan_laporan}, ...]
+                    AS-->>AC: list laporan
+                    AC-->>C: 200 {message: "Laporan found", data: [...]}
+                end
+            end
+        end
+    end

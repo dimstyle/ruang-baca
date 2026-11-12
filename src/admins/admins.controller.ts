@@ -14,6 +14,9 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 import type { AccessTokenPayload } from '../auth/strategies/jwt.strategy';
 import { AdminsService } from './admins.service';
 import { CreateDendaDto } from './dto/create-denda.dto';
+import { CreateLaporanDto } from './dto/create-laporan.dto';
+import { ReadLaporanDto } from './dto/read-laporan.dto';
+import { ReadListLaporanDto } from './dto/read-list-laporan.dto';
 import { UpdateDendaDto } from './dto/update-denda.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserIdDto } from './dto/user-id.dto';
@@ -60,5 +63,32 @@ export class AdminsController {
   async getDenda(@Req() req: AuthedRequest) {
     const data = await this.adminsService.getDenda(req.user.sub);
     return { message: 'Denda found', data };
+  }
+
+  @Post('createlaporan')
+  async createLaporan(
+    @Req() req: AuthedRequest,
+    @Body() dto: CreateLaporanDto,
+  ) {
+    await this.adminsService.createLaporan(req.user.sub, dto);
+    return { message: 'Laporan created' };
+  }
+
+  @Get('readlaporan')
+  async readLaporan(@Req() req: AuthedRequest, @Body() dto: ReadLaporanDto) {
+    const data = await this.adminsService.readLaporan(
+      req.user.sub,
+      dto.laporan_id,
+    );
+    return { message: 'Laporan found', data };
+  }
+
+  @Get('readlistlaporan')
+  async readListLaporan(
+    @Req() req: AuthedRequest,
+    @Body() dto?: ReadListLaporanDto,
+  ) {
+    const data = await this.adminsService.readListLaporan(req.user.sub, dto);
+    return { message: 'Laporan found', data };
   }
 }

@@ -1,0 +1,45 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: GET /api/admins/readlaporan {laporan_id} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (ReadLaporanDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: readLaporan(accountId, dto.laporan_id)
+                AS->>DB: find admin by account_id = sub
+                AS->>DB: find laporan by id = laporan_id AND admin_id (join admins & accounts)
+                alt laporan tidak ditemukan
+                    DB-->>AS: null
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "laporan not found"
+                else laporan ditemukan
+                    AS->>DB: find peminjaman by admin_id BETWEEN tanggal_awal_peminjaman AND tanggal_akhir_peminjaman
+                    DB-->>AS: peminjaman[]
+                    AS->>DB: find pengembalian by admin_id BETWEEN tanggal_awal_pengembalian AND tanggal_akhir_pengembalian (left join daftar_denda)
+                    DB-->>AS: pengembalian[]
+                    alt error database
+                        AS-->>AC: InternalServerErrorException
+                        AC-->>C: 500 "Internal server error"
+                    else sukses
+                        AS-->>AC: {email_admin, username_admin, nama_lengkap_admin, keterangan, total_denda, peminjaman, pengembalian}
+                        AC-->>C: 200 {message: "Laporan found", data: {...}}
+                    end
+                end
+            end
+        end
+    end

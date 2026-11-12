@@ -1,4 +1,9 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@ruangbaca/database';
@@ -20,6 +25,9 @@ describe('AdminsController', () => {
     createDenda: jest.fn(),
     updateDenda: jest.fn(),
     getDenda: jest.fn(),
+    createLaporan: jest.fn(),
+    readLaporan: jest.fn(),
+    readListLaporan: jest.fn(),
   };
   const req = { user: { sub: 'acc-admin', email: 'a@x.id' } } as Parameters<
     AdminsController['updateUser']
@@ -183,6 +191,133 @@ describe('AdminsController', () => {
         new NotFoundException('denda not found'),
       );
       await expect(controller.getDenda(req)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('POST /createlaporan', () => {
+    const dto = {
+      keterangan: 'Laporan bulanan November',
+      tanggal_awal_peminjaman: '2026-11-01T00:00:00.000Z',
+      tanggal_akhir_peminjaman: '2026-11-30T23:59:59.000Z',
+      tanggal_awal_pengembalian: '2026-11-01T00:00:00.000Z',
+      tanggal_akhir_pengembalian: '2026-11-30T23:59:59.000Z',
+      tanggal_pembuatan_laporan: '2026-11-30T23:59:59.000Z',
+    };
+
+    it('creates a laporan record for the calling admin', async () => {
+      await expect(controller.createLaporan(req, dto)).resolves.toEqual({
+        message: 'Laporan created',
+      });
+      expect(adminsService.createLaporan).toHaveBeenCalledWith(
+        'acc-admin',
+        dto,
+      );
+    });
+
+    it('propagates 500 Internal server error on unexpected failure', async () => {
+      adminsService.createLaporan.mockRejectedValue(
+        new InternalServerErrorException('Internal server error'),
+      );
+      await expect(controller.createLaporan(req, dto)).rejects.toBeInstanceOf(
+        InternalServerErrorException,
+      );
+    });
+  });
+
+  describe('GET /readlaporan', () => {
+    const dto = { laporan_id: 1 };
+
+    it('returns the detailed laporan data', async () => {
+      const detail = {
+        email_admin: 'a@x.id',
+        username_admin: 'admin1',
+        nama_lengkap_admin: 'Admin Satu',
+        keterangan: 'Laporan bulanan November',
+        total_denda: 15000,
+        peminjaman: [
+          {
+            email_user: 'u@x.id',
+            username_user: 'budi',
+            nama_lengkap_user: 'Budi',
+            judul_buku: 'Clean Code',
+            penerbit: 'Prentice Hall',
+            tanggal_rilis: new Date('2008-08-01T00:00:00.000Z'),
+            tanggal_peminjaman: new Date('2026-11-05T00:00:00.000Z'),
+          },
+        ],
+        pengembalian: [
+          {
+            email_user: 'u@x.id',
+            username_user: 'budi',
+            nama_lengkap_user: 'Budi',
+            judul_buku: 'Clean Code',
+            penerbit: 'Prentice Hall',
+            tanggal_rilis: new Date('2008-08-01T00:00:00.000Z'),
+            status_buku: 'Rusak',
+            denda: 15000,
+            tanggal_pengembalian: new Date('2026-11-10T00:00:00.000Z'),
+          },
+        ],
+      };
+      adminsService.readLaporan.mockResolvedValue(detail);
+      await expect(controller.readLaporan(req, dto)).resolves.toEqual({
+        message: 'Laporan found',
+        data: detail,
+      });
+      expect(adminsService.readLaporan).toHaveBeenCalledWith('acc-admin', 1);
+    });
+
+    it('propagates 404 laporan not found', async () => {
+      adminsService.readLaporan.mockRejectedValue(
+        new NotFoundException('laporan not found'),
+      );
+      await expect(controller.readLaporan(req, dto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('GET /readlistlaporan', () => {
+    it('returns the list of laporan records', async () => {
+      const list = [
+        {
+          laporan_id: 1,
+          tanggal_pembuatan_laporan: new Date('2026-11-30T23:59:59.000Z'),
+        },
+      ];
+      const dto = {
+        tanggal_awal_laporan: '2026-11-01T00:00:00.000Z',
+        tanggal_akhir_laporan: '2026-11-30T23:59:59.000Z',
+      };
+      adminsService.readListLaporan.mockResolvedValue(list);
+      await expect(controller.readListLaporan(req, dto)).resolves.toEqual({
+        message: 'Laporan found',
+        data: list,
+      });
+      expect(adminsService.readListLaporan).toHaveBeenCalledWith(
+        'acc-admin',
+        dto,
+      );
+    });
+
+    it('propagates 422 Unprocessable Content when date range is incomplete', async () => {
+      adminsService.readListLaporan.mockRejectedValue(
+        new UnprocessableEntityException('Unprocessable Content'),
+      );
+      await expect(
+        controller.readListLaporan(req, {
+          tanggal_awal_laporan: '2026-11-01T00:00:00.000Z',
+        }),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    });
+
+    it('propagates 404 laporan not found when list is empty', async () => {
+      adminsService.readListLaporan.mockRejectedValue(
+        new NotFoundException('laporan not found'),
+      );
+      await expect(controller.readListLaporan(req, {})).rejects.toBeInstanceOf(
         NotFoundException,
       );
     });

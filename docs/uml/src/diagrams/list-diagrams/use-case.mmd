@@ -15,6 +15,9 @@ flowchart LR
         updateDenda(("Update Denda"))
         deleteDenda(("Delete Denda"))
         readDenda(("Read Denda"))
+        createLaporan(("Create Laporan"))
+        readLaporan(("Read Laporan"))
+        readListLaporan(("Read List Laporan"))
     end
 
     user --> login
@@ -31,8 +34,11 @@ flowchart LR
     admin --> createDenda
     admin --> updateDenda
     admin --> readDenda
+    admin --> createLaporan
+    admin --> readListLaporan
 
     createUser -. "<<extend>>" .-> register
     deleteDenda -. "<<extend>>" .-> updateDenda
+    readLaporan -. "<<extend>>" .-> readListLaporan
 
-    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda usecase
+    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan usecase
