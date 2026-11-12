@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   ConflictException,
   Injectable,
@@ -18,6 +21,20 @@ const SALT_ROUNDS = 10;
 
 export type AuthTokens = { access_token: string; refresh_token: string };
 
+const queries = Object.fromEntries(
+  readFileSync(join(__dirname, 'sql', 'auth.queries.sql'), 'utf8')
+    .split(/^--\s*name:\s*/m)
+    .slice(1)
+    .map((b) => {
+      const i = b.indexOf('\n');
+      return [b.slice(0, i).trim(), b.slice(i + 1).trim()];
+    }),
+);
+
+const isUniqueError = (e: unknown) =>
+  e instanceof Prisma.PrismaClientKnownRequestError &&
+  (e.code === 'P2002' || e.message.includes('UNIQUE'));
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -30,27 +47,28 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<void> {
     try {
       const password = await bcrypt.hash(dto.password, SALT_ROUNDS);
-      const account = await this.prisma.account.create({
-        data: {
-          username: dto.username,
-          email: dto.email,
+      const accountId = randomUUID();
+      const userId = randomUUID();
+      await this.prisma.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(
+          queries.insertAccount,
+          accountId,
+          dto.username,
+          dto.email,
           password,
-          role: 'user',
-          user: {
-            create: {
-              nama_lengkap: dto.nama_lengkap,
-              no_hp: dto.no_hp,
-              alamat: dto.alamat,
-            },
-          },
-        },
+        );
+        await tx.$executeRawUnsafe(
+          queries.insertUser,
+          userId,
+          accountId,
+          dto.nama_lengkap,
+          dto.no_hp,
+          dto.alamat,
+        );
       });
-      this.logger.log(`Account and user registered: ${account.id}`);
+      this.logger.log(`Account and user registered: ${accountId}`);
     } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
-      ) {
+      if (isUniqueError(e)) {
         this.logger.warn(`Registration rejected, duplicate: ${dto.email}`);
         throw new ConflictException('user data already exists');
       }
@@ -59,9 +77,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<AuthTokens> {
-    const account = await this.prisma.account.findUnique({
-      where: { email: dto.email },
-    });
+    const [account] = await this.prisma.$queryRawUnsafe<
+      Array<{ id: string; email: string; password: string }>
+    >(queries.findAccountByEmail, dto.email);
     if (!account) {
       this.logger.warn(`Login failed, user not found: ${dto.email}`);
       throw new NotFoundException('user not found');
@@ -75,13 +93,12 @@ export class AuthService {
 
     try {
       const tokens = await this.signTokens(account.id, account.email);
-      await this.prisma.refreshToken.create({
-        data: {
-          account_id: account.id,
-          token: tokens.refresh_token,
-          expired_at: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-        },
-      });
+      await this.prisma.$executeRawUnsafe(
+        queries.insertRefreshToken,
+        account.id,
+        tokens.refresh_token,
+        new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+      );
       this.logger.log(`Login success: ${account.id}`);
       return tokens;
     } catch (e) {
@@ -91,9 +108,11 @@ export class AuthService {
 
   async logout(accountId: string, refreshToken?: string): Promise<void> {
     try {
-      const { count } = await this.prisma.refreshToken.deleteMany({
-        where: { account_id: accountId, token: refreshToken ?? '' },
-      });
+      const count = await this.prisma.$executeRawUnsafe(
+        queries.deleteRefreshToken,
+        accountId,
+        refreshToken ?? '',
+      );
       this.logger.log(`Logout: ${accountId} (${count} refresh token removed)`);
     } catch (e) {
       throw this.unexpected('logout', e);
@@ -114,28 +133,22 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const stored = await this.prisma.refreshToken.findFirst({
-      where: {
-        token: refreshToken,
-        account_id: sub,
-        expired_at: { gt: new Date() },
-      },
-      include: { account: true },
-    });
+    const [stored] = await this.prisma.$queryRawUnsafe<
+      Array<{ id: number; email: string }>
+    >(queries.findValidRefreshToken, refreshToken, sub, new Date());
     if (!stored) {
       this.logger.warn(`Refresh rejected, token not found: ${sub}`);
       throw new NotFoundException('token not found');
     }
 
     try {
-      const tokens = await this.signTokens(sub, stored.account.email);
-      await this.prisma.refreshToken.update({
-        where: { id: stored.id },
-        data: {
-          token: tokens.refresh_token,
-          expired_at: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-        },
-      });
+      const tokens = await this.signTokens(sub, stored.email);
+      await this.prisma.$executeRawUnsafe(
+        queries.updateRefreshToken,
+        tokens.refresh_token,
+        new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+        stored.id,
+      );
       this.logger.log(`Token refreshed: ${sub}`);
       return tokens;
     } catch (e) {

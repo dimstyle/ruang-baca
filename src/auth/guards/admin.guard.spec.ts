@@ -5,9 +5,9 @@ import { AdminGuard } from './admin.guard';
 jest.mock('@ruangbaca/database', () => ({ PrismaService: class {} }));
 
 describe('AdminGuard', () => {
-  const findUnique = jest.fn();
+  const $queryRawUnsafe = jest.fn();
   const guard = new AdminGuard({
-    account: { findUnique },
+    $queryRawUnsafe,
   } as unknown as PrismaService);
 
   const ctx = (user?: { sub: string; email: string }) =>
@@ -16,23 +16,26 @@ describe('AdminGuard', () => {
     }) as unknown as ExecutionContext;
   const admin = { sub: 'acc-admin', email: 'a@x.id' };
 
-  beforeEach(() => findUnique.mockReset());
+  beforeEach(() => $queryRawUnsafe.mockReset());
 
   it('allows an account with role admin', async () => {
-    findUnique.mockResolvedValue({ id: 'acc-admin', role: 'admin' });
+    $queryRawUnsafe.mockResolvedValue([{ id: 'acc-admin', role: 'admin' }]);
     await expect(guard.canActivate(ctx(admin))).resolves.toBe(true);
-    expect(findUnique).toHaveBeenCalledWith({ where: { id: 'acc-admin' } });
+    expect($queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT id, role'),
+      'acc-admin',
+    );
   });
 
   it('rejects an account with role user', async () => {
-    findUnique.mockResolvedValue({ id: 'acc-admin', role: 'user' });
+    $queryRawUnsafe.mockResolvedValue([{ id: 'acc-admin', role: 'user' }]);
     await expect(guard.canActivate(ctx(admin))).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
   });
 
   it('rejects when the account no longer exists', async () => {
-    findUnique.mockResolvedValue(null);
+    $queryRawUnsafe.mockResolvedValue([]);
     await expect(guard.canActivate(ctx(admin))).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
@@ -42,6 +45,6 @@ describe('AdminGuard', () => {
     await expect(guard.canActivate(ctx())).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
-    expect(findUnique).not.toHaveBeenCalled();
+    expect($queryRawUnsafe).not.toHaveBeenCalled();
   });
 });
