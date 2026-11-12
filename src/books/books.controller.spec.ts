@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -147,6 +148,15 @@ describe('BooksController', () => {
       );
       await expect(controller.deleteCategory(req, dto)).rejects.toBeInstanceOf(
         NotFoundException,
+      );
+    });
+
+    it('propagates 409 when category still has books records', async () => {
+      booksService.deleteCategory.mockRejectedValue(
+        new ConflictException('category still has books records'),
+      );
+      await expect(controller.deleteCategory(req, dto)).rejects.toBeInstanceOf(
+        ConflictException,
       );
     });
 

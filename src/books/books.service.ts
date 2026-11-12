@@ -1,12 +1,13 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@ruangbaca/database';
+import { Prisma, PrismaService } from '@ruangbaca/database';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
@@ -24,6 +25,10 @@ const queries = Object.fromEntries(
         }),
     ),
 );
+
+const isFkError = (e: unknown) =>
+  e instanceof Prisma.PrismaClientKnownRequestError &&
+  (e.code === 'P2003' || /foreign\s*key/i.test(e.message));
 
 @Injectable()
 export class BooksService {
@@ -77,6 +82,12 @@ export class BooksService {
         kategori_id,
       );
     } catch (e) {
+      if (isFkError(e)) {
+        this.logger.warn(
+          `Delete category rejected, has related books: ${kategori_id}`,
+        );
+        throw new ConflictException('category still has books records');
+      }
       throw this.unexpected('deleteCategory', e);
     }
 

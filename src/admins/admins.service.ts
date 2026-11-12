@@ -32,7 +32,7 @@ const queries = Object.fromEntries(
 
 const isFkError = (e: unknown) =>
   e instanceof Prisma.PrismaClientKnownRequestError &&
-  (e.code === 'P2003' || e.message.includes('FOREIGNKEY'));
+  (e.code === 'P2003' || /foreign\s*key/i.test(e.message));
 
 @Injectable()
 export class AdminsService {
