@@ -26,16 +26,15 @@ model Account {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  account_id   String        @unique
+  id           String       @id @default(uuid())
+  account_id   String       @unique
   nama_lengkap String
   no_hp        String
   alamat       String
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @default(now())
-  account      Account       @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @default(now())
+  account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
   peminjaman   Peminjaman[]
-  daftar_denda DaftarDenda[]
 
   @@map("users")
 }
@@ -119,7 +118,7 @@ model Laporan {
   id                         Int      @id @default(autoincrement())
   admin_id                   String
   keterangan                 String
-  total_denda                Int
+  total_denda                Float
   tanggal_awal_peminjaman    DateTime
   tanggal_akhir_peminjaman   DateTime
   tanggal_awal_pengembalian  DateTime
@@ -132,11 +131,9 @@ model Laporan {
 
 model DaftarDenda {
   id              Int          @id @default(autoincrement())
-  user_id         String
   pengembalian_id Int
   denda           Float
   keterangan      String
-  user            User         @relation(fields: [user_id], references: [id], onDelete: Restrict)
   pengembalian    Pengembalian @relation(fields: [pengembalian_id], references: [id], onDelete: Restrict)
 
   @@map("daftar_denda")
