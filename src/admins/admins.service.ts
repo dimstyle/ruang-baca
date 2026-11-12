@@ -6,7 +6,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, PrismaService } from '@ruangbaca/database';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateDendaDto } from './dto/create-denda.dto';
+import { UpdateDendaDto } from './dto/update-denda.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 const isPrismaError = (e: unknown, code: string) =>
@@ -17,32 +18,6 @@ export class AdminsService {
   private readonly logger = new Logger(AdminsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
-
-  async createUser(adminId: string, dto: CreateUserDto): Promise<void> {
-    const { id_user, ...data } = dto;
-    const account = await this.prisma.account.findUnique({
-      where: { id: id_user },
-    });
-    if (!account) {
-      this.logger.warn(`Create user rejected, account not found: ${id_user}`);
-      throw new NotFoundException('account not found');
-    }
-
-    try {
-      const user = await this.prisma.user.create({
-        data: { account_id: id_user, ...data },
-      });
-      this.logger.log(
-        `User created: ${user.id} (account ${id_user}) by admin ${adminId}`,
-      );
-    } catch (e) {
-      if (isPrismaError(e, 'P2002')) {
-        this.logger.warn(`Create user rejected, already exists: ${id_user}`);
-        throw new ConflictException('user data already exists');
-      }
-      throw this.unexpected('createUser', e);
-    }
-  }
 
   async updateUser(adminId: string, dto: UpdateUserDto): Promise<void> {
     const { id_user, ...data } = dto;
@@ -107,6 +82,104 @@ export class AdminsService {
     }
     this.logger.log(`User fetched: ${id_user} by admin ${adminId}`);
     return user;
+  }
+
+  async createDenda(adminId: string, dto: CreateDendaDto): Promise<void> {
+    const pengembalian = await this.prisma.pengembalian.findUnique({
+      where: { id: dto.id_pengembalian },
+    });
+    if (!pengembalian) {
+      this.logger.warn(
+        `Create denda rejected, pengembalian not found: ${dto.id_pengembalian}`,
+      );
+      throw new NotFoundException('User not found');
+    }
+
+    try {
+      const record = await this.prisma.daftarDenda.create({
+        data: {
+          pengembalian_id: dto.id_pengembalian,
+          denda: dto.denda,
+          keterangan: dto.keterangan,
+        },
+      });
+      this.logger.log(
+        `Denda created: ${record.id} (pengembalian ${dto.id_pengembalian}) by admin ${adminId}`,
+      );
+    } catch (e) {
+      throw this.unexpected('createDenda', e);
+    }
+  }
+
+  async updateDenda(adminId: string, dto: UpdateDendaDto): Promise<void> {
+    const record = await this.prisma.daftarDenda.findUnique({
+      where: { id: dto.id_daftar_denda },
+    });
+    if (!record) {
+      this.logger.warn(
+        `Update denda rejected, not found: ${dto.id_daftar_denda}`,
+      );
+      throw new NotFoundException('Denda not found');
+    }
+
+    const sisa = record.denda - dto.uang_masuk;
+    try {
+      if (sisa <= 0) {
+        await this.prisma.daftarDenda.delete({
+          where: { id: dto.id_daftar_denda },
+        });
+        this.logger.log(
+          `Denda deleted (paid off): ${dto.id_daftar_denda} by admin ${adminId}`,
+        );
+      } else {
+        await this.prisma.daftarDenda.update({
+          where: { id: dto.id_daftar_denda },
+          data: { denda: sisa },
+        });
+        this.logger.log(
+          `Denda updated: ${dto.id_daftar_denda} (remaining ${sisa}) by admin ${adminId}`,
+        );
+      }
+    } catch (e) {
+      throw this.unexpected('updateDenda', e);
+    }
+  }
+
+  async getDenda(adminId: string) {
+    const records = await this.prisma.daftarDenda.findMany({
+      include: {
+        pengembalian: {
+          include: {
+            peminjaman: {
+              include: {
+                user: {
+                  include: {
+                    account: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (records.length === 0) {
+      this.logger.warn('Get denda rejected, no denda records found');
+      throw new NotFoundException('denda not found');
+    }
+
+    this.logger.log(
+      `Denda fetched (${records.length} records) by admin ${adminId}`,
+    );
+    return records.map((r) => ({
+      id_denda: r.id,
+      username: r.pengembalian.peminjaman.user.account.username,
+      nama_lengkap: r.pengembalian.peminjaman.user.nama_lengkap,
+      status_buku: r.pengembalian.status_buku,
+      denda: r.denda,
+      keterangan_buku: r.keterangan,
+      tanggal_dikembalikan: r.pengembalian.tanggal_dikembalikan,
+    }));
   }
 
   private unexpected(action: string, e: unknown) {

@@ -13,7 +13,8 @@ import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import type { AccessTokenPayload } from '../auth/strategies/jwt.strategy';
 import { AdminsService } from './admins.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateDendaDto } from './dto/create-denda.dto';
+import { UpdateDendaDto } from './dto/update-denda.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserIdDto } from './dto/user-id.dto';
 
@@ -23,12 +24,6 @@ type AuthedRequest = Request & { user: AccessTokenPayload };
 @UseGuards(AuthGuard('jwt'), AdminGuard)
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
-
-  @Post('createuser')
-  async createUser(@Req() req: AuthedRequest, @Body() dto: CreateUserDto) {
-    await this.adminsService.createUser(req.user.sub, dto);
-    return { message: 'user data has created' };
-  }
 
   @Put('updateuser')
   async updateUser(@Req() req: AuthedRequest, @Body() dto: UpdateUserDto) {
@@ -47,5 +42,23 @@ export class AdminsController {
   async getUser(@Req() req: AuthedRequest, @Body() dto: UserIdDto) {
     const data = await this.adminsService.getUser(req.user.sub, dto.id_user);
     return { message: 'User found', data };
+  }
+
+  @Post('createdenda')
+  async createDenda(@Req() req: AuthedRequest, @Body() dto: CreateDendaDto) {
+    await this.adminsService.createDenda(req.user.sub, dto);
+    return { message: 'Denda created' };
+  }
+
+  @Put('updatedenda')
+  async updateDenda(@Req() req: AuthedRequest, @Body() dto: UpdateDendaDto) {
+    await this.adminsService.updateDenda(req.user.sub, dto);
+    return { message: 'Denda updated' };
+  }
+
+  @Get('getdenda')
+  async getDenda(@Req() req: AuthedRequest) {
+    const data = await this.adminsService.getDenda(req.user.sub);
+    return { message: 'Denda found', data };
   }
 }

@@ -14,13 +14,15 @@ jest.mock('@ruangbaca/database', () => ({
 describe('AdminsController', () => {
   let controller: AdminsController;
   const adminsService = {
-    createUser: jest.fn(),
     updateUser: jest.fn(),
     deleteUser: jest.fn(),
     getUser: jest.fn(),
+    createDenda: jest.fn(),
+    updateDenda: jest.fn(),
+    getDenda: jest.fn(),
   };
   const req = { user: { sub: 'acc-admin', email: 'a@x.id' } } as Parameters<
-    AdminsController['createUser']
+    AdminsController['updateUser']
   >[0];
 
   beforeEach(async () => {
@@ -43,36 +45,6 @@ describe('AdminsController', () => {
     ) as unknown[];
     expect(guards).toContain(AdminGuard);
     expect(guards).toHaveLength(2); // AuthGuard('jwt') runs first
-  });
-
-  describe('POST /createuser', () => {
-    const dto = {
-      id_user: 'acc-1',
-      nama_lengkap: 'Budi',
-      no_hp: '0812',
-      alamat: 'Jl. Mawar',
-    };
-
-    it('creates the user data as the calling admin', async () => {
-      await expect(controller.createUser(req, dto)).resolves.toEqual({
-        message: 'user data has created',
-      });
-      expect(adminsService.createUser).toHaveBeenCalledWith('acc-admin', dto);
-    });
-
-    it('propagates 404 account not found', async () => {
-      adminsService.createUser.mockRejectedValue(new NotFoundException());
-      await expect(controller.createUser(req, dto)).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
-    });
-
-    it('propagates 409 user data already exists', async () => {
-      adminsService.createUser.mockRejectedValue(new ConflictException());
-      await expect(controller.createUser(req, dto)).rejects.toBeInstanceOf(
-        ConflictException,
-      );
-    });
   });
 
   describe('PUT /updateuser', () => {
@@ -137,6 +109,80 @@ describe('AdminsController', () => {
     it('propagates 404 User not found', async () => {
       adminsService.getUser.mockRejectedValue(new NotFoundException());
       await expect(controller.getUser(req, dto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('POST /createdenda', () => {
+    const dto = {
+      id_pengembalian: 1,
+      denda: 15000,
+      keterangan: 'Buku rusak',
+    };
+
+    it('creates the denda record as the calling admin', async () => {
+      await expect(controller.createDenda(req, dto)).resolves.toEqual({
+        message: 'Denda created',
+      });
+      expect(adminsService.createDenda).toHaveBeenCalledWith('acc-admin', dto);
+    });
+
+    it('propagates 404 when pengembalian/user is not found', async () => {
+      adminsService.createDenda.mockRejectedValue(new NotFoundException());
+      await expect(controller.createDenda(req, dto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('PUT /updatedenda', () => {
+    const dto = {
+      id_daftar_denda: 1,
+      uang_masuk: 5000,
+    };
+
+    it('updates the denda record', async () => {
+      await expect(controller.updateDenda(req, dto)).resolves.toEqual({
+        message: 'Denda updated',
+      });
+      expect(adminsService.updateDenda).toHaveBeenCalledWith('acc-admin', dto);
+    });
+
+    it('propagates 404 Denda not found', async () => {
+      adminsService.updateDenda.mockRejectedValue(new NotFoundException());
+      await expect(controller.updateDenda(req, dto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('GET /getdenda', () => {
+    it('returns the list of denda records', async () => {
+      const list = [
+        {
+          id_denda: 1,
+          username: 'budi',
+          nama_lengkap: 'Budi',
+          status_buku: 'Rusak',
+          denda: 15000,
+          keterangan_buku: 'Buku rusak',
+          tanggal_dikembalikan: new Date('2026-11-12T00:00:00.000Z'),
+        },
+      ];
+      adminsService.getDenda.mockResolvedValue(list);
+      await expect(controller.getDenda(req)).resolves.toEqual({
+        message: 'Denda found',
+        data: list,
+      });
+      expect(adminsService.getDenda).toHaveBeenCalledWith('acc-admin');
+    });
+
+    it('propagates 404 denda not found when list is empty', async () => {
+      adminsService.getDenda.mockRejectedValue(
+        new NotFoundException('denda not found'),
+      );
+      await expect(controller.getDenda(req)).rejects.toBeInstanceOf(
         NotFoundException,
       );
     });
