@@ -6,6 +6,7 @@
   --color-accent: #D552A3;
 }
 
+/* Use Case Uniform Sizing */
 g.node.usecase foreignObject > div {
   width: 120px !important;
   height: 28px !important;
@@ -14,4 +15,54 @@ g.node.usecase foreignObject > div {
   justify-content: center !important;
   text-align: center !important;
   white-space: nowrap !important;
+}
+
+/* Sequence Diagram Typography Enhancement */
+text.actor,
+.actor text,
+.actor tspan {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.messageText,
+.messageText tspan {
+  font-size: 17px !important;
+  font-weight: 500 !important;
+}
+
+.labelText,
+.labelText tspan,
+.loopText,
+.loopText tspan {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.noteText,
+.noteText tspan {
+  font-size: 15px !important;
+}
+
+.sequenceNumber {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+/* ERD Table - Unify background for all rows (no white background) */
+g.row-rect-odd path,
+g.row-rect-even path,
+.row-rect-odd path,
+.row-rect-even path,
+.entityBox,
+.er.entityBox {
+  fill: #8E1EA2 !important;
+}
+
+g.label.attribute-type text,
+g.label.attribute-name text,
+g.label.attribute-keys text,
+g.label.attribute-comment text,
+g.label.name text {
+  fill: #ffffff !important;
 }
