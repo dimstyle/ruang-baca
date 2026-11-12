@@ -11,9 +11,8 @@ erDiagram
 
     categories ||--o{ books : "contains"
 
-    books ||--o{ detail_peminjaman : "referenced_in"
+    books ||--o{ peminjaman : "referenced_in"
 
-    peminjaman ||--o{ detail_peminjaman : "has"
     peminjaman ||--o{ pengembalian : "has"
 
     laporan ||--o{ daftar_denda : "contains"
@@ -67,6 +66,7 @@ erDiagram
         int id PK
         string user_id FK
         string admin_id FK
+        int book_id FK
         datetime tanggal_peminjaman
         datetime tanggal_batas_peminjaman
     }
@@ -77,12 +77,6 @@ erDiagram
         datetime tanggal_dikembalikan
         float denda
         string status_buku
-    }
-
-    detail_peminjaman {
-        int id PK
-        int peminjaman_id FK
-        int books_id FK
     }
 
     refresh_token {

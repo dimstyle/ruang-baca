@@ -51,7 +51,7 @@ Setiap diagram disimpan dalam file `.mmd` terpisah:
 * **Use Case**:
   * `use-case.mmd`: Diagram use case lengkap sistem Ruang Baca (Auth, Admin User Management, Admin Denda Management).
 * **ERD**:
-  * `erd.mmd`: ERD relasi tabel `accounts`, `users`, `admins`, `refresh_token`, `categories`, `books`, `peminjaman`, `detail_peminjaman`, `pengembalian`, `laporan`, dan `daftar_denda`.
+  * `erd.mmd`: ERD relasi tabel `accounts`, `users`, `admins`, `refresh_token`, `categories`, `books`, `peminjaman`, `pengembalian`, `laporan`, dan `daftar_denda`.
 * **Sequence Diagram**:
   * `sequence-login.mmd`: Alur autentikasi login akun dan pembuatan JWT access & refresh token.
   * `sequence-register.mmd`: Alur registrasi akun dan verifikasi password hash.
