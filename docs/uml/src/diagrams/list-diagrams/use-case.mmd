@@ -18,11 +18,16 @@ flowchart LR
         createLaporan(("Create Laporan"))
         readLaporan(("Read Laporan"))
         readListLaporan(("Read List Laporan"))
+        createCategory(("Create Category"))
+        updateCategory(("Update Category"))
+        deleteCategory(("Delete Category"))
+        readListCategories(("Read List Categories"))
     end
 
     user --> login
     user --> logout
     user --> refreshToken
+    user --> readListCategories
 
     admin --> login
     admin --> register
@@ -36,9 +41,13 @@ flowchart LR
     admin --> readDenda
     admin --> createLaporan
     admin --> readListLaporan
+    admin --> createCategory
+    admin --> updateCategory
+    admin --> deleteCategory
+    admin --> readListCategories
 
     createUser -. "<<extend>>" .-> register
     deleteDenda -. "<<extend>>" .-> updateDenda
     readLaporan -. "<<extend>>" .-> readListLaporan
 
-    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan usecase
+    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan,createCategory,updateCategory,deleteCategory,readListCategories usecase
