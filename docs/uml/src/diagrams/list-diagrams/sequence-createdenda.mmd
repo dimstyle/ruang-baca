@@ -1,0 +1,42 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: POST /api/admins/createdenda {id_pengembalian, denda, keterangan} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (CreateDendaDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: createDenda(adminId, dto)
+                AS->>DB: find pengembalian by id = id_pengembalian
+                alt pengembalian tidak ditemukan
+                    DB-->>AS: null
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "User not found"
+                else pengembalian ditemukan
+                    AS->>DB: insert daftar_denda {pengembalian_id: id_pengembalian, denda, keterangan}
+                    alt error
+                        AS-->>AC: InternalServerErrorException
+                        AC-->>C: 500 "Internal server error"
+                    else sukses
+                        DB-->>AS: denda record
+                        AS-->>AC: ok
+                        AC-->>C: 201 {message: "Denda created"}
+                    end
+                end
+            end
+        end
+    end

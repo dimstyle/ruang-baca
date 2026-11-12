@@ -1,0 +1,47 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: PUT /api/admins/updatedenda {id_daftar_denda, uang_masuk} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AC: ValidationPipe (UpdateDendaDto)
+            alt body tidak valid
+                AC-->>C: 400 Bad Request
+            else body valid
+                AC->>AS: updateDenda(adminId, dto)
+                AS->>DB: find daftar_denda by id = id_daftar_denda
+                alt denda tidak ditemukan
+                    DB-->>AS: null
+                    AS-->>AC: NotFoundException
+                    AC-->>C: 404 "Denda not found"
+                else denda ditemukan
+                    AS->>AS: sisa = denda - uang_masuk
+                    alt sisa <= 0
+                        AS->>DB: delete daftar_denda where id = id_daftar_denda
+                    else sisa > 0
+                        AS->>DB: update daftar_denda set denda = sisa where id = id_daftar_denda
+                    end
+                    alt error
+                        AS-->>AC: InternalServerErrorException
+                        AC-->>C: 500 "Internal server error"
+                    else sukses
+                        DB-->>AS: ok
+                        AS-->>AC: ok
+                        AC-->>C: 200 {message: "Denda updated"}
+                    end
+                end
+            end
+        end
+    end

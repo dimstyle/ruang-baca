@@ -6,7 +6,7 @@ sequenceDiagram
     participant AS as AuthService
     participant DB as Database
 
-    C->>G: POST /api/auth/registration {username, email, password} (cookie access_token)
+    C->>G: POST /api/auth/registration {username, email, password, nama_lengkap, no_hp, alamat} (cookie access_token)
     G->>G: verify access_token dari cookie
     alt access_token tidak ada / tidak valid
         G-->>C: 401 "Unauthorized"
@@ -22,16 +22,17 @@ sequenceDiagram
             else body valid
                 AC->>AS: register(dto)
                 AS->>AS: bcrypt.hash(password)
-                AS->>DB: insert accounts {username, email, password, role: "user"}
-                alt email / username sudah dipakai
-                    DB-->>AS: unique constraint error
+                AS->>DB: insert accounts {username, email, password, role: "user"} + nested insert users {account_id, nama_lengkap, no_hp, alamat}
+                alt data sudah ada (P2002)
+                    DB-->>AS: unique constraint error (rollback)
                     AS-->>AC: ConflictException
-                    AC-->>C: 409 "email or username already used"
+                    AC-->>C: 409 "user data already exists"
                 else error lain
+                    DB-->>AS: error (rollback)
                     AS-->>AC: InternalServerErrorException
                     AC-->>C: 500 "internal server error"
                 else sukses
-                    DB-->>AS: account
+                    DB-->>AS: account + user (commit)
                     AS-->>AC: ok
                     AC-->>C: 201 {message: "account created"}
                 end

@@ -5,26 +5,32 @@ flowchart LR
     subgraph system["Ruang Baca"]
         login(("Login"))
         register(("Registration"))
+        createUser(("Create User"))
         logout(("Logout"))
         refreshToken(("Refresh Token"))
-        profileManagement(("Profile Management"))
-        createUser(("Create User"))
         updateUser(("Update User"))
         deleteUser(("Delete User"))
         getUser(("Get User"))
+        createDenda(("Create Denda"))
+        updateDenda(("Update Denda"))
+        deleteDenda(("Delete Denda"))
+        readDenda(("Read Denda"))
     end
 
     user --> login
     user --> logout
     user --> refreshToken
-    user --> profileManagement
-    
+
     admin --> login
     admin --> register
     admin --> logout
     admin --> refreshToken
-    admin --> profileManagement
-    admin --> createUser
     admin --> updateUser
     admin --> deleteUser
     admin --> getUser
+    admin --> createDenda
+    admin --> updateDenda
+    admin --> readDenda
+
+    createUser -. "<<extend>>" .-> register
+    deleteDenda -. "<<extend>>" .-> updateDenda

@@ -1,0 +1,34 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant AC as AdminsController
+    participant AS as AdminsService
+    participant DB as Database
+
+    C->>G: GET /api/admins/getdenda (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>AC: lanjut
+            AC->>AS: getDenda(adminId)
+            AS->>DB: findMany daftar_denda include pengembalian -> peminjaman -> user -> account
+            alt daftar_denda kosong
+                DB-->>AS: []
+                AS-->>AC: NotFoundException
+                AC-->>C: 404 "denda not found"
+            else error lain
+                AS-->>AC: InternalServerErrorException
+                AC-->>C: 500 "Internal server error"
+            else sukses
+                DB-->>AS: records
+                AS-->>AC: mapped denda list
+                AC-->>C: 200 {message: "Denda found", data: [...]}
+            end
+        end
+    end
