@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   ConflictException,
@@ -12,14 +12,19 @@ import { CreateDendaDto } from './dto/create-denda.dto';
 import { UpdateDendaDto } from './dto/update-denda.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+const sqlDir = join(__dirname, 'sql');
 const queries = Object.fromEntries(
-  readFileSync(join(__dirname, 'sql', 'admins.queries.sql'), 'utf8')
-    .split(/^--\s*name:\s*/m)
-    .slice(1)
-    .map((b) => {
-      const i = b.indexOf('\n');
-      return [b.slice(0, i).trim(), b.slice(i + 1).trim()];
-    }),
+  readdirSync(sqlDir)
+    .filter((f) => f.endsWith('.queries.sql'))
+    .flatMap((f) =>
+      readFileSync(join(sqlDir, f), 'utf8')
+        .split(/^--\s*name:\s*/m)
+        .slice(1)
+        .map((b) => {
+          const i = b.indexOf('\n');
+          return [b.slice(0, i).trim(), b.slice(i + 1).trim()];
+        }),
+    ),
 );
 
 const isFkError = (e: unknown) =>

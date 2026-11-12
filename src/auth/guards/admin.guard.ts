@@ -11,7 +11,7 @@ import { PrismaService } from '@ruangbaca/database';
 import type { AccessTokenPayload } from '../strategies/jwt.strategy';
 
 const queries = Object.fromEntries(
-  readFileSync(join(__dirname, '..', 'sql', 'auth.queries.sql'), 'utf8')
+  readFileSync(join(__dirname, '..', 'sql', 'admin-guard.queries.sql'), 'utf8')
     .split(/^--\s*name:\s*/m)
     .slice(1)
     .map((b) => {
