@@ -1,0 +1,42 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant BC as BooksController
+    participant BS as BooksService
+    participant DB as Database
+
+    C->>G: POST /api/books/createbook {kategori_id, judul, penulis, penerbit, sinopsis, tanggal_rilis, stok} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>BC: lanjut
+            BC->>BC: ValidationPipe (CreateBookDto)
+            alt body tidak valid
+                BC-->>C: 400 Bad Request
+            else body valid
+                BC->>BS: createBook(adminId, dto)
+                BS->>DB: SELECT id FROM categories WHERE id = kategori_id LIMIT 1
+                alt kategori tidak ditemukan
+                    DB-->>BS: null
+                    BS-->>BC: NotFoundException
+                    BC-->>C: 404 "Kategori not found"
+                else kategori ditemukan
+                    BS->>DB: INSERT INTO books (categories_id, judul, penulis, penerbit, sinopsis, tanggal_rilis, stok)
+                    alt error database
+                        BS-->>BC: InternalServerErrorException
+                        BC-->>C: 500 "Internal server error"
+                    else sukses
+                        DB-->>BS: inserted
+                        BS-->>BC: ok
+                        BC-->>C: 201 {message: "Book created"}
+                    end
+                end
+            end
+        end
+    end

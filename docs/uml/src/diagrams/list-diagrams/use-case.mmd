@@ -22,12 +22,17 @@ flowchart LR
         updateCategory(("Update Category"))
         deleteCategory(("Delete Category"))
         readListCategories(("Read List Categories"))
+        createBook(("Create Book"))
+        updateBook(("Update Book"))
+        deleteBook(("Delete Book"))
+        getBook(("Get Book"))
     end
 
     user --> login
     user --> logout
     user --> refreshToken
     user --> readListCategories
+    user --> getBook
 
     admin --> login
     admin --> register
@@ -45,9 +50,13 @@ flowchart LR
     admin --> updateCategory
     admin --> deleteCategory
     admin --> readListCategories
+    admin --> createBook
+    admin --> updateBook
+    admin --> deleteBook
+    admin --> getBook
 
     createUser -. "<<extend>>" .-> register
     deleteDenda -. "<<extend>>" .-> updateDenda
     readLaporan -. "<<extend>>" .-> readListLaporan
 
-    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan,createCategory,updateCategory,deleteCategory,readListCategories usecase
+    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan,createCategory,updateCategory,deleteCategory,readListCategories,createBook,updateBook,deleteBook,getBook usecase

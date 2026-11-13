@@ -13,8 +13,11 @@ import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import type { AccessTokenPayload } from '../auth/strategies/jwt.strategy';
 import { BooksService } from './books.service';
+import { CreateBookDto } from './dto/create-book.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { DeleteBookDto } from './dto/delete-book.dto';
 import { DeleteCategoryDto } from './dto/delete-category.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 type AuthedRequest = Request & { user: AccessTokenPayload };
@@ -57,5 +60,32 @@ export class BooksController {
   async readListCategories() {
     const data = await this.booksService.readListCategories();
     return { message: 'Categories found', data };
+  }
+
+  @Post('createbook')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async createBook(@Req() req: AuthedRequest, @Body() dto: CreateBookDto) {
+    await this.booksService.createBook(req.user.sub, dto);
+    return { message: 'Book created' };
+  }
+
+  @Put('updatebook')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async updateBook(@Req() req: AuthedRequest, @Body() dto: UpdateBookDto) {
+    await this.booksService.updateBook(req.user.sub, dto);
+    return { message: 'Books updated' };
+  }
+
+  @Get('getbook')
+  async getBook() {
+    const data = await this.booksService.getBook();
+    return { message: 'Book found', data };
+  }
+
+  @Delete('deletebook')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async deleteBook(@Req() req: AuthedRequest, @Body() dto: DeleteBookDto) {
+    await this.booksService.deleteBook(req.user.sub, dto.buku_id);
+    return { message: 'Book deleted' };
   }
 }

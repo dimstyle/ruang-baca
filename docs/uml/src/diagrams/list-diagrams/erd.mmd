@@ -4,7 +4,6 @@ erDiagram
     accounts ||--o{ refresh_token : "has"
 
     users ||--o{ peminjaman : "places"
-    users ||--o{ daftar_denda : "has"
 
     admins ||--o{ peminjaman : "manages"
     admins ||--o{ laporan : "creates"
@@ -15,7 +14,7 @@ erDiagram
 
     peminjaman ||--o{ pengembalian : "has"
 
-    laporan ||--o{ daftar_denda : "contains"
+    pengembalian ||--o{ daftar_denda : "has"
 
     accounts {
         string id PK
@@ -58,6 +57,7 @@ erDiagram
         string judul
         string penulis
         string penerbit
+        string sinopsis
         datetime tanggal_rilis
         int stok
     }
@@ -75,7 +75,6 @@ erDiagram
         int id PK
         int peminjaman_id FK
         datetime tanggal_dikembalikan
-        float denda
         string status_buku
     }
 
@@ -91,14 +90,17 @@ erDiagram
         int id PK
         string admin_id FK
         string keterangan
-        int total_denda
+        float total_denda
+        datetime tanggal_awal_peminjaman
+        datetime tanggal_akhir_peminjaman
+        datetime tanggal_awal_pengembalian
+        datetime tanggal_akhir_pengembalian
         datetime tanggal_pembuatan_laporan
     }
 
     daftar_denda {
         int id PK
-        string user_id FK
-        int laporan_id FK
-        int denda
+        int pengembalian_id FK
+        float denda
         string keterangan
     }

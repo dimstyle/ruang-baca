@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant BC as BooksController
+    participant BS as BooksService
+    participant DB as Database
+
+    C->>G: DELETE /api/books/deletebook {buku_id} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>BC: lanjut
+            BC->>BC: ValidationPipe (DeleteBookDto)
+            alt body tidak valid
+                BC-->>C: 400 Bad Request
+            else body valid
+                BC->>BS: deleteBook(adminId, buku_id)
+                BS->>DB: DELETE FROM books WHERE id = buku_id
+                alt buku tidak ditemukan (affected rows = 0)
+                    DB-->>BS: 0
+                    BS-->>BC: NotFoundException
+                    BC-->>C: 404 "Book not found"
+                else error database
+                    BS-->>BC: InternalServerErrorException
+                    BC-->>C: 500 "Internal server error"
+                else sukses
+                    DB-->>BS: 1
+                    BS-->>BC: ok
+                    BC-->>C: 200 {message: "Book deleted"}
+                end
+            end
+        end
+    end

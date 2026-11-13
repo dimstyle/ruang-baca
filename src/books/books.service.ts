@@ -8,7 +8,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, PrismaService } from '@ruangbaca/database';
+import { CreateBookDto } from './dto/create-book.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 const sqlDir = join(__dirname, 'sql');
@@ -114,6 +116,117 @@ export class BooksService {
 
     this.logger.log(`List categories fetched (${records.length} records)`);
     return records;
+  }
+
+  async createBook(adminId: string, dto: CreateBookDto): Promise<void> {
+    let category: { id: number } | undefined;
+    try {
+      [category] = await this.prisma.$queryRawUnsafe<Array<{ id: number }>>(
+        queries.findCategoryById,
+        dto.kategori_id,
+      );
+    } catch (e) {
+      throw this.unexpected('createBook', e);
+    }
+
+    if (!category) {
+      this.logger.warn(
+        `Create book rejected, category not found: ${dto.kategori_id}`,
+      );
+      throw new NotFoundException('Kategori not found');
+    }
+
+    try {
+      await this.prisma.$executeRawUnsafe(
+        queries.insertBook,
+        dto.kategori_id,
+        dto.judul,
+        dto.penulis,
+        dto.penerbit,
+        dto.sinopsis,
+        new Date(dto.tanggal_rilis),
+        dto.stok,
+      );
+      this.logger.log(`Book created (${dto.judul}) by admin ${adminId}`);
+    } catch (e) {
+      if (isFkError(e)) {
+        this.logger.warn(
+          `Create book rejected, category not found: ${dto.kategori_id}`,
+        );
+        throw new NotFoundException('Kategori not found');
+      }
+      throw this.unexpected('createBook', e);
+    }
+  }
+
+  async updateBook(adminId: string, dto: UpdateBookDto): Promise<void> {
+    let count: number;
+    try {
+      count = await this.prisma.$executeRawUnsafe(
+        queries.updateBookById,
+        dto.kategori_id ?? null,
+        dto.judul ?? null,
+        dto.penulis ?? null,
+        dto.penerbit ?? null,
+        dto.sinopsis ?? null,
+        dto.tanggal_rilis ? new Date(dto.tanggal_rilis) : null,
+        dto.stok ?? null,
+        dto.buku_id,
+      );
+    } catch (e) {
+      throw this.unexpected('updateBook', e);
+    }
+
+    if (count === 0) {
+      this.logger.warn(`Update book rejected, not found: ${dto.buku_id}`);
+      throw new NotFoundException('Book not found');
+    }
+
+    this.logger.log(`Book updated: ${dto.buku_id} by admin ${adminId}`);
+  }
+
+  async getBook() {
+    let records: Array<{
+      nama_kategori: string;
+      jenis_buku: string;
+      judul_buku: string;
+      penulis_buku: string;
+      sinopsis: string;
+      tanggal_rilis: Date;
+      stok: number;
+    }>;
+    try {
+      records = await this.prisma.$queryRawUnsafe(queries.findAllBooks);
+    } catch (e) {
+      throw this.unexpected('getBook', e);
+    }
+
+    if (records.length === 0) {
+      this.logger.warn('Get book rejected, no books found');
+      throw new NotFoundException('Book not found');
+    }
+
+    this.logger.log(`Books fetched (${records.length} records)`);
+    return records;
+  }
+
+  async deleteBook(adminId: string, buku_id: number): Promise<void> {
+    let count: number;
+    try {
+      count = await this.prisma.$executeRawUnsafe(
+        queries.deleteBookById,
+        buku_id,
+      );
+    } catch (e) {
+      throw this.unexpected('deleteBook', e);
+    }
+
+    if (count === 0) {
+      this.logger.warn(`Delete book rejected, not found: ${buku_id}`);
+      throw new NotFoundException('Book not found');
+    }
+
+    this.logger.log(`Book deleted: ${buku_id} by admin ${adminId}`);
   }
 
   private unexpected(action: string, e: unknown) {

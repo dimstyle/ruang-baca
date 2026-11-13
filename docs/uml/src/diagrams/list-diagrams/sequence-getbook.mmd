@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Public / User / Admin)
+    participant BC as BooksController
+    participant BS as BooksService
+    participant DB as Database
+
+    C->>BC: GET /api/books/getbook
+    BC->>BS: getBook()
+    BS->>DB: SELECT nama_kategori, jenis_buku, judul AS judul_buku, penulis AS penulis_buku, sinopsis, tanggal_rilis, stok FROM books JOIN categories
+    alt daftar buku kosong
+        DB-->>BS: []
+        BS-->>BC: NotFoundException
+        BC-->>C: 404 "Book not found"
+    else error database
+        BS-->>BC: InternalServerErrorException
+        BC-->>C: 500 "Internal server error"
+    else sukses
+        DB-->>BS: records
+        BS-->>BC: book list
+        BC-->>C: 200 {message: "Book found", data: [...]}
+    end
