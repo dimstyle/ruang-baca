@@ -15,8 +15,11 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return render view model for root', () => {
+      expect(appController.root()).toEqual({
+        title: 'Ruang Baca',
+        message: 'Platform Manajemen & Katalog Perpustakaan',
+      });
     });
   });
 });
