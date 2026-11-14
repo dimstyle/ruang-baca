@@ -1,0 +1,7 @@
+    <p class="hidden text-sm text-danger" data-error></p>
+  </div>
+  <div class="flex items-center justify-between border-t border-line px-4 py-3" data-body>
+    <button type="submit" class="btn-primary"><%= typeof submit !== 'undefined' ? submit : 'Simpan' %></button>
+    <button type="button" class="icon-btn" data-close title="Buang"><%- include('icon', { n: 'delete' }) %></button>
+  </div>
+</form>

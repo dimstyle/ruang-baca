@@ -24,9 +24,16 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
+  it('/ (GET) redirects to /app/katalog', () => {
     return request(app.getHttpServer())
       .get('/')
+      .expect(302)
+      .expect('Location', '/app/katalog');
+  });
+
+  it('/login (GET) renders login page', () => {
+    return request(app.getHttpServer())
+      .get('/login')
       .expect(200)
       .expect(/Ruang Baca/);
   });

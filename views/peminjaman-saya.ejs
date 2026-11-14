@@ -1,0 +1,57 @@
+<%- include('partials/shell-top') %>
+
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Peminjaman Saya</span>
+  <span class="ml-auto text-xs text-muted"><%= loans.length ? `1–${loans.length} dari ${loans.length}` : '0 data' %></span>
+</div>
+
+<!-- tabs -->
+<div class="flex shrink-0 border-b border-line px-2">
+  <button class="border-b-2 border-accent px-5 py-3 text-sm font-medium text-accent" data-cat-tab="">Semua (<%= loans.length %>)</button>
+  <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted" data-cat-tab="Menunggu">Menunggu Persetujuan</button>
+  <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted" data-cat-tab="Dipinjam">Sedang Dipinjam</button>
+  <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted" data-cat-tab="Dikembalikan">Riwayat</button>
+</div>
+
+<div class="flex-1 overflow-y-auto">
+  <% if (!loans.length) { %>
+    <%- include('partials/empty', { icon: 'inbox', text: 'Kamu belum meminjam buku', actionLabel: 'Lihat Katalog', actionHref: '/app/katalog' }) %>
+  <% } %>
+  <% loans.forEach((l) => {
+    const d = l.status === 'Dipinjam' ? daysLeft(l.tanggal_batas_peminjaman) : null;
+    const late = d !== null && d < 0;
+  %>
+    <div class="list-row" data-row data-cat="<%= l.status === 'Menunggu Pengembalian' ? 'Menunggu' : l.status %>">
+      <%- include('partials/tile', { key: l.judul_buku, text: l.judul_buku }) %>
+      <span class="w-64 shrink-0 truncate font-bold"><%= l.judul_buku %></span>
+      <span class="flex-1 truncate text-muted">
+        Pinjam: <span class="text-ink"><%= date(l.tanggal_peminjaman) %></span>
+        <% if (l.tanggal_batas_peminjaman) { %> · Batas: <span class="text-ink"><%= date(l.tanggal_batas_peminjaman) %></span><% } %>
+        <% if (d !== null) { %>
+          · <span class="<%= late ? 'font-medium text-danger' : 'text-muted' %>">
+            <%= late ? `Terlambat ${Math.abs(d)} hari` : `Sisa ${d} hari` %>
+          </span>
+        <% } %>
+      </span>
+      <div class="ml-auto flex items-center gap-3">
+        <%- include('partials/chip', { kind: late ? 'Telat' : l.status, label: late ? 'Telat' : l.status }) %>
+        <% if (l.status === 'Dipinjam') { %>
+          <button class="btn-secondary h-8 px-3 text-xs"
+            data-open="#compose-kembali" data-title="Ajukan Pengembalian" data-api="POST /api/peminjaman/pengembalian"
+            data-fill="<%= JSON.stringify({ peminjaman_id: l.peminjaman_id, info_buku: l.judul_buku, tanggal_dikembalikan: ymd(new Date()) }) %>">
+            Ajukan Pengembalian
+          </button>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('partials/compose-start', { id: 'compose-kembali', title: 'Ajukan Pengembalian', api: 'POST /api/peminjaman/pengembalian', success: 'Pengajuan pengembalian dikirim, menunggu verifikasi admin', submit: 'Kirim Pengajuan' }) %>
+  <input type="hidden" name="peminjaman_id" data-num>
+  <div><label class="label">Buku</label><input name="info_buku" disabled class="field bg-bg"></div>
+  <div><label class="label">Tanggal Dikembalikan</label><input name="tanggal_dikembalikan" type="date" value="<%= ymd(new Date()) %>" required class="field"></div>
+<%- include('partials/compose-end', { submit: 'Kirim Pengajuan' }) %>
+
+<%- include('partials/shell-bottom') %>

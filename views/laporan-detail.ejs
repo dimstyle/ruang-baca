@@ -1,0 +1,97 @@
+<%- include('partials/shell-top') %>
+
+<% if (!report) { %>
+  <div class="p-4"><a href="/app/admin/laporan" class="btn-text"><%- include('partials/icon', { n: 'back', cls: 'size-4' }) %> Kembali</a></div>
+  <%- include('partials/empty', { icon: 'report', text: 'Laporan tidak ditemukan' }) %>
+<% } else { %>
+  <!-- header -->
+  <div class="flex items-center gap-3 border-b border-line px-4 py-3">
+    <a href="/app/admin/laporan" class="icon-btn" title="Kembali ke daftar laporan"><%- include('partials/icon', { n: 'back' }) %></a>
+    <div class="min-w-0 flex-1">
+      <h1 class="truncate text-lg font-medium"><%= report.keterangan %></h1>
+      <p class="text-xs text-muted">Dibuat oleh <%= report.nama_lengkap_admin %> (@<%= report.username_admin %> · <%= report.email_admin %>)</p>
+    </div>
+    <div class="flex gap-3">
+      <div class="rounded-xl bg-active px-4 py-2 text-right">
+        <p class="text-[11px] text-accent">Total Peminjam</p>
+        <p class="text-base font-bold text-accent"><%= report.peminjaman.length %></p>
+      </div>
+      <div class="rounded-xl bg-[#FCE8E6] px-4 py-2 text-right">
+        <p class="text-[11px] text-danger">Total Denda</p>
+        <p class="text-base font-bold text-danger"><%= rupiah(report.total_denda) %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- tabs -->
+  <div class="flex shrink-0 border-b border-line px-4">
+    <button class="border-b-2 border-accent px-5 py-3 text-sm font-medium text-accent" data-report-tab="pinjam">Peminjaman (<%= report.peminjaman.length %>)</button>
+    <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted" data-report-tab="kembali">Pengembalian (<%= report.pengembalian.length %>)</button>
+  </div>
+
+  <div class="flex-1 overflow-auto p-4">
+    <!-- tabel peminjaman -->
+    <table id="tab-pinjam" class="w-full border-collapse overflow-hidden rounded-xl border border-line text-left text-sm">
+      <thead class="bg-secondary text-xs font-medium text-muted">
+        <tr>
+          <th class="px-3 py-2.5">Nama Lengkap</th>
+          <th class="px-3 py-2.5">Username</th>
+          <th class="px-3 py-2.5">Email</th>
+          <th class="px-3 py-2.5">Judul Buku</th>
+          <th class="px-3 py-2.5">Penerbit</th>
+          <th class="px-3 py-2.5">Tanggal Rilis</th>
+          <th class="px-3 py-2.5">Tanggal Peminjaman</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!report.peminjaman.length) { %><tr><td colspan="7" class="py-8 text-center text-muted">Tidak ada data peminjaman pada rentang ini</td></tr><% } %>
+        <% report.peminjaman.forEach((p, i) => { %>
+          <tr class="border-t border-line <%= i % 2 ? 'bg-[#F8FAFD]' : 'bg-surface' %>">
+            <td class="px-3 py-2.5 font-medium"><%= p.nama_lengkap_user %></td>
+            <td class="px-3 py-2.5 text-muted">@<%= p.username_user %></td>
+            <td class="px-3 py-2.5 text-muted"><%= p.email_user %></td>
+            <td class="px-3 py-2.5 font-medium"><%= p.judul_buku %></td>
+            <td class="px-3 py-2.5"><%= p.penerbit %></td>
+            <td class="px-3 py-2.5 text-muted"><%= date(p.tanggal_rilis) %></td>
+            <td class="px-3 py-2.5"><%= date(p.tanggal_peminjaman) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- tabel pengembalian -->
+    <table id="tab-kembali" hidden class="w-full border-collapse overflow-hidden rounded-xl border border-line text-left text-sm">
+      <thead class="bg-secondary text-xs font-medium text-muted">
+        <tr>
+          <th class="px-3 py-2.5">Nama Lengkap</th>
+          <th class="px-3 py-2.5">Username</th>
+          <th class="px-3 py-2.5">Email</th>
+          <th class="px-3 py-2.5">Judul Buku</th>
+          <th class="px-3 py-2.5">Penerbit</th>
+          <th class="px-3 py-2.5">Tanggal Rilis</th>
+          <th class="px-3 py-2.5">Status Buku</th>
+          <th class="px-3 py-2.5">Denda</th>
+          <th class="px-3 py-2.5">Tanggal Pengembalian</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!report.pengembalian.length) { %><tr><td colspan="9" class="py-8 text-center text-muted">Tidak ada data pengembalian pada rentang ini</td></tr><% } %>
+        <% report.pengembalian.forEach((p, i) => { %>
+          <tr class="border-t border-line <%= i % 2 ? 'bg-[#F8FAFD]' : 'bg-surface' %>">
+            <td class="px-3 py-2.5 font-medium"><%= p.nama_lengkap_user %></td>
+            <td class="px-3 py-2.5 text-muted">@<%= p.username_user %></td>
+            <td class="px-3 py-2.5 text-muted"><%= p.email_user %></td>
+            <td class="px-3 py-2.5 font-medium"><%= p.judul_buku %></td>
+            <td class="px-3 py-2.5"><%= p.penerbit %></td>
+            <td class="px-3 py-2.5 text-muted"><%= date(p.tanggal_rilis) %></td>
+            <td class="px-3 py-2.5"><%- include('partials/chip', { label: p.status_buku }) %></td>
+            <td class="px-3 py-2.5 font-medium text-danger"><%= rupiah(p.denda) %></td>
+            <td class="px-3 py-2.5"><%= date(p.tanggal_pengembalian) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('partials/shell-bottom') %>

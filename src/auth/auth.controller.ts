@@ -78,7 +78,7 @@ export class AuthController {
   }
 }
 
-function setAuthCookies(res: Response, tokens: AuthTokens) {
+export function setAuthCookies(res: Response, tokens: AuthTokens) {
   res.cookie('access_token', tokens.access_token, {
     ...baseCookie,
     maxAge: ACCESS_TOKEN_TTL_MS,

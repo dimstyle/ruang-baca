@@ -1,0 +1,7 @@
+<form id="<%= id %>" class="compose" hidden data-api="<%= typeof api !== 'undefined' ? api : '' %>" data-success="<%= typeof success !== 'undefined' ? success : 'Berhasil disimpan' %>">
+  <div class="flex items-center gap-2 rounded-t-2xl bg-[#F2F6FC] pl-4 pr-2 h-11">
+    <span class="flex-1 text-sm font-medium" data-title-slot><%= title %></span>
+    <button type="button" class="icon-btn size-8" data-minimize title="Minimize"><%- include('icon', { n: 'minimize', cls: 'size-4' }) %></button>
+    <button type="button" class="icon-btn size-8" data-close title="Tutup"><%- include('icon', { n: 'close', cls: 'size-4' }) %></button>
+  </div>
+  <div class="flex flex-col gap-3 overflow-y-auto p-4" data-body>

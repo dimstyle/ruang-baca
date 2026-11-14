@@ -102,7 +102,11 @@ export class BooksService {
   }
 
   async readListCategories() {
-    let records: Array<{ nama_kategori: string; jenis_buku: string }>;
+    let records: Array<{
+      id: number;
+      nama_kategori: string;
+      jenis_buku: string;
+    }>;
     try {
       records = await this.prisma.$queryRawUnsafe(queries.findAllCategories);
     } catch (e) {
@@ -187,10 +191,13 @@ export class BooksService {
 
   async getBook() {
     let records: Array<{
+      id: number;
+      kategori_id: number;
       nama_kategori: string;
       jenis_buku: string;
       judul_buku: string;
       penulis_buku: string;
+      penerbit: string;
       sinopsis: string;
       tanggal_rilis: Date;
       stok: number;

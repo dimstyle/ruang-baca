@@ -1,0 +1,78 @@
+<%- include('head') %>
+<%
+  const userNav = [
+    { href: '/app/katalog', label: 'Katalog Buku', icon: 'book' },
+    { href: '/app/kategori', label: 'Kategori', icon: 'label' },
+    { href: '/app/peminjaman-saya', label: 'Peminjaman Saya', icon: 'inbox' },
+  ];
+  const adminNav = [
+    { href: '/app/katalog', label: 'Katalog Buku', icon: 'book' },
+    { href: '/app/kategori', label: 'Kategori', icon: 'label' },
+    { href: '/app/admin/permintaan-peminjaman', label: 'Permintaan Peminjaman', icon: 'inbox', badge: badges && badges.peminjaman },
+    { href: '/app/admin/permintaan-pengembalian', label: 'Permintaan Pengembalian', icon: 'undo', badge: badges && badges.pengembalian },
+    { href: '/app/admin/anggota', label: 'Anggota', icon: 'people' },
+    { href: '/app/admin/denda', label: 'Denda', icon: 'receipt' },
+    { href: '/app/admin/laporan', label: 'Laporan', icon: 'report' },
+  ];
+  const nav = isAdmin ? adminNav : userNav;
+  const c = typeof compose !== 'undefined' ? compose : null;
+%>
+<body class="bg-bg text-ink font-sans antialiased">
+<div class="flex h-screen flex-col">
+  <!-- top-bar -->
+  <header class="flex h-16 shrink-0 items-center gap-2 px-2 pr-4">
+    <button class="icon-btn" data-toggle-sidebar title="Menu utama"><%- include('icon', { n: 'menu' }) %></button>
+    <a href="/app/katalog" class="flex w-52 items-center gap-2 pl-1 text-[22px] text-muted">
+      <span class="text-accent"><%- include('icon', { n: 'book', cls: 'size-8' }) %></span>
+      <span><span class="font-medium text-accent">Ruang</span> Baca</span>
+    </a>
+    <label class="flex h-12 max-w-3xl flex-1 items-center gap-2 rounded-full bg-secondary px-2 focus-within:bg-surface focus-within:shadow-md">
+      <span class="icon-btn"><%- include('icon', { n: 'search' }) %></span>
+      <input id="search" type="search" class="h-full flex-1 bg-transparent text-base outline-none placeholder:text-muted" placeholder="Cari buku, kategori, anggota…" autocomplete="off">
+    </label>
+    <div class="ml-auto relative">
+      <button class="rounded-full p-1 hover:bg-secondary" data-toggle="#account-popover" title="Akun: <%= session.nama_lengkap %>">
+        <%- include('avatar', { name: session.nama_lengkap }) %>
+      </button>
+      <!-- account-popover -->
+      <div id="account-popover" hidden class="absolute right-0 top-12 z-50 w-80 rounded-3xl bg-[#E9EEF6] p-4 shadow-xl">
+        <div class="flex flex-col items-center gap-2 rounded-2xl bg-surface p-5 text-center">
+          <%- include('avatar', { name: session.nama_lengkap, size: 'lg' }) %>
+          <p class="text-lg font-medium">Halo, <%= session.nama_lengkap %>!</p>
+          <p class="text-sm text-muted"><%= session.email %></p>
+          <%- include('chip', { label: isAdmin ? 'Admin' : 'Anggota' }) %>
+        </div>
+        <button class="btn-secondary mt-3 w-full bg-surface" data-call="POST /api/auth/logout" data-redirect="/login">
+          <%- include('icon', { n: 'logout', cls: 'size-4' }) %> Keluar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex min-h-0 flex-1">
+    <!-- sidebar -->
+    <aside class="flex w-64 shrink-0 flex-col gap-1 overflow-y-auto pr-3 transition-all">
+      <div class="mb-3 pl-2 pt-1">
+        <% if (c) { %>
+          <button class="inline-flex h-14 items-center gap-3 rounded-2xl bg-compose px-4 pr-6 text-sm font-medium hover:shadow-md" data-open="<%= c.open %>" data-title="<%= c.title %>" data-api="<%= c.api %>">
+            <%- include('icon', { n: 'add', cls: 'size-6' }) %><span class="compose-label"><%= c.label %></span>
+          </button>
+        <% } else { %>
+          <a href="/app/katalog" class="inline-flex h-14 items-center gap-3 rounded-2xl bg-compose px-4 pr-6 text-sm font-medium hover:shadow-md">
+            <%- include('icon', { n: 'add', cls: 'size-6' }) %><span class="compose-label"><%= isAdmin ? 'Kelola Buku' : 'Pinjam Buku' %></span>
+          </a>
+        <% } %>
+      </div>
+      <nav class="flex flex-col">
+        <% nav.forEach((item) => { %>
+          <a href="<%= item.href %>" class="nav-item <%= path.startsWith(item.href) ? 'active' : '' %>" title="<%= item.label %>">
+            <%- include('icon', { n: item.icon }) %>
+            <span class="nav-label flex-1 truncate"><%= item.label %></span>
+            <% if (item.badge) { %><span class="nav-label text-xs font-bold text-accent"><%= item.badge %></span><% } %>
+          </a>
+        <% }) %>
+      </nav>
+    </aside>
+
+    <!-- content-area -->
+    <main class="mb-4 mr-4 flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-surface">

@@ -1,0 +1,49 @@
+<%- include('partials/shell-top') %>
+
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Permintaan Peminjaman</span>
+  <span class="ml-auto text-xs text-muted"><%= requests.length %> permintaan menunggu</span>
+</div>
+
+<div class="flex-1 overflow-y-auto">
+  <% if (!requests.length) { %>
+    <%- include('partials/empty', { icon: 'inbox', text: 'Tidak ada permintaan peminjaman' }) %>
+  <% } %>
+  <% const defaultDue = ymd(new Date(Date.now() + 7 * 86_400_000)); %>
+  <% requests.forEach((r) => { %>
+    <div class="list-row" data-row>
+      <%- include('partials/avatar', { name: r.nama_lengkap }) %>
+      <span class="w-48 shrink-0 truncate font-bold"><%= r.nama_lengkap %> <span class="font-normal text-muted">(@<%= r.username %>)</span></span>
+      <span class="flex-1 truncate">Meminjam buku <span class="font-medium"><%= r.judul_buku %></span></span>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-xs text-muted">Diajukan <%= date(r.tanggal_peminjaman) %></span>
+        <%- include('partials/chip', { label: 'Menunggu' }) %>
+        <button class="btn-primary h-8 px-4 text-xs"
+          data-open="#dialog-setujui"
+          data-fill="<%= JSON.stringify({ temp_peminjaman_id: r.temp_peminjaman_id, info: `${r.nama_lengkap} — ${r.judul_buku}`, tanggal_batas_peminjaman: defaultDue }) %>">
+          Setujui
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<dialog id="dialog-setujui" class="dialog">
+  <form data-api="POST /api/peminjaman/acceptpeminjaman" data-success="Peminjaman disetujui" class="flex flex-col gap-4">
+    <h2 class="text-lg font-medium">Setujui Peminjaman</h2>
+    <input type="hidden" name="temp_peminjaman_id" data-num>
+    <div><label class="label">Anggota & Buku</label><input name="info" disabled class="field bg-bg"></div>
+    <div>
+      <label class="label">Tanggal Batas Peminjaman</label>
+      <input name="tanggal_batas_peminjaman" type="date" required class="field">
+    </div>
+    <p class="hidden text-sm text-danger" data-error></p>
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" class="btn-text" data-close>Batal</button>
+      <button type="submit" class="btn-primary">Setujui</button>
+    </div>
+  </form>
+</dialog>
+
+<%- include('partials/shell-bottom') %>

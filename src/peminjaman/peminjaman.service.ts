@@ -186,6 +186,75 @@ export class PeminjamanService {
     }
   }
 
+  async listTempPeminjaman(accountId: string) {
+    try {
+      const records = await this.prisma.$queryRawUnsafe<
+        Array<{
+          temp_peminjaman_id: number;
+          username: string;
+          nama_lengkap: string;
+          judul_buku: string;
+          tanggal_peminjaman: Date;
+        }>
+      >(queries.findAllTempPeminjaman);
+      this.logger.log(
+        `Temp peminjaman listed (${records.length}) by admin ${accountId}`,
+      );
+      return records;
+    } catch (e) {
+      throw this.unexpected('listTempPeminjaman', e);
+    }
+  }
+
+  async listTempPengembalian(accountId: string) {
+    try {
+      const records = await this.prisma.$queryRawUnsafe<
+        Array<{
+          temp_pengembalian_id: number;
+          peminjaman_id: number;
+          username: string;
+          nama_lengkap: string;
+          judul_buku: string;
+          tanggal_batas_peminjaman: Date;
+          tanggal_dikembalikan: Date;
+        }>
+      >(queries.findAllTempPengembalian);
+      this.logger.log(
+        `Temp pengembalian listed (${records.length}) by admin ${accountId}`,
+      );
+      return records;
+    } catch (e) {
+      throw this.unexpected('listTempPengembalian', e);
+    }
+  }
+
+  async listPeminjaman(accountId: string) {
+    type Row = {
+      peminjaman_id: number | null;
+      judul_buku: string;
+      tanggal_peminjaman: Date;
+      tanggal_batas_peminjaman: Date | null;
+      status: string;
+    };
+    try {
+      const userId = await this.resolveUserId(accountId);
+      const pending = await this.prisma.$queryRawUnsafe<Row[]>(
+        queries.findTempPeminjamanByUser,
+        userId,
+      );
+      const loans = await this.prisma.$queryRawUnsafe<Row[]>(
+        queries.findPeminjamanByUser,
+        userId,
+      );
+      this.logger.log(
+        `Peminjaman listed (${pending.length + loans.length}) for user ${userId}`,
+      );
+      return [...pending, ...loans];
+    } catch (e) {
+      throw this.unexpected('listPeminjaman', e);
+    }
+  }
+
   private async resolveUserId(accountOrUserId: string): Promise<string> {
     const [user] = await this.prisma.$queryRawUnsafe<Array<{ id: string }>>(
       queries.findUserByAccountId,

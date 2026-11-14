@@ -5,5 +5,6 @@ import { PeminjamanService } from './peminjaman.service';
 @Module({
   controllers: [PeminjamanController],
   providers: [PeminjamanService],
+  exports: [PeminjamanService],
 })
 export class PeminjamanModule {}

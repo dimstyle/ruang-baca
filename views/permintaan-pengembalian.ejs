@@ -1,0 +1,61 @@
+<%- include('partials/shell-top') %>
+
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Permintaan Pengembalian</span>
+  <span class="ml-auto text-xs text-muted"><%= requests.length %> permintaan menunggu</span>
+</div>
+
+<div class="flex-1 overflow-y-auto">
+  <% if (!requests.length) { %>
+    <%- include('partials/empty', { icon: 'undo', text: 'Tidak ada permintaan pengembalian' }) %>
+  <% } %>
+  <% requests.forEach((r) => {
+    const late = new Date(r.tanggal_dikembalikan) > new Date(r.tanggal_batas_peminjaman);
+  %>
+    <div class="list-row" data-row>
+      <%- include('partials/avatar', { name: r.nama_lengkap }) %>
+      <span class="w-48 shrink-0 truncate font-bold"><%= r.nama_lengkap %> <span class="font-normal text-muted">(@<%= r.username %>)</span></span>
+      <span class="flex-1 truncate">
+        Mengembalikan <span class="font-medium"><%= r.judul_buku %></span>
+        <span class="text-muted"> · Batas <%= date(r.tanggal_batas_peminjaman) %></span>
+      </span>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-xs text-muted">Dikembalikan <%= date(r.tanggal_dikembalikan) %></span>
+        <% if (late) { %><%- include('partials/chip', { label: 'Telat' }) %><% } else { %><%- include('partials/chip', { label: 'Menunggu' }) %><% } %>
+        <button class="btn-primary h-8 px-4 text-xs"
+          data-open="#dialog-terima"
+          data-fill="<%= JSON.stringify({ temp_pengembalian_id: r.temp_pengembalian_id, info: `${r.nama_lengkap} — ${r.judul_buku}`, status_buku: 'Baik' }) %>">
+          Terima
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<dialog id="dialog-terima" class="dialog">
+  <form data-api="POST /api/peminjaman/acceptpengembalian" data-success="Pengembalian buku diterima" class="flex flex-col gap-4">
+    <h2 class="text-lg font-medium">Terima Pengembalian Buku</h2>
+    <input type="hidden" name="temp_pengembalian_id" data-num>
+    <div><label class="label">Peminjaman</label><input name="info" disabled class="field bg-bg"></div>
+    <fieldset class="flex flex-col gap-2">
+      <legend class="label">Kondisi / Status Buku</legend>
+      <% ['Baik', 'Rusak', 'Hilang'].forEach((s, i) => { %>
+        <label class="flex cursor-pointer items-center justify-between rounded-lg border border-line px-3 py-2.5 hover:bg-secondary/50">
+          <span class="flex items-center gap-2 text-sm">
+            <input type="radio" name="status_buku" value="<%= s %>" <%= i === 0 ? 'checked' : '' %> class="accent-accent">
+            <%= s %>
+          </span>
+          <%- include('partials/chip', { label: s }) %>
+        </label>
+      <% }) %>
+    </fieldset>
+    <p class="hidden text-sm text-danger" data-error></p>
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" class="btn-text" data-close>Batal</button>
+      <button type="submit" class="btn-primary">Terima</button>
+    </div>
+  </form>
+</dialog>
+
+<%- include('partials/shell-bottom') %>

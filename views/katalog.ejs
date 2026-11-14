@@ -1,0 +1,140 @@
+<%- include('partials/shell-top', {
+  compose: isAdmin
+    ? { open: '#compose-book', title: 'Buku Baru', api: 'POST /api/books/createbook', label: 'Tambah Buku' }
+    : { open: '#compose-pinjam', title: 'Pinjam Buku', api: 'POST /api/peminjaman/peminjaman', label: 'Pinjam Buku' }
+}) %>
+
+<!-- toolbar -->
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <% if (isAdmin) { %><input type="checkbox" class="size-4 accent-accent" data-check-all title="Pilih semua"><% } %>
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <select class="field h-8 w-auto py-0 text-xs" data-filter-cat aria-label="Filter kategori">
+    <option value="">Semua kategori</option>
+    <% categories.forEach((c) => { %><option value="<%= c.nama_kategori %>"><%= c.nama_kategori %> (<%= c.jenis_buku %>)</option><% }) %>
+  </select>
+  <span class="ml-auto text-xs text-muted"><%= books.length ? `1–${books.length} dari ${books.length}` : '0 buku' %></span>
+</div>
+
+<!-- tab-kategori -->
+<% if (categories.length) { %>
+<div class="flex shrink-0 overflow-x-auto border-b border-line px-2">
+  <button class="border-b-2 border-accent px-5 py-3 text-sm font-medium text-accent whitespace-nowrap" data-cat-tab="">Semua</button>
+  <% categories.forEach((c) => { %>
+    <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted hover:bg-secondary/50 whitespace-nowrap" data-cat-tab="<%= c.nama_kategori %>"><%= c.nama_kategori %></button>
+  <% }) %>
+</div>
+<% } %>
+
+<div class="flex min-h-0 flex-1 overflow-hidden">
+  <!-- book list -->
+  <div class="flex-1 overflow-y-auto" id="book-list">
+    <% if (!books.length) { %>
+      <%- include('partials/empty', { icon: 'book', text: 'Belum ada koleksi buku' }) %>
+    <% } %>
+    <% books.forEach((b) => { %>
+      <div class="list-row cursor-pointer" data-row data-cat="<%= b.nama_kategori %>" data-book="<%= JSON.stringify(b) %>">
+        <% if (isAdmin) { %><input type="checkbox" class="size-4 accent-accent" onclick="event.stopPropagation()"><% } %>
+        <%- include('partials/tile', { key: b.nama_kategori, text: b.judul_buku }) %>
+        <span class="w-56 shrink-0 truncate font-bold"><%= b.judul_buku %></span>
+        <span class="min-w-0 flex-1 truncate text-muted">
+          <span class="text-ink"><%= b.penulis_buku %> · <%= b.penerbit %></span> — <%= b.sinopsis %>
+        </span>
+        <div class="ml-auto flex shrink-0 items-center gap-3">
+          <%- include('partials/chip', { kind: b.stok > 0 ? 'Tersedia' : 'Habis', label: b.stok > 0 ? `Tersedia ${b.stok}` : 'Habis' }) %>
+          <span class="w-24 text-right text-xs text-muted <%= isAdmin ? 'row-meta' : '' %>"><%= date(b.tanggal_rilis) %></span>
+          <% if (isAdmin) { %>
+            <div class="row-actions" onclick="event.stopPropagation()">
+              <button class="icon-btn size-8" title="Edit buku"
+                data-open="#compose-book" data-title="Edit Buku" data-api="PUT /api/books/updatebook"
+                data-fill="<%= JSON.stringify({ buku_id: b.id, kategori_id: b.kategori_id, judul: b.judul_buku, penulis: b.penulis_buku, penerbit: b.penerbit, sinopsis: b.sinopsis, tanggal_rilis: ymd(b.tanggal_rilis), stok: b.stok }) %>">
+                <%- include('partials/icon', { n: 'edit', cls: 'size-4' }) %>
+              </button>
+              <button class="icon-btn size-8 text-danger" title="Hapus buku"
+                data-confirm="DELETE /api/books/deletebook" data-body="<%= JSON.stringify({ buku_id: b.id }) %>"
+                data-confirm-title="Hapus buku '<%= b.judul_buku %>'?" data-confirm-text="Buku akan dihapus permanen dari katalog.">
+                <%- include('partials/icon', { n: 'delete', cls: 'size-4' }) %>
+              </button>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Detail Buku Panel -->
+  <section id="book-detail" hidden class="w-96 shrink-0 overflow-y-auto border-l border-line p-6 flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <button class="icon-btn size-8" data-close-detail title="Tutup detail"><%- include('partials/icon', { n: 'back', cls: 'size-4' }) %></button>
+      <span class="chip chip-info" data-d-cat></span>
+      <span class="chip chip-lost" data-d-jenis></span>
+    </div>
+    <div class="flex items-start gap-4">
+      <span class="inline-flex size-24 shrink-0 items-center justify-center rounded-2xl text-4xl font-medium text-white" data-d-tile></span>
+      <div class="min-w-0">
+        <h2 class="text-xl font-medium leading-snug" data-d-judul></h2>
+        <p class="mt-1 text-sm text-muted" data-d-penulis></p>
+      </div>
+    </div>
+    <dl class="grid grid-cols-2 gap-2 rounded-xl bg-bg p-3 text-xs">
+      <div><dt class="text-muted">Penerbit</dt><dd class="font-medium" data-d-penerbit></dd></div>
+      <div><dt class="text-muted">Tanggal Rilis</dt><dd class="font-medium" data-d-rilis></dd></div>
+      <div><dt class="text-muted">Stok</dt><dd class="font-medium" data-d-stok></dd></div>
+    </dl>
+    <div>
+      <h3 class="text-xs font-medium text-muted mb-1">Sinopsis</h3>
+      <p class="text-sm leading-relaxed whitespace-pre-line" data-d-sinopsis></p>
+    </div>
+    <div class="mt-auto pt-4 flex gap-2">
+      <% if (!isAdmin) { %>
+        <button id="btn-pinjam-detail" class="btn-primary w-full" data-open="#compose-pinjam" data-title="Ajukan Peminjaman" data-api="POST /api/peminjaman/peminjaman">
+          Ajukan Peminjaman
+        </button>
+      <% } else { %>
+        <button id="btn-edit-detail" class="btn-secondary flex-1" data-open="#compose-book" data-title="Edit Buku" data-api="PUT /api/books/updatebook">Edit</button>
+        <button id="btn-del-detail" class="btn-text text-danger flex-1">Hapus</button>
+      <% } %>
+    </div>
+  </section>
+</div>
+
+<% if (isAdmin) { %>
+  <!-- Form Buku (createbook / updatebook) -->
+  <%- include('partials/compose-start', { id: 'compose-book', title: 'Buku Baru', api: 'POST /api/books/createbook', success: 'Buku berhasil disimpan' }) %>
+    <input type="hidden" name="buku_id" data-num>
+    <div>
+      <label class="label">Kategori</label>
+      <select name="kategori_id" data-num required class="field">
+        <option value="">Pilih kategori…</option>
+        <% categories.forEach((c) => { %><option value="<%= c.id %>"><%= c.nama_kategori %> — <%= c.jenis_buku %></option><% }) %>
+      </select>
+    </div>
+    <div><label class="label">Judul Buku</label><input name="judul" required class="field"></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="label">Penulis</label><input name="penulis" required class="field"></div>
+      <div><label class="label">Penerbit</label><input name="penerbit" required class="field"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="label">Tanggal Rilis</label><input name="tanggal_rilis" type="date" required class="field"></div>
+      <div><label class="label">Stok</label><input name="stok" type="number" min="0" value="1" data-num required class="field"></div>
+    </div>
+    <div><label class="label">Sinopsis</label><textarea name="sinopsis" required class="field"></textarea></div>
+  <%- include('partials/compose-end') %>
+<% } else { %>
+  <!-- Compose Pinjam Buku -->
+  <%- include('partials/compose-start', { id: 'compose-pinjam', title: 'Ajukan Peminjaman', api: 'POST /api/peminjaman/peminjaman', success: 'Permintaan peminjaman dikirim, menunggu persetujuan admin' }) %>
+    <div>
+      <label class="label">Pilih Buku</label>
+      <select name="book_id" data-num required class="field">
+        <% books.filter((b) => b.stok > 0).forEach((b) => { %>
+          <option value="<%= b.id %>"><%= b.judul_buku %> — <%= b.penulis_buku %> (stok <%= b.stok %>)</option>
+        <% }) %>
+      </select>
+    </div>
+    <div>
+      <label class="label">Tanggal Peminjaman</label>
+      <input name="tanggal_peminjaman" type="date" value="<%= ymd(new Date()) %>" required class="field">
+    </div>
+  <%- include('partials/compose-end', { submit: 'Ajukan Peminjaman' }) %>
+<% } %>
+
+<%- include('partials/shell-bottom') %>

@@ -1,0 +1,99 @@
+<%- include('partials/shell-top', {
+  compose: { open: '#compose-register', title: 'Anggota Baru', api: 'POST /api/auth/registration', label: 'Tambah Anggota' }
+}) %>
+
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <input type="checkbox" class="size-4 accent-accent" data-check-all title="Pilih semua">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Daftar Anggota</span>
+  <span class="ml-auto text-xs text-muted"><%= users.length ? `1–${users.length} dari ${users.length}` : '0 anggota' %></span>
+</div>
+
+<div class="flex min-h-0 flex-1 overflow-hidden">
+  <div class="flex-1 overflow-y-auto">
+    <% if (!users.length) { %>
+      <%- include('partials/empty', { icon: 'people', text: 'Belum ada anggota terdaftar' }) %>
+    <% } %>
+    <% users.forEach((u) => { %>
+      <div class="list-row cursor-pointer <%= selected && selected.id === u.id_user ? 'bg-active/40' : '' %>" data-row onclick="location.href='/app/admin/anggota?id=<%= u.id_user %>'">
+        <input type="checkbox" class="size-4 accent-accent" onclick="event.stopPropagation()">
+        <%- include('partials/avatar', { name: u.nama_lengkap }) %>
+        <span class="w-52 shrink-0 truncate font-bold"><%= u.nama_lengkap %></span>
+        <span class="flex-1 truncate text-muted"><span class="text-ink">@<%= u.username %></span> · <%= u.email %> — <%= u.alamat %></span>
+        <div class="ml-auto flex items-center gap-3">
+          <span class="text-xs text-muted row-meta"><%= u.no_hp %></span>
+          <div class="row-actions" onclick="event.stopPropagation()">
+            <button class="icon-btn size-8" title="Edit anggota"
+              data-open="#compose-edit-user" data-title="Edit Anggota" data-api="PUT /api/admins/updateuser"
+              data-fill="<%= JSON.stringify({ id_user: u.id_user, nama_lengkap: u.nama_lengkap, no_hp: u.no_hp, alamat: u.alamat }) %>">
+              <%- include('partials/icon', { n: 'edit', cls: 'size-4' }) %>
+            </button>
+            <button class="icon-btn size-8 text-danger" title="Hapus anggota"
+              data-confirm="DELETE /api/admins/deleteuser" data-body="<%= JSON.stringify({ id_user: u.id_user }) %>"
+              data-confirm-title="Hapus anggota '<%= u.nama_lengkap %>'?"
+              data-confirm-text="Akun dan seluruh datanya akan terhapus permanen.">
+              <%- include('partials/icon', { n: 'delete', cls: 'size-4' }) %>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- detail-panel (via getUser) -->
+  <% if (selected) { %>
+    <section class="w-96 shrink-0 overflow-y-auto border-l border-line p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <a href="/app/admin/anggota" class="icon-btn size-8" title="Tutup detail"><%- include('partials/icon', { n: 'back', cls: 'size-4' }) %></a>
+        <%- include('partials/chip', { label: 'Anggota' }) %>
+      </div>
+      <div class="flex flex-col items-center gap-2 text-center">
+        <%- include('partials/avatar', { name: selected.nama_lengkap, size: 'lg' }) %>
+        <h2 class="text-xl font-medium"><%= selected.nama_lengkap %></h2>
+        <p class="text-sm text-muted">@<%= selected.account.username %> · <%= selected.account.email %></p>
+      </div>
+      <dl class="flex flex-col gap-2 rounded-xl bg-bg p-4 text-xs">
+        <div><dt class="text-muted">No. HP</dt><dd class="font-medium text-sm"><%= selected.no_hp %></dd></div>
+        <div><dt class="text-muted">Alamat</dt><dd class="font-medium text-sm"><%= selected.alamat %></dd></div>
+        <div><dt class="text-muted">Tanggal Bergabung</dt><dd class="font-medium"><%= date(selected.created_at) %></dd></div>
+      </dl>
+      <div class="mt-auto flex gap-2">
+        <button class="btn-secondary flex-1"
+          data-open="#compose-edit-user" data-title="Edit Anggota" data-api="PUT /api/admins/updateuser"
+          data-fill="<%= JSON.stringify({ id_user: selected.id, nama_lengkap: selected.nama_lengkap, no_hp: selected.no_hp, alamat: selected.alamat }) %>">
+          Edit
+        </button>
+        <button class="btn-text text-danger flex-1"
+          data-confirm="DELETE /api/admins/deleteuser" data-body="<%= JSON.stringify({ id_user: selected.id }) %>"
+          data-confirm-title="Hapus anggota '<%= selected.nama_lengkap %>'?"
+          data-confirm-text="Akun dan seluruh datanya akan terhapus permanen.">
+          Hapus
+        </button>
+      </div>
+    </section>
+  <% } %>
+</div>
+
+<!-- compose-window "Anggota Baru" -->
+<%- include('partials/compose-start', { id: 'compose-register', title: 'Anggota Baru', api: 'POST /api/auth/registration', success: 'Anggota baru berhasil didaftarkan' }) %>
+  <p class="text-xs font-bold uppercase tracking-wider text-muted">Akun</p>
+  <div class="grid grid-cols-2 gap-3">
+    <div><label class="label">Username</label><input name="username" required class="field"></div>
+    <div><label class="label">Email</label><input name="email" type="email" required class="field"></div>
+  </div>
+  <div><label class="label">Password (min. 8 karakter)</label><input name="password" type="password" minlength="8" required class="field"></div>
+  <p class="mt-1 text-xs font-bold uppercase tracking-wider text-muted">Biodata</p>
+  <div><label class="label">Nama Lengkap</label><input name="nama_lengkap" required class="field"></div>
+  <div><label class="label">No. HP</label><input name="no_hp" required class="field"></div>
+  <div><label class="label">Alamat</label><textarea name="alamat" required class="field"></textarea></div>
+<%- include('partials/compose-end', { submit: 'Daftarkan' }) %>
+
+<!-- compose-window "Edit Anggota" -->
+<%- include('partials/compose-start', { id: 'compose-edit-user', title: 'Edit Anggota', api: 'PUT /api/admins/updateuser', success: 'Data anggota diperbarui' }) %>
+  <input type="hidden" name="id_user">
+  <div><label class="label">Nama Lengkap</label><input name="nama_lengkap" required class="field"></div>
+  <div><label class="label">No. HP</label><input name="no_hp" required class="field"></div>
+  <div><label class="label">Alamat</label><textarea name="alamat" required class="field"></textarea></div>
+<%- include('partials/compose-end') %>
+
+<%- include('partials/shell-bottom') %>

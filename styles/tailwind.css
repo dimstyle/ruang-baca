@@ -1,2 +1,67 @@
 @import "tailwindcss";
 @source "../views";
+@source "../public/js";
+
+/* ui-specs.md — 60/30/10: bg & surface / secondary & active / accent */
+@theme {
+  --color-bg: #F6F8FC;
+  --color-surface: #FFFFFF;
+  --color-secondary: #E9EEF6;
+  --color-active: #D3E3FD;
+  --color-compose: #C2E7FF;
+  --color-accent: #0B57D0;
+  --color-ink: #1F1F1F;
+  --color-muted: #5E5E5E;
+  --color-line: #E0E3E7;
+  --color-danger: #C5221F;
+  --font-sans: Roboto, "Google Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 h-10 text-sm font-medium text-white hover:shadow-md hover:bg-[#0A4BB5] disabled:opacity-40 disabled:cursor-not-allowed transition;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line px-5 h-9 text-sm font-medium text-accent hover:bg-secondary transition;
+  }
+  .btn-text {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 h-9 text-sm font-medium text-accent hover:bg-secondary transition;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-danger px-5 h-9 text-sm font-medium text-white hover:shadow-md transition;
+  }
+  .icon-btn {
+    @apply inline-flex size-10 shrink-0 items-center justify-center rounded-full text-muted hover:bg-secondary transition;
+  }
+  .field {
+    @apply block w-full rounded-lg border border-line bg-surface px-3 h-11 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+  textarea.field { @apply h-auto py-2 min-h-24; }
+  .label { @apply mb-1 block text-xs font-medium text-muted; }
+  .list-row {
+    @apply flex items-center gap-4 border-b border-line px-4 h-14 text-sm hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3)] hover:z-10 relative bg-surface;
+  }
+  .row-actions { @apply hidden items-center gap-1; }
+  .list-row:hover .row-actions { display: flex; }
+  .list-row:hover .row-meta { display: none; }
+  .chip { @apply inline-flex items-center rounded-lg px-2 h-6 text-xs font-medium whitespace-nowrap; }
+  .chip-ok { @apply bg-[#E6F4EA] text-[#137333]; }
+  .chip-wait { @apply bg-[#FEF7E0] text-[#B06000]; }
+  .chip-bad { @apply bg-[#FCE8E6] text-[#C5221F]; }
+  .chip-lost { @apply bg-[#F1F3F4] text-[#3C4043]; }
+  .chip-info { @apply bg-active text-accent; }
+  .compose {
+    @apply fixed bottom-0 right-6 z-40 w-[480px] max-w-[calc(100vw-2rem)] rounded-t-2xl bg-surface shadow-2xl flex flex-col max-h-[85vh];
+  }
+  .dialog {
+    @apply rounded-2xl bg-surface p-6 shadow-2xl w-[420px] max-w-[calc(100vw-2rem)] m-auto backdrop:bg-black/40;
+  }
+  .nav-item {
+    @apply flex items-center gap-4 rounded-r-full h-8 pl-6 pr-4 text-sm text-ink hover:bg-secondary;
+  }
+  .nav-item.active { @apply bg-active font-bold; }
+}
+
+body.sidebar-collapsed aside .nav-label,
+body.sidebar-collapsed aside .compose-label { display: none; }
+body.sidebar-collapsed aside { width: 4.5rem; }

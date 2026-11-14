@@ -47,6 +47,12 @@ export class AdminsController {
     return { message: 'User found', data };
   }
 
+  @Get('listuser')
+  async listUser(@Req() req: AuthedRequest) {
+    const data = await this.adminsService.listUser(req.user.sub);
+    return { message: 'Users found', data };
+  }
+
   @Post('createdenda')
   async createDenda(@Req() req: AuthedRequest, @Body() dto: CreateDendaDto) {
     await this.adminsService.createDenda(req.user.sub, dto);

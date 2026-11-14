@@ -55,9 +55,11 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Rules, specs, and handoff
+# Rules, specs, and handoff, .agents
 .rules/
 .rules/*
 specs/
 specs/*
 handoff.md
+.agents/
+.agents/*

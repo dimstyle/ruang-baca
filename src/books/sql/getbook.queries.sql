@@ -1,8 +1,11 @@
 -- name: findAllBooks
-SELECT c.nama_kategori,
+SELECT b.id,
+       b.categories_id AS kategori_id,
+       c.nama_kategori,
        c.jenis_buku,
        b.judul   AS judul_buku,
        b.penulis AS penulis_buku,
+       b.penerbit,
        b.sinopsis,
        b.tanggal_rilis,
        b.stok

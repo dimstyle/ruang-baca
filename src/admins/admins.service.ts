@@ -335,6 +335,9 @@ export class AdminsService {
     const adminId = await this.resolveAdminId(accountId);
     let records: Array<{
       laporan_id: number;
+      keterangan: string;
+      total_denda: number;
+      total_peminjam: number;
       tanggal_pembuatan_laporan: Date;
     }>;
 
@@ -365,6 +368,27 @@ export class AdminsService {
 
     this.logger.log(
       `List laporan fetched (${records.length} records) by admin ${adminId}`,
+    );
+    return records;
+  }
+
+  async listUser(adminId: string) {
+    let records: Array<{
+      id_user: string;
+      username: string;
+      email: string;
+      nama_lengkap: string;
+      no_hp: string;
+      alamat: string;
+      created_at: Date;
+    }>;
+    try {
+      records = await this.prisma.$queryRawUnsafe(queries.findAllUsers);
+    } catch (e) {
+      throw this.unexpected('listUser', e);
+    }
+    this.logger.log(
+      `Users listed (${records.length} records) by admin ${adminId}`,
     );
     return records;
   }

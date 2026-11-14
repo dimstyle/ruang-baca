@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -65,5 +66,28 @@ export class PeminjamanController {
   ) {
     await this.peminjamanService.acceptPengembalian(req.user.sub, dto);
     return { message: 'Pengembalian admission success' };
+  }
+
+  @Get('listtemppeminjaman')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async listTempPeminjaman(@Req() req: AuthedRequest) {
+    const data = await this.peminjamanService.listTempPeminjaman(req.user.sub);
+    return { message: 'Peminjaman requests found', data };
+  }
+
+  @Get('listtemppengembalian')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  async listTempPengembalian(@Req() req: AuthedRequest) {
+    const data = await this.peminjamanService.listTempPengembalian(
+      req.user.sub,
+    );
+    return { message: 'Pengembalian requests found', data };
+  }
+
+  @Get('listpeminjaman')
+  @UseGuards(AuthGuard('jwt'))
+  async listPeminjaman(@Req() req: AuthedRequest) {
+    const data = await this.peminjamanService.listPeminjaman(req.user.sub);
+    return { message: 'Peminjaman found', data };
   }
 }

@@ -22,6 +22,7 @@ describe('AdminsController', () => {
     updateUser: jest.fn(),
     deleteUser: jest.fn(),
     getUser: jest.fn(),
+    listUser: jest.fn(),
     createDenda: jest.fn(),
     updateDenda: jest.fn(),
     getDenda: jest.fn(),
@@ -320,6 +321,28 @@ describe('AdminsController', () => {
       await expect(controller.readListLaporan(req, {})).rejects.toBeInstanceOf(
         NotFoundException,
       );
+    });
+  });
+
+  describe('GET /listuser', () => {
+    it('returns the list of registered users', async () => {
+      const users = [
+        {
+          id_user: 'u1',
+          username: 'budi',
+          email: 'budi@x.id',
+          nama_lengkap: 'Budi',
+          no_hp: '0812',
+          alamat: 'Jl. A',
+          created_at: new Date(),
+        },
+      ];
+      adminsService.listUser.mockResolvedValue(users);
+      await expect(controller.listUser(req)).resolves.toEqual({
+        message: 'Users found',
+        data: users,
+      });
+      expect(adminsService.listUser).toHaveBeenCalledWith('acc-admin');
     });
   });
 });

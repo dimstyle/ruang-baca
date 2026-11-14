@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@ruangbaca/database';
 import { AdminsModule } from './admins/admins.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { BooksModule } from './books/books.module';
 import { PeminjamanModule } from './peminjaman/peminjaman.module';
+import { ViewsModule } from './views/views.module';
 
 @Module({
   imports: [
@@ -14,8 +13,7 @@ import { PeminjamanModule } from './peminjaman/peminjaman.module';
     AdminsModule,
     BooksModule,
     PeminjamanModule,
+    ViewsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

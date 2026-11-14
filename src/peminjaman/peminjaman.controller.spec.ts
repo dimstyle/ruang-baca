@@ -21,6 +21,9 @@ describe('PeminjamanController', () => {
     pengembalian: jest.fn(),
     acceptPeminjaman: jest.fn(),
     acceptPengembalian: jest.fn(),
+    listTempPeminjaman: jest.fn(),
+    listTempPengembalian: jest.fn(),
+    listPeminjaman: jest.fn(),
   };
   const userReq = {
     user: { sub: 'acc-user', email: 'u@x.id' },
@@ -214,6 +217,60 @@ describe('PeminjamanController', () => {
       await expect(
         controller.acceptPengembalian(adminReq, dto),
       ).rejects.toBeInstanceOf(InternalServerErrorException);
+    });
+  });
+
+  describe('GET /listtemppeminjaman', () => {
+    it('is restricted to authenticated admins and returns pending requests', async () => {
+      const guards = Reflect.getMetadata(
+        GUARDS_METADATA,
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        PeminjamanController.prototype.listTempPeminjaman,
+      ) as unknown[];
+      expect(guards).toContain(AdminGuard);
+      const rows = [{ temp_peminjaman_id: 1, username: 'budi' }];
+      peminjamanService.listTempPeminjaman.mockResolvedValue(rows);
+      await expect(controller.listTempPeminjaman(adminReq)).resolves.toEqual({
+        message: 'Peminjaman requests found',
+        data: rows,
+      });
+    });
+  });
+
+  describe('GET /listtemppengembalian', () => {
+    it('is restricted to authenticated admins and returns pending return requests', async () => {
+      const guards = Reflect.getMetadata(
+        GUARDS_METADATA,
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        PeminjamanController.prototype.listTempPengembalian,
+      ) as unknown[];
+      expect(guards).toContain(AdminGuard);
+      const rows = [{ temp_pengembalian_id: 2, peminjaman_id: 1 }];
+      peminjamanService.listTempPengembalian.mockResolvedValue(rows);
+      await expect(controller.listTempPengembalian(adminReq)).resolves.toEqual({
+        message: 'Pengembalian requests found',
+        data: rows,
+      });
+    });
+  });
+
+  describe('GET /listpeminjaman', () => {
+    it('requires JWT authentication and returns user loans', async () => {
+      const guards = Reflect.getMetadata(
+        GUARDS_METADATA,
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        PeminjamanController.prototype.listPeminjaman,
+      ) as unknown[];
+      expect(guards).toHaveLength(1);
+      expect(guards).not.toContain(AdminGuard);
+      const rows = [
+        { peminjaman_id: 1, judul_buku: 'Clean Code', status: 'Dipinjam' },
+      ];
+      peminjamanService.listPeminjaman.mockResolvedValue(rows);
+      await expect(controller.listPeminjaman(userReq)).resolves.toEqual({
+        message: 'Peminjaman found',
+        data: rows,
+      });
     });
   });
 });

@@ -1,0 +1,3 @@
+<%
+const CHIP = { Menunggu: 'chip-wait', 'Menunggu Pengembalian': 'chip-wait', Dipinjam: 'chip-info', Dikembalikan: 'chip-ok', Baik: 'chip-ok', Lunas: 'chip-ok', Tersedia: 'chip-ok', Rusak: 'chip-bad', Telat: 'chip-bad', Habis: 'chip-bad', Hilang: 'chip-lost', Admin: 'chip-info', Anggota: 'chip-lost' };
+%><span class="chip <%= CHIP[(typeof kind !== 'undefined' && kind) || label] || 'chip-lost' %>"><%= label %></span>

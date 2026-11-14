@@ -1,0 +1,52 @@
+<%- include('partials/shell-top', {
+  compose: isAdmin
+    ? { open: '#compose-cat', title: 'Kategori Baru', api: 'POST /api/books/createcategory', label: 'Tambah Kategori' }
+    : null
+}) %>
+
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Kategori Buku</span>
+  <span class="ml-auto text-xs text-muted"><%= categories.length ? `1–${categories.length} dari ${categories.length}` : '0 kategori' %></span>
+</div>
+
+<div class="flex-1 overflow-y-auto">
+  <% if (!categories.length) { %>
+    <%- include('partials/empty', { icon: 'label', text: 'Belum ada kategori buku' }) %>
+  <% } %>
+  <% categories.forEach((c) => { const n = counts[c.id] || 0; %>
+    <div class="list-row" data-row>
+      <%- include('partials/tile', { key: c.nama_kategori, text: c.nama_kategori }) %>
+      <span class="w-64 shrink-0 truncate font-bold"><%= c.nama_kategori %></span>
+      <span class="flex-1 truncate text-muted">Jenis: <span class="text-ink"><%= c.jenis_buku %></span></span>
+      <div class="ml-auto flex items-center gap-3">
+        <%- include('partials/chip', { kind: 'Dipinjam', label: `${n} buku` }) %>
+        <% if (isAdmin) { %>
+          <div class="row-actions">
+            <button class="icon-btn size-8" title="Edit kategori"
+              data-open="#compose-cat" data-title="Edit Kategori" data-api="PUT /api/books/updatecategory"
+              data-fill="<%= JSON.stringify({ kategori_id: c.id, nama_kategori: c.nama_kategori, jenis_buku: c.jenis_buku }) %>">
+              <%- include('partials/icon', { n: 'edit', cls: 'size-4' }) %>
+            </button>
+            <button class="icon-btn size-8 text-danger" title="Hapus kategori"
+              data-confirm="DELETE /api/books/deletecategory" data-body="<%= JSON.stringify({ kategori_id: c.id }) %>"
+              data-confirm-title="Hapus kategori '<%= c.nama_kategori %>'?"
+              data-confirm-text="Kategori yang masih memiliki buku tidak bisa dihapus.">
+              <%- include('partials/icon', { n: 'delete', cls: 'size-4' }) %>
+            </button>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<% if (isAdmin) { %>
+  <%- include('partials/compose-start', { id: 'compose-cat', title: 'Kategori Baru', api: 'POST /api/books/createcategory', success: 'Kategori berhasil disimpan' }) %>
+    <input type="hidden" name="kategori_id" data-num>
+    <div><label class="label">Nama Kategori</label><input name="nama_kategori" required class="field" placeholder="Contoh: Teknologi"></div>
+    <div><label class="label">Jenis Buku</label><input name="jenis_buku" required class="field" placeholder="Contoh: Referensi / Fiksi"></div>
+  <%- include('partials/compose-end') %>
+<% } %>
+
+<%- include('partials/shell-bottom') %>

@@ -1,0 +1,51 @@
+<%- include('partials/shell-top', {
+  compose: { open: '#compose-laporan', title: 'Laporan Baru', api: 'POST /api/admins/createlaporan', label: 'Buat Laporan' }
+}) %>
+
+<!-- filter-bar -->
+<form method="get" action="/app/admin/laporan" class="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5">
+  <span class="text-xs font-medium text-muted">Filter Tanggal Laporan:</span>
+  <input type="date" name="awal" value="<%= filter.awal %>" class="field h-9 w-40 text-xs">
+  <span class="text-xs text-muted">s/d</span>
+  <input type="date" name="akhir" value="<%= filter.akhir %>" class="field h-9 w-40 text-xs">
+  <button type="submit" class="btn-secondary h-9 px-4 text-xs">Terapkan</button>
+  <% if (filter.awal || filter.akhir) { %><a href="/app/admin/laporan" class="btn-text h-9 px-3 text-xs">Reset</a><% } %>
+  <% if (error) { %><span class="text-xs font-medium text-danger"><%= error %></span><% } %>
+  <span class="ml-auto text-xs text-muted"><%= reports.length %> laporan</span>
+</form>
+
+<div class="flex-1 overflow-y-auto">
+  <% if (!reports.length) { %>
+    <%- include('partials/empty', { icon: 'report', text: 'Belum ada laporan' }) %>
+  <% } %>
+  <% reports.forEach((r) => { %>
+    <a href="/app/admin/laporan/<%= r.laporan_id %>" class="list-row" data-row>
+      <%- include('partials/tile', { key: r.keterangan || r.laporan_id, icon: 'report' }) %>
+      <span class="w-64 shrink-0 truncate font-bold"><%= r.keterangan || `Laporan #${r.laporan_id}` %></span>
+      <span class="flex-1 truncate text-muted">Laporan rekapitulasi perpustakaan #<%= r.laporan_id %></span>
+      <div class="ml-auto flex items-center gap-3">
+        <%- include('partials/chip', { kind: 'Dipinjam', label: `${r.total_peminjam ?? 0} peminjam` }) %>
+        <%- include('partials/chip', { kind: 'Rusak', label: `Denda ${rupiah(r.total_denda)}` }) %>
+        <span class="w-28 text-right text-xs text-muted"><%= date(r.tanggal_pembuatan_laporan) %></span>
+      </div>
+    </a>
+  <% }) %>
+</div>
+
+<% const today = ymd(new Date()); %>
+<%- include('partials/compose-start', { id: 'compose-laporan', title: 'Laporan Baru', api: 'POST /api/admins/createlaporan', success: 'Laporan berhasil dibuat' }) %>
+  <div><label class="label">Keterangan Laporan</label><input name="keterangan" required class="field" placeholder="Contoh: Laporan Bulanan November"></div>
+  <p class="text-xs font-bold uppercase tracking-wider text-muted">Rentang Tanggal Peminjaman</p>
+  <div class="grid grid-cols-2 gap-3">
+    <div><label class="label">Tanggal Awal</label><input name="tanggal_awal_peminjaman" type="date" value="<%= today %>" required class="field"></div>
+    <div><label class="label">Tanggal Akhir</label><input name="tanggal_akhir_peminjaman" type="date" value="<%= today %>" required class="field"></div>
+  </div>
+  <p class="text-xs font-bold uppercase tracking-wider text-muted">Rentang Tanggal Pengembalian</p>
+  <div class="grid grid-cols-2 gap-3">
+    <div><label class="label">Tanggal Awal</label><input name="tanggal_awal_pengembalian" type="date" value="<%= today %>" required class="field"></div>
+    <div><label class="label">Tanggal Akhir</label><input name="tanggal_akhir_pengembalian" type="date" value="<%= today %>" required class="field"></div>
+  </div>
+  <div><label class="label">Tanggal Pembuatan Laporan</label><input name="tanggal_pembuatan_laporan" type="date" value="<%= today %>" required class="field"></div>
+<%- include('partials/compose-end') %>
+
+<%- include('partials/shell-bottom') %>
