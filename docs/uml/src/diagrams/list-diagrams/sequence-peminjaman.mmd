@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (User / Admin)
+    participant G as JwtStrategy
+    participant PC as PeminjamanController
+    participant PS as PeminjamanService
+    participant DB as Database
+
+    C->>G: POST /api/peminjaman/peminjaman {book_id, tanggal_peminjaman} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>PC: lanjut
+        PC->>PC: ValidationPipe (CreatePeminjamanDto)
+        alt body tidak valid
+            PC-->>C: 400 Bad Request
+        else body valid
+            PC->>PS: peminjaman(accountId, dto)
+            PS->>DB: SELECT id FROM users WHERE account_id = sub OR id = sub LIMIT 1
+            PS->>DB: INSERT INTO temp_peminjaman (user_id, book_id, tanggal_peminjaman)
+            alt error database
+                PS-->>PC: InternalServerErrorException
+                PC-->>C: 500 "Internal server error"
+            else sukses
+                DB-->>PS: inserted
+                PS-->>PC: ok
+                PC-->>C: 200 {message: "Peminjaman success, wait for admin admission"}
+            end
+        end
+    end

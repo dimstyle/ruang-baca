@@ -214,10 +214,7 @@ export class AdminsService {
     return records;
   }
 
-  async createLaporan(
-    accountId: string,
-    dto: CreateLaporanDto,
-  ): Promise<void> {
+  async createLaporan(accountId: string, dto: CreateLaporanDto): Promise<void> {
     const adminId = await this.resolveAdminId(accountId);
     const awalPinjam = new Date(dto.tanggal_awal_peminjaman);
     const akhirPinjam = new Date(dto.tanggal_akhir_peminjaman);
@@ -233,6 +230,9 @@ export class AdminsService {
         adminId,
         awalKembali,
         akhirKembali,
+        adminId,
+        awalPinjam,
+        akhirPinjam,
         awalPinjam,
         akhirPinjam,
         awalKembali,

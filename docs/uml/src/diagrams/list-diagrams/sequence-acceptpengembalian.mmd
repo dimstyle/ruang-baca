@@ -1,0 +1,44 @@
+sequenceDiagram
+    autonumber
+    actor C as Client (Admin)
+    participant G as JwtStrategy + AdminGuard
+    participant PC as PeminjamanController
+    participant PS as PeminjamanService
+    participant DB as Database
+
+    C->>G: POST /api/peminjaman/acceptpengembalian {temp_pengembalian_id, status_buku} (cookie access_token)
+    G->>G: verify access_token dari cookie
+    alt access_token tidak ada / tidak valid
+        G-->>C: 401 "Unauthorized"
+    else valid
+        G->>DB: find accounts by id = sub
+        alt bukan role admin
+            G-->>C: 401 "Unauthorized"
+        else admin
+            G->>PC: lanjut
+            PC->>PC: ValidationPipe (AcceptPengembalianDto)
+            alt body tidak valid
+                PC-->>C: 400 Bad Request
+            else body valid
+                PC->>PS: acceptPengembalian(accountId, dto)
+                PS->>DB: SELECT id FROM admins WHERE account_id = sub OR id = sub LIMIT 1
+                PS->>DB: SELECT id, peminjaman_id, tanggal_dikembalikan FROM temp_pengembalian WHERE id = temp_pengembalian_id LIMIT 1
+                alt temp_pengembalian tidak ditemukan
+                    DB-->>PS: null
+                    PS-->>PC: NotFoundException
+                    PC-->>C: 404 "Peminjaman not found"
+                else temp_pengembalian ditemukan
+                    PS->>DB: INSERT INTO pengembalian (peminjaman_id, tanggal_dikembalikan, status_buku)
+                    PS->>DB: DELETE FROM temp_pengembalian WHERE id = temp_pengembalian_id
+                    alt error database
+                        PS-->>PC: InternalServerErrorException
+                        PC-->>C: 500 "Internal server error"
+                    else sukses
+                        DB-->>PS: ok
+                        PS-->>PC: ok
+                        PC-->>C: 200 {message: "Pengembalian admission success"}
+                    end
+                end
+            end
+        end
+    end

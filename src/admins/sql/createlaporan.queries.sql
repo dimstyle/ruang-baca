@@ -9,6 +9,7 @@ INSERT INTO laporan (
   admin_id,
   keterangan,
   total_denda,
+  total_peminjam,
   tanggal_awal_peminjaman,
   tanggal_akhir_peminjaman,
   tanggal_awal_pengembalian,
@@ -26,6 +27,12 @@ VALUES (
     WHERE pm.admin_id = ?
       AND pg.tanggal_dikembalikan BETWEEN ? AND ?
   ), 0),
+  (
+    SELECT COUNT(*)
+    FROM peminjaman pm
+    WHERE pm.admin_id = ?
+      AND pm.tanggal_peminjaman BETWEEN ? AND ?
+  ),
   ?,
   ?,
   ?,

@@ -3,6 +3,7 @@ erDiagram
     accounts ||--o| admins : "owns"
     accounts ||--o{ refresh_token : "has"
 
+    users ||--o{ temp_peminjaman : "requests"
     users ||--o{ peminjaman : "places"
 
     admins ||--o{ peminjaman : "manages"
@@ -10,8 +11,10 @@ erDiagram
 
     categories ||--o{ books : "contains"
 
+    books ||--o{ temp_peminjaman : "requested_in"
     books ||--o{ peminjaman : "referenced_in"
 
+    peminjaman ||--o{ temp_pengembalian : "pending_return"
     peminjaman ||--o{ pengembalian : "has"
 
     pengembalian ||--o{ daftar_denda : "has"
@@ -62,6 +65,19 @@ erDiagram
         int stok
     }
 
+    temp_peminjaman {
+        int id PK
+        string user_id FK
+        int book_id FK
+        datetime tanggal_peminjaman
+    }
+
+    temp_pengembalian {
+        int id PK
+        int peminjaman_id FK
+        datetime tanggal_dikembalikan
+    }
+
     peminjaman {
         int id PK
         string user_id FK
@@ -91,6 +107,7 @@ erDiagram
         string admin_id FK
         string keterangan
         float total_denda
+        int total_peminjam
         datetime tanggal_awal_peminjaman
         datetime tanggal_akhir_peminjaman
         datetime tanggal_awal_pengembalian

@@ -26,15 +26,16 @@ model Account {
 }
 
 model User {
-  id           String       @id @default(uuid())
-  account_id   String       @unique
-  nama_lengkap String
-  no_hp        String
-  alamat       String
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @default(now())
-  account      Account      @relation(fields: [account_id], references: [id], onDelete: Cascade)
-  peminjaman   Peminjaman[]
+  id              String           @id @default(uuid())
+  account_id      String           @unique
+  nama_lengkap    String
+  no_hp           String
+  alamat          String
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @default(now())
+  account         Account          @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  temp_peminjaman TempPeminjaman[]
+  peminjaman      Peminjaman[]
 
   @@map("users")
 }
@@ -64,30 +65,52 @@ model Category {
 }
 
 model Book {
-  id            Int          @id @default(autoincrement())
-  categories_id Int
-  judul         String
-  penulis       String
-  penerbit      String
-  sinopsis      String
-  tanggal_rilis DateTime
-  stok          Int          @default(0)
-  category      Category     @relation(fields: [categories_id], references: [id], onDelete: Restrict)
-  peminjaman    Peminjaman[]
+  id              Int              @id @default(autoincrement())
+  categories_id   Int
+  judul           String
+  penulis         String
+  penerbit        String
+  sinopsis        String
+  tanggal_rilis   DateTime
+  stok            Int              @default(0)
+  category        Category         @relation(fields: [categories_id], references: [id], onDelete: Restrict)
+  temp_peminjaman TempPeminjaman[]
+  peminjaman      Peminjaman[]
 
   @@map("books")
 }
 
+model TempPeminjaman {
+  id                 Int      @id @default(autoincrement())
+  user_id            String
+  book_id            Int
+  tanggal_peminjaman DateTime @default(now())
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  book               Book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
+
+  @@map("temp_peminjaman")
+}
+
+model TempPengembalian {
+  id                   Int        @id @default(autoincrement())
+  peminjaman_id        Int
+  tanggal_dikembalikan DateTime
+  peminjaman           Peminjaman @relation(fields: [peminjaman_id], references: [id], onDelete: Cascade)
+
+  @@map("temp_pengembalian")
+}
+
 model Peminjaman {
-  id                       Int            @id @default(autoincrement())
+  id                       Int                @id @default(autoincrement())
   user_id                  String
   admin_id                 String
   book_id                  Int
-  tanggal_peminjaman       DateTime       @default(now())
+  tanggal_peminjaman       DateTime           @default(now())
   tanggal_batas_peminjaman DateTime
-  user                     User           @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  admin                    Admin          @relation(fields: [admin_id], references: [id], onDelete: Restrict)
-  book                     Book           @relation(fields: [book_id], references: [id], onDelete: Restrict)
+  user                     User               @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  admin                    Admin              @relation(fields: [admin_id], references: [id], onDelete: Restrict)
+  book                     Book               @relation(fields: [book_id], references: [id], onDelete: Restrict)
+  temp_pengembalian        TempPengembalian[]
   pengembalian             Pengembalian[]
 
   @@map("peminjaman")
@@ -120,6 +143,7 @@ model Laporan {
   admin_id                   String
   keterangan                 String
   total_denda                Float
+  total_peminjam             Int      @default(0)
   tanggal_awal_peminjaman    DateTime
   tanggal_akhir_peminjaman   DateTime
   tanggal_awal_pengembalian  DateTime

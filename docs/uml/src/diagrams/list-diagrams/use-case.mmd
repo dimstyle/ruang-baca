@@ -26,6 +26,10 @@ flowchart LR
         updateBook(("Update Book"))
         deleteBook(("Delete Book"))
         getBook(("Get Book"))
+        peminjaman(("Peminjaman"))
+        pengembalian(("Pengembalian"))
+        acceptPeminjaman(("Accept Peminjaman"))
+        acceptPengembalian(("Accept Pengembalian"))
     end
 
     user --> login
@@ -33,6 +37,8 @@ flowchart LR
     user --> refreshToken
     user --> readListCategories
     user --> getBook
+    user --> peminjaman
+    user --> pengembalian
 
     admin --> login
     admin --> register
@@ -54,9 +60,13 @@ flowchart LR
     admin --> updateBook
     admin --> deleteBook
     admin --> getBook
+    admin --> peminjaman
+    admin --> pengembalian
+    admin --> acceptPeminjaman
+    admin --> acceptPengembalian
 
     createUser -. "<<extend>>" .-> register
     deleteDenda -. "<<extend>>" .-> updateDenda
     readLaporan -. "<<extend>>" .-> readListLaporan
 
-    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan,createCategory,updateCategory,deleteCategory,readListCategories,createBook,updateBook,deleteBook,getBook usecase
+    class login,register,createUser,logout,refreshToken,updateUser,deleteUser,getUser,createDenda,updateDenda,deleteDenda,readDenda,createLaporan,readLaporan,readListLaporan,createCategory,updateCategory,deleteCategory,readListCategories,createBook,updateBook,deleteBook,getBook,peminjaman,pengembalian,acceptPeminjaman,acceptPengembalian usecase
