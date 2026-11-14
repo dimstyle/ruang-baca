@@ -146,7 +146,10 @@ export class ViewsController {
       req,
       res,
       { view: 'denda', title: 'Denda', admin: true },
-      async (s) => ({ fines: await orEmpty(this.admins.getDenda(s.id)) }),
+      async (s) => ({
+        fines: await orEmpty(this.admins.getDenda(s.id)),
+        pengembalianList: await this.views.pengembalianOptions(),
+      }),
     );
   }
 

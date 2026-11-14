@@ -6,10 +6,12 @@ SELECT l.id,
        ad.nama_lengkap AS nama_lengkap_admin,
        l.keterangan,
        l.total_denda,
+       l.total_peminjam,
        l.tanggal_awal_peminjaman,
        l.tanggal_akhir_peminjaman,
        l.tanggal_awal_pengembalian,
-       l.tanggal_akhir_pengembalian
+       l.tanggal_akhir_pengembalian,
+       l.tanggal_pembuatan_laporan
 FROM laporan l
 JOIN admins ad ON ad.id = l.admin_id
 JOIN accounts a ON a.id = ad.account_id

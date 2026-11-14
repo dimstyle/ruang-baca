@@ -9,12 +9,12 @@
     <a href="/app/admin/laporan" class="icon-btn" title="Kembali ke daftar laporan"><%- include('partials/icon', { n: 'back' }) %></a>
     <div class="min-w-0 flex-1">
       <h1 class="truncate text-lg font-medium"><%= report.keterangan %></h1>
-      <p class="text-xs text-muted">Dibuat oleh <%= report.nama_lengkap_admin %> (@<%= report.username_admin %> · <%= report.email_admin %>)</p>
+      <p class="text-xs text-muted">Dibuat <%= date(report.tanggal_pembuatan_laporan) %> · oleh <%= report.nama_lengkap_admin %> (@<%= report.username_admin %> · <%= report.email_admin %>)</p>
     </div>
     <div class="flex gap-3">
       <div class="rounded-xl bg-active px-4 py-2 text-right">
         <p class="text-[11px] text-accent">Total Peminjam</p>
-        <p class="text-base font-bold text-accent"><%= report.peminjaman.length %></p>
+        <p class="text-base font-bold text-accent"><%= report.total_peminjam ?? report.peminjaman.length %></p>
       </div>
       <div class="rounded-xl bg-[#FCE8E6] px-4 py-2 text-right">
         <p class="text-[11px] text-danger">Total Denda</p>

@@ -1,5 +1,9 @@
 <div class="flex flex-col items-center justify-center gap-3 py-20 text-center text-muted">
   <span class="inline-flex size-16 items-center justify-center rounded-full bg-secondary text-accent"><%- include('icon', { n: typeof icon !== 'undefined' ? icon : 'inbox', cls: 'size-8' }) %></span>
   <p class="text-sm"><%= text %></p>
-  <% if (typeof actionLabel !== 'undefined' && actionHref) { %><a href="<%= actionHref %>" class="btn-secondary"><%= actionLabel %></a><% } %>
+  <% if (typeof actionLabel !== 'undefined' && typeof actionHref !== 'undefined' && actionHref) { %>
+    <a href="<%= actionHref %>" class="btn-secondary"><%= actionLabel %></a>
+  <% } else if (typeof actionLabel !== 'undefined' && typeof actionOpen !== 'undefined' && actionOpen) { %>
+    <button type="button" class="btn-primary" data-open="<%= actionOpen %>" data-title="<%= actionTitle || actionLabel %>" data-api="<%= actionApi || '' %>"><%= actionLabel %></button>
+  <% } %>
 </div>

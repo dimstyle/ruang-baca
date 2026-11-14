@@ -3,6 +3,10 @@ SELECT id AS laporan_id,
        keterangan,
        total_denda,
        total_peminjam,
+       tanggal_awal_peminjaman,
+       tanggal_akhir_peminjaman,
+       tanggal_awal_pengembalian,
+       tanggal_akhir_pengembalian,
        tanggal_pembuatan_laporan
 FROM laporan
 WHERE admin_id = ?
@@ -13,6 +17,10 @@ SELECT id AS laporan_id,
        keterangan,
        total_denda,
        total_peminjam,
+       tanggal_awal_peminjaman,
+       tanggal_akhir_peminjaman,
+       tanggal_awal_pengembalian,
+       tanggal_akhir_pengembalian,
        tanggal_pembuatan_laporan
 FROM laporan
 WHERE admin_id = ?

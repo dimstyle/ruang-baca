@@ -3,7 +3,7 @@
 <div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
   <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
   <span class="text-sm font-medium">Peminjaman Saya</span>
-  <span class="ml-auto text-xs text-muted"><%= loans.length ? `1–${loans.length} dari ${loans.length}` : '0 data' %></span>
+  <%- include('partials/pagination', { count: loans.length }) %>
 </div>
 
 <!-- tabs -->

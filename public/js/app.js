@@ -204,7 +204,7 @@
     if (errEl) errEl.classList.add('hidden');
     const body = {};
     for (const el of form.elements) {
-      if (!el.name || el.disabled) continue;
+      if (!el.name || el.disabled || el.hasAttribute('data-skip')) continue;
       if (el.type === 'radio' && !el.checked) continue;
       if (el.value === '') continue;
       body[el.name] = el.hasAttribute('data-num') ? Number(el.value) : el.value;
@@ -214,7 +214,10 @@
       if (form.dataset.redirect) {
         location.href = form.dataset.redirect;
       } else {
-        sessionStorage.setItem('rb_flash', form.dataset.success || 'Berhasil disimpan');
+        let msg = form.dataset.success || 'Berhasil disimpan';
+        const sisa = form.elements.namedItem('sisa_denda');
+        if (sisa && Number(body.uang_masuk) >= Number(sisa.value)) msg = 'Denda lunas';
+        sessionStorage.setItem('rb_flash', msg);
         location.reload();
       }
     } catch (err) {
@@ -246,5 +249,12 @@
     document.querySelectorAll('[data-row] input[type="checkbox"]').forEach((c) => {
       c.checked = checkAll.checked;
     });
+  });
+
+  document.addEventListener('input', (e) => {
+    if (e.target.tagName === 'TEXTAREA') {
+      e.target.style.height = 'auto';
+      e.target.style.height = `${e.target.scrollHeight}px`;
+    }
   });
 })();

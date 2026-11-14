@@ -14,7 +14,11 @@ jest.mock('@ruangbaca/database', () => ({
 
 describe('ViewsController', () => {
   let controller: ViewsController;
-  const viewsService = { session: jest.fn(), badges: jest.fn() };
+  const viewsService = {
+    session: jest.fn(),
+    badges: jest.fn(),
+    pengembalianOptions: jest.fn(),
+  };
   const booksService = { getBook: jest.fn(), readListCategories: jest.fn() };
   const adminsService = {
     listUser: jest.fn(),

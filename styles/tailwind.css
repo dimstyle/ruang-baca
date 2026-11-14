@@ -22,7 +22,7 @@
     @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 h-10 text-sm font-medium text-white hover:shadow-md hover:bg-[#0A4BB5] disabled:opacity-40 disabled:cursor-not-allowed transition;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line px-5 h-9 text-sm font-medium text-accent hover:bg-secondary transition;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line bg-transparent px-5 h-9 text-sm font-medium text-accent hover:bg-secondary transition;
   }
   .btn-text {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-4 h-9 text-sm font-medium text-accent hover:bg-secondary transition;
@@ -39,7 +39,7 @@
   textarea.field { @apply h-auto py-2 min-h-24; }
   .label { @apply mb-1 block text-xs font-medium text-muted; }
   .list-row {
-    @apply flex items-center gap-4 border-b border-line px-4 h-14 text-sm hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3)] hover:z-10 relative bg-surface;
+    @apply flex items-center gap-4 border-b border-line px-4 h-12 text-sm hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3)] hover:z-10 relative bg-surface;
   }
   .row-actions { @apply hidden items-center gap-1; }
   .list-row:hover .row-actions { display: flex; }

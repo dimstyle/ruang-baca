@@ -7,12 +7,19 @@
 <div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
   <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
   <span class="text-sm font-medium">Kategori Buku</span>
-  <span class="ml-auto text-xs text-muted"><%= categories.length ? `1–${categories.length} dari ${categories.length}` : '0 kategori' %></span>
+  <%- include('partials/pagination', { count: categories.length }) %>
 </div>
 
 <div class="flex-1 overflow-y-auto">
   <% if (!categories.length) { %>
-    <%- include('partials/empty', { icon: 'label', text: 'Belum ada kategori buku' }) %>
+    <%- include('partials/empty', {
+      icon: 'label',
+      text: 'Belum ada kategori buku',
+      actionLabel: isAdmin ? 'Tambah Kategori' : undefined,
+      actionOpen: isAdmin ? '#compose-cat' : undefined,
+      actionTitle: 'Kategori Baru',
+      actionApi: 'POST /api/books/createcategory',
+    }) %>
   <% } %>
   <% categories.forEach((c) => { const n = counts[c.id] || 0; %>
     <div class="list-row" data-row>

@@ -256,10 +256,12 @@ export class AdminsService {
         nama_lengkap_admin: string;
         keterangan: string;
         total_denda: number;
+        total_peminjam: number;
         tanggal_awal_peminjaman: Date;
         tanggal_akhir_peminjaman: Date;
         tanggal_awal_pengembalian: Date;
         tanggal_akhir_pengembalian: Date;
+        tanggal_pembuatan_laporan: Date;
       }>
     >(queries.findLaporanByIdAndAdmin, laporan_id, adminId);
 
@@ -314,6 +316,8 @@ export class AdminsService {
         nama_lengkap_admin: laporan.nama_lengkap_admin,
         keterangan: laporan.keterangan,
         total_denda: Number(laporan.total_denda),
+        total_peminjam: Number(laporan.total_peminjam ?? peminjaman.length),
+        tanggal_pembuatan_laporan: laporan.tanggal_pembuatan_laporan,
         peminjaman,
         pengembalian,
       };

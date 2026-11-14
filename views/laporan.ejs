@@ -16,13 +16,22 @@
 
 <div class="flex-1 overflow-y-auto">
   <% if (!reports.length) { %>
-    <%- include('partials/empty', { icon: 'report', text: 'Belum ada laporan' }) %>
+    <%- include('partials/empty', {
+      icon: 'report',
+      text: 'Belum ada laporan',
+      actionLabel: 'Buat Laporan',
+      actionOpen: '#compose-laporan',
+      actionTitle: 'Laporan Baru',
+      actionApi: 'POST /api/admins/createlaporan',
+    }) %>
   <% } %>
   <% reports.forEach((r) => { %>
     <a href="/app/admin/laporan/<%= r.laporan_id %>" class="list-row" data-row>
       <%- include('partials/tile', { key: r.keterangan || r.laporan_id, icon: 'report' }) %>
       <span class="w-64 shrink-0 truncate font-bold"><%= r.keterangan || `Laporan #${r.laporan_id}` %></span>
-      <span class="flex-1 truncate text-muted">Laporan rekapitulasi perpustakaan #<%= r.laporan_id %></span>
+      <span class="flex-1 truncate text-muted">
+        Periode <%= date(r.tanggal_awal_peminjaman) %> – <%= date(r.tanggal_akhir_peminjaman) %>
+      </span>
       <div class="ml-auto flex items-center gap-3">
         <%- include('partials/chip', { kind: 'Dipinjam', label: `${r.total_peminjam ?? 0} peminjam` }) %>
         <%- include('partials/chip', { kind: 'Rusak', label: `Denda ${rupiah(r.total_denda)}` }) %>

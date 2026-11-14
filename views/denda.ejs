@@ -21,21 +21,28 @@
 
 <div class="mt-2 flex-1 overflow-y-auto">
   <% if (!fines.length) { %>
-    <%- include('partials/empty', { icon: 'receipt', text: 'Tidak ada denda' }) %>
+    <%- include('partials/empty', {
+      icon: 'receipt',
+      text: 'Tidak ada denda',
+      actionLabel: 'Tambah Denda',
+      actionOpen: '#compose-denda',
+      actionTitle: 'Denda Baru',
+      actionApi: 'POST /api/admins/createdenda',
+    }) %>
   <% } %>
   <% fines.forEach((f) => { %>
     <div class="list-row" data-row>
       <%- include('partials/avatar', { name: f.nama_lengkap }) %>
       <span class="w-48 shrink-0 truncate font-bold"><%= f.nama_lengkap %> <span class="font-normal text-muted">(@<%= f.username %>)</span></span>
       <span class="flex-1 truncate text-muted">
-        <span class="text-ink"><%= f.keterangan_buku %></span> · Dikembalikan <%= date(f.tanggal_dikembalikan) %>
+        <span class="font-medium text-ink"><%= f.judul_buku || 'Buku' %></span> — <%= f.keterangan_buku %> · Dikembalikan <%= date(f.tanggal_dikembalikan) %>
       </span>
       <div class="ml-auto flex items-center gap-3">
-        <%- include('partials/chip', { label: f.status_buku }) %>
         <span class="w-28 text-right font-bold text-danger"><%= rupiah(f.denda) %></span>
+        <%- include('partials/chip', { label: f.status_buku }) %>
         <button class="btn-secondary h-8 px-3 text-xs"
           data-open="#dialog-bayar"
-          data-fill="<%= JSON.stringify({ id_daftar_denda: f.id_denda, info: `${f.nama_lengkap} — Sisa ${rupiah(f.denda)}`, uang_masuk: f.denda }) %>">
+          data-fill="<%= JSON.stringify({ id_daftar_denda: f.id_denda, sisa_denda: f.denda, info: `${f.nama_lengkap} — Sisa ${rupiah(f.denda)}`, uang_masuk: f.denda }) %>">
           Catat Pembayaran
         </button>
       </div>
@@ -45,7 +52,19 @@
 
 <!-- compose-window "Denda Baru" -->
 <%- include('partials/compose-start', { id: 'compose-denda', title: 'Denda Baru', api: 'POST /api/admins/createdenda', success: 'Denda berhasil dicatat' }) %>
-  <div><label class="label">ID Pengembalian</label><input name="id_pengembalian" type="number" min="1" data-num required class="field" placeholder="Masukkan ID pengembalian"></div>
+  <div>
+    <label class="label">Pilih Pengembalian</label>
+    <% if (typeof pengembalianList !== 'undefined' && pengembalianList.length) { %>
+      <select name="id_pengembalian" data-num required class="field">
+        <option value="">Pilih data pengembalian…</option>
+        <% pengembalianList.forEach((pg) => { %>
+          <option value="<%= pg.id %>">#<%= pg.id %> — <%= pg.nama_lengkap %> · <%= pg.judul_buku %> (<%= pg.status_buku %>, <%= date(pg.tanggal_dikembalikan) %>)</option>
+        <% }) %>
+      </select>
+    <% } else { %>
+      <input name="id_pengembalian" type="number" min="1" data-num required class="field" placeholder="Masukkan ID pengembalian">
+    <% } %>
+  </div>
   <div><label class="label">Nominal Denda (Rp)</label><input name="denda" type="number" min="1000" step="500" data-num required class="field" placeholder="10000"></div>
   <div><label class="label">Keterangan</label><textarea name="keterangan" required class="field" placeholder="Contoh: Terlambat 5 hari / sampul rusak"></textarea></div>
 <%- include('partials/compose-end') %>
@@ -55,12 +74,13 @@
   <form data-api="PUT /api/admins/updatedenda" data-success="Pembayaran denda tercatat" class="flex flex-col gap-4">
     <h2 class="text-lg font-medium">Catat Pembayaran Denda</h2>
     <input type="hidden" name="id_daftar_denda" data-num>
-    <div><label class="label">Tagihan</label><input name="info" disabled class="field bg-bg"></div>
+    <input type="hidden" name="sisa_denda" data-skip>
+    <div><label class="label">Sisa Denda</label><input name="info" disabled class="field bg-bg"></div>
     <div>
       <label class="label">Uang Masuk (Rp)</label>
       <input name="uang_masuk" type="number" min="1" step="500" data-num required class="field">
     </div>
-    <p class="rounded-lg bg-secondary px-3 py-2 text-xs text-muted">Denda yang lunas (sisa Rp0) akan otomatis dihapus dari daftar.</p>
+    <p class="rounded-lg bg-secondary px-3 py-2 text-xs text-muted">Denda lunas akan otomatis dihapus dari daftar</p>
     <p class="hidden text-sm text-danger" data-error></p>
     <div class="flex justify-end gap-2 pt-2">
       <button type="button" class="btn-text" data-close>Batal</button>

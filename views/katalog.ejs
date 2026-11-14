@@ -12,7 +12,7 @@
     <option value="">Semua kategori</option>
     <% categories.forEach((c) => { %><option value="<%= c.nama_kategori %>"><%= c.nama_kategori %> (<%= c.jenis_buku %>)</option><% }) %>
   </select>
-  <span class="ml-auto text-xs text-muted"><%= books.length ? `1–${books.length} dari ${books.length}` : '0 buku' %></span>
+  <%- include('partials/pagination', { count: books.length }) %>
 </div>
 
 <!-- tab-kategori -->
@@ -29,7 +29,14 @@
   <!-- book list -->
   <div class="flex-1 overflow-y-auto" id="book-list">
     <% if (!books.length) { %>
-      <%- include('partials/empty', { icon: 'book', text: 'Belum ada koleksi buku' }) %>
+      <%- include('partials/empty', {
+        icon: 'book',
+        text: 'Belum ada koleksi buku',
+        actionLabel: isAdmin ? 'Tambah Buku' : undefined,
+        actionOpen: isAdmin ? '#compose-book' : undefined,
+        actionTitle: 'Buku Baru',
+        actionApi: 'POST /api/books/createbook',
+      }) %>
     <% } %>
     <% books.forEach((b) => { %>
       <div class="list-row cursor-pointer" data-row data-cat="<%= b.nama_kategori %>" data-book="<%= JSON.stringify(b) %>">
@@ -37,7 +44,7 @@
         <%- include('partials/tile', { key: b.nama_kategori, text: b.judul_buku }) %>
         <span class="w-56 shrink-0 truncate font-bold"><%= b.judul_buku %></span>
         <span class="min-w-0 flex-1 truncate text-muted">
-          <span class="text-ink"><%= b.penulis_buku %> · <%= b.penerbit %></span> — <%= b.sinopsis %>
+          <%= b.penulis_buku %> · <%= b.penerbit %> — <span class="text-ink/80"><%= b.sinopsis %></span>
         </span>
         <div class="ml-auto flex shrink-0 items-center gap-3">
           <%- include('partials/chip', { kind: b.stok > 0 ? 'Tersedia' : 'Habis', label: b.stok > 0 ? `Tersedia ${b.stok}` : 'Habis' }) %>

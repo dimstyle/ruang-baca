@@ -1,0 +1,6 @@
+<!-- pagination-info: teks "1–50 dari 120" + tombol panah kiri/kanan di kanan atas list -->
+<div class="ml-auto flex items-center gap-1 text-xs text-muted">
+  <span><%= count ? `1–${count} dari ${count}` : '0 dari 0' %></span>
+  <button type="button" class="icon-btn size-8" title="Sebelumnya" disabled><%- include('icon', { n: 'chevronLeft', cls: 'size-4' }) %></button>
+  <button type="button" class="icon-btn size-8" title="Berikutnya" disabled><%- include('icon', { n: 'chevronRight', cls: 'size-4' }) %></button>
+</div>

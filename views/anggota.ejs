@@ -6,13 +6,20 @@
   <input type="checkbox" class="size-4 accent-accent" data-check-all title="Pilih semua">
   <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
   <span class="text-sm font-medium">Daftar Anggota</span>
-  <span class="ml-auto text-xs text-muted"><%= users.length ? `1–${users.length} dari ${users.length}` : '0 anggota' %></span>
+  <%- include('partials/pagination', { count: users.length }) %>
 </div>
 
 <div class="flex min-h-0 flex-1 overflow-hidden">
   <div class="flex-1 overflow-y-auto">
     <% if (!users.length) { %>
-      <%- include('partials/empty', { icon: 'people', text: 'Belum ada anggota terdaftar' }) %>
+      <%- include('partials/empty', {
+        icon: 'people',
+        text: 'Belum ada anggota terdaftar',
+        actionLabel: 'Tambah Anggota',
+        actionOpen: '#compose-register',
+        actionTitle: 'Anggota Baru',
+        actionApi: 'POST /api/auth/registration',
+      }) %>
     <% } %>
     <% users.forEach((u) => { %>
       <div class="list-row cursor-pointer <%= selected && selected.id === u.id_user ? 'bg-active/40' : '' %>" data-row onclick="location.href='/app/admin/anggota?id=<%= u.id_user %>'">
