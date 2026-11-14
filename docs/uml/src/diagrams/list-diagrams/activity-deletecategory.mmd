@@ -1,0 +1,19 @@
+stateDiagram-v2
+    state "Masuk sebagai Admin & buka menu kategori" as s1
+    state "Pilih kategori & klik tombol hapus kategori" as s2
+    state checkFound <<choice>>
+    state "Tampilkan pesan kategori tidak ditemukan" as err
+    state checkBooks <<choice>>
+    state "Tampilkan peringatan masih ada buku & batalkan" as conflict
+    state "Hapus kategori & tampilkan pesan berhasil dihapus" as ok
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> checkFound
+    checkFound --> err : 0 (Tidak ditemukan)
+    err --> [*]
+    checkFound --> checkBooks : 1 (Ditemukan)
+    checkBooks --> conflict : 1 (Masih digunakan buku)
+    checkBooks --> ok : 0 (Tidak digunakan buku)
+    conflict --> [*]
+    ok --> [*]

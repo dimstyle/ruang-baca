@@ -1,0 +1,14 @@
+stateDiagram-v2
+    state "Membuka halaman saat waktu akses sedang habis" as s1
+    state checkActive <<choice>>
+    state "Perpanjang akses masuk secara otomatis" as s2
+    state "Tetap melanjutkan aktivitas di halaman" as s3
+    state "Tampilkan pesan sesi berakhir & arahkan ke halaman masuk" as s4
+
+    [*] --> s1
+    s1 --> checkActive
+    checkActive --> s2 : 1 (Masa aktif masih berlaku)
+    s2 --> s3
+    s3 --> [*]
+    checkActive --> s4 : 0 (Masa aktif habis)
+    s4 --> [*]

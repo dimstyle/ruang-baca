@@ -1,0 +1,16 @@
+stateDiagram-v2
+    state "Buka halaman katalog buku & pilih buku" as s1
+    state "Masukan tanggal peminjaman" as s2
+    state "Klik tombol ajukan peminjaman" as s3
+    state checkLogged <<choice>>
+    state "Tampilkan peringatan harus masuk & arahkan ke halaman masuk" as login
+    state "Tampilkan pesan pengajuan berhasil & menunggu persetujuan Admin" as ok
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> s3
+    s3 --> checkLogged
+    checkLogged --> login : 0 (Belum masuk)
+    checkLogged --> ok : 1 (Sudah masuk)
+    login --> [*]
+    ok --> [*]

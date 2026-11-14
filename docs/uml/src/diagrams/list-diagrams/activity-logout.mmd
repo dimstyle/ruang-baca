@@ -1,0 +1,14 @@
+stateDiagram-v2
+    state "Berada di halaman aplikasi (sudah masuk)" as s1
+    state "Klik tombol keluar pada menu profil" as s2
+    state confirmLogout <<choice>>
+    state "Tetap berada di halaman saat ini" as stay
+    state "Keluar dari akun dan diarahkan ke halaman masuk" as out
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> confirmLogout
+    confirmLogout --> stay : 0 (Batal keluar)
+    confirmLogout --> out : 1 (Yakin keluar)
+    stay --> [*]
+    out --> [*]

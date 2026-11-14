@@ -1,0 +1,8 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu daftar denda"]
+    openMenu --> checkRecords{"Apakah ada catatan denda yang tersimpan?"}
+    checkRecords -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada catatan denda"]
+    emptyMsg --> finish(["Selesai"])
+    checkRecords -->|"1 (Ya)"| showList["Tampilkan daftar denda (nama pengguna, nama lengkap, kondisi buku, nominal denda, keterangan, tanggal pengembalian)"]
+    showList --> finish

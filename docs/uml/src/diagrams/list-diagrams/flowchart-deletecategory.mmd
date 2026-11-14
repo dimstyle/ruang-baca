@@ -1,0 +1,14 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu kategori buku"]
+    openMenu --> selectCat["Pilih kategori yang ingin dihapus"]
+    selectCat --> clickDel["Klik tombol hapus kategori"]
+    clickDel --> checkFound{"Apakah kategori tersebut ditemukan?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+    notFound --> finish(["Selesai"])
+    checkFound -->|"1 (Ya)"| checkBooks{"Apakah kategori masih digunakan oleh koleksi buku?"}
+    checkBooks -->|"1 (Ya)"| warnUsed["Tampilkan peringatan kategori masih memiliki koleksi buku"]
+    warnUsed --> cancelDel["Batalkan penghapusan kategori"]
+    cancelDel --> finish
+    checkBooks -->|"0 (Tidak)"| deleted["Hapus kategori dan tampilkan pesan kategori berhasil dihapus"]
+    deleted --> finish

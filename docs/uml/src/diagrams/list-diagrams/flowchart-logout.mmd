@@ -1,0 +1,8 @@
+flowchart TD
+    start(["Mulai"]) --> activePage["Berada di halaman aplikasi (sudah masuk)"]
+    activePage --> clickLogout["Klik tombol keluar pada menu profil"]
+    clickLogout --> confirmLogout{"Apakah yakin ingin keluar?"}
+    confirmLogout -->|"0 (Tidak)"| stayPage["Tetap berada di halaman saat ini"]
+    stayPage --> finish(["Selesai"])
+    confirmLogout -->|"1 (Ya)"| doLogout["Keluar dari akun dan diarahkan ke halaman masuk"]
+    doLogout --> finish

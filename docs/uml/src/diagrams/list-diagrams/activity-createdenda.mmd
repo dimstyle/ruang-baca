@@ -1,0 +1,18 @@
+stateDiagram-v2
+    state "Masuk sebagai Admin" as s1
+    state "Pilih catatan pengembalian buku yang terkena denda" as s2
+    state "Masukan nominal denda dan keterangan alasan" as s3
+    state "Klik tombol simpan denda" as s4
+    state checkFound <<choice>>
+    state "Tampilkan pesan data peminjam tidak ditemukan" as err
+    state "Tampilkan pesan denda berhasil dicatat" as ok
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> s3
+    s3 --> s4
+    s4 --> checkFound
+    checkFound --> err : 0 (Tidak ditemukan)
+    checkFound --> ok : 1 (Ditemukan)
+    err --> [*]
+    ok --> [*]

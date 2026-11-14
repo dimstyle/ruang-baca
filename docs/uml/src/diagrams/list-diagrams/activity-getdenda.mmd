@@ -1,0 +1,14 @@
+stateDiagram-v2
+    state "Masuk sebagai Admin" as s1
+    state "Buka menu daftar denda" as s2
+    state checkRecords <<choice>>
+    state "Tampilkan pesan belum ada catatan denda" as empty
+    state "Tampilkan daftar denda lengkap" as list
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> checkRecords
+    checkRecords --> empty : 0 (Belum ada denda)
+    checkRecords --> list : 1 (Ada denda)
+    empty --> [*]
+    list --> [*]

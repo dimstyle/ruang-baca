@@ -1,0 +1,19 @@
+stateDiagram-v2
+    state hasAccount <<choice>>
+    state "Minta Admin mendaftarkan akun & kembali ke halaman masuk" as reg
+    state "Masukan email dan kata sandi" as inputAuth
+    state "Klik tombol masuk" as clickLogin
+    state checkMatch <<choice>>
+    state "Tampilkan pesan salah & coba lagi kata sandi" as retryPass
+    state "Diarahkan ke halaman dashboard" as dashboard
+
+    [*] --> hasAccount
+    hasAccount --> reg : 0 (Belum punya akun)
+    reg --> inputAuth
+    hasAccount --> inputAuth : 1 (Sudah punya akun)
+    inputAuth --> clickLogin
+    clickLogin --> checkMatch
+    checkMatch --> retryPass : 0 (Tidak sesuai)
+    retryPass --> inputAuth
+    checkMatch --> dashboard : 1 (Sesuai)
+    dashboard --> [*]

@@ -1,0 +1,16 @@
+stateDiagram-v2
+    state "Masuk sebagai Admin & buka daftar pengajuan peminjaman" as s1
+    state "Pilih pengajuan & tentukan tanggal batas pengembalian" as s2
+    state "Klik tombol setujui peminjaman" as s3
+    state checkFound <<choice>>
+    state "Tampilkan pesan pengajuan peminjaman tidak ditemukan" as err
+    state "Pindahkan ke daftar peminjaman aktif & tampilkan pesan disetujui" as ok
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> s3
+    s3 --> checkFound
+    checkFound --> err : 0 (Tidak ditemukan)
+    checkFound --> ok : 1 (Ditemukan)
+    err --> [*]
+    ok --> [*]

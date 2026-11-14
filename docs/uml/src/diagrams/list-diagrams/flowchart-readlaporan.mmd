@@ -1,0 +1,9 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu daftar laporan"]
+    openMenu --> selectReport["Pilih salah satu laporan untuk melihat rincian"]
+    selectReport --> checkFound{"Apakah laporan tersebut ditemukan?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan laporan tidak ditemukan"]
+    notFound --> finish(["Selesai"])
+    checkFound -->|"1 (Ya)"| showDetail["Tampilkan rincian laporan lengkap (identitas admin, keterangan, total denda, daftar peminjaman, daftar pengembalian)"]
+    showDetail --> finish

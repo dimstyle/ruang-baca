@@ -1,0 +1,7 @@
+flowchart TD
+    start(["Mulai"]) --> openPage["Buka halaman daftar kategori buku"]
+    openPage --> checkAvail{"Apakah daftar kategori buku sudah tersedia?"}
+    checkAvail -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada kategori buku"]
+    emptyMsg --> finish(["Selesai"])
+    checkAvail -->|"1 (Ya)"| showList["Tampilkan seluruh daftar kategori beserta jenis bukunya"]
+    showList --> finish

@@ -1,0 +1,11 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openReq["Buka menu daftar pengajuan pengembalian"]
+    openReq --> selectReq["Pilih pengajuan pengembalian buku dari anggota"]
+    selectReq --> checkCond["Periksa fisik buku dan pilih status kondisi buku (Baik, Rusak, atau Hilang)"]
+    checkCond --> clickApprove["Klik tombol setujui pengembalian"]
+    clickApprove --> checkFound{"Apakah data pengajuan pengembalian ditemukan?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+    notFound --> finish(["Selesai"])
+    checkFound -->|"1 (Ya)"| approved["Catat pengembalian buku dan tampilkan pesan pengembalian berhasil disetujui"]
+    approved --> finish

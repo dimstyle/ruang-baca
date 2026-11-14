@@ -1,0 +1,11 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu kategori buku"]
+    openMenu --> selectCat["Pilih kategori yang ingin diubah"]
+    selectCat --> editCat["Perbarui nama kategori atau jenis buku"]
+    editCat --> clickSave["Klik tombol simpan perubahan"]
+    clickSave --> checkFound{"Apakah kategori tersebut ditemukan?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+    notFound --> finish(["Selesai"])
+    checkFound -->|"1 (Ya)"| updated["Tampilkan pesan kategori berhasil diperbarui"]
+    updated --> finish

@@ -1,0 +1,12 @@
+stateDiagram-v2
+    state "Buka halaman katalog buku" as s1
+    state checkAvail <<choice>>
+    state "Tampilkan pesan belum ada koleksi buku" as empty
+    state "Tampilkan daftar buku lengkap" as list
+
+    [*] --> s1
+    s1 --> checkAvail
+    checkAvail --> empty : 0 (Belum ada koleksi)
+    checkAvail --> list : 1 (Tersedia)
+    empty --> [*]
+    list --> [*]

@@ -1,0 +1,13 @@
+flowchart TD
+    start(["Mulai"]) --> hasAccount{"Sudah punya akun anggota?"}
+    hasAccount -->|"0 (Tidak)"| askAdmin["Minta Admin mendaftarkan akun"]
+    askAdmin --> backLogin["Kembali ke halaman masuk"]
+    backLogin --> inputAuth["Masukan email dan kata sandi"]
+    hasAccount -->|"1 (Ya)"| inputAuth
+    inputAuth --> clickLogin["Klik tombol masuk"]
+    clickLogin --> checkMatch{"Apakah email dan kata sandi sesuai?"}
+    checkMatch -->|"0 (Tidak)"| warnWrong["Tampilkan pesan email atau kata sandi salah"]
+    warnWrong --> retryPass["Coba masukan kembali kata sandi"]
+    retryPass --> inputAuth
+    checkMatch -->|"1 (Ya)"| toDashboard["Diarahkan ke halaman dashboard"]
+    toDashboard --> finish(["Selesai"])

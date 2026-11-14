@@ -1,0 +1,11 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu pengembalian buku atau daftar denda"]
+    openMenu --> selectReturn["Pilih catatan pengembalian buku yang terkena denda"]
+    selectReturn --> inputFine["Masukan nominal denda dan keterangan alasan denda"]
+    inputFine --> clickSave["Klik tombol simpan denda"]
+    clickSave --> checkFound{"Apakah data pengembalian ditemukan?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjam tidak ditemukan"]
+    notFound --> finish(["Selesai"])
+    checkFound -->|"1 (Ya)"| created["Tampilkan pesan denda berhasil dicatat"]
+    created --> finish

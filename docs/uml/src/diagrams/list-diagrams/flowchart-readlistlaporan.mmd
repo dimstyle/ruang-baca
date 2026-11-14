@@ -1,0 +1,14 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu daftar laporan"]
+    openMenu --> wantFilter{"Apakah ingin menyaring laporan berdasarkan rentang tanggal?"}
+    wantFilter -->|"1 (Ya)"| inputDates["Isi tanggal awal dan tanggal akhir laporan"]
+    inputDates --> checkDates{"Apakah kedua tanggal sudah diisi lengkap?"}
+    checkDates -->|"0 (Tidak)"| warnDates["Tampilkan peringatan tanggal awal dan akhir harus diisi keduanya"]
+    warnDates --> inputDates
+    checkDates -->|"1 (Ya)"| checkList{"Apakah ada laporan yang sesuai?"}
+    wantFilter -->|"0 (Tidak)"| checkList
+    checkList -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada laporan"]
+    emptyMsg --> finish(["Selesai"])
+    checkList -->|"1 (Ya)"| showList["Tampilkan daftar laporan beserta tanggal pembuatannya"]
+    showList --> finish

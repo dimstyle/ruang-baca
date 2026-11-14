@@ -1,0 +1,18 @@
+stateDiagram-v2
+    state "Masuk sebagai Admin & buka menu katalog buku" as s1
+    state "Klik tombol tambah buku baru" as s2
+    state "Pilih kategori & masukan informasi lengkap buku" as s3
+    state "Klik tombol simpan buku" as s4
+    state checkCat <<choice>>
+    state "Tampilkan pesan kategori tidak ditemukan & pilih kategori lain" as fix
+    state "Tampilkan pesan buku baru berhasil ditambahkan" as ok
+
+    [*] --> s1
+    s1 --> s2
+    s2 --> s3
+    s3 --> s4
+    s4 --> checkCat
+    checkCat --> fix : 0 (Kategori tidak ditemukan)
+    fix --> s3
+    checkCat --> ok : 1 (Kategori tersedia)
+    ok --> [*]

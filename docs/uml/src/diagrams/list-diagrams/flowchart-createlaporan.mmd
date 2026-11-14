@@ -1,0 +1,12 @@
+flowchart TD
+    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
+    loginAdmin --> openMenu["Buka menu laporan perpustakaan"]
+    openMenu --> clickNew["Klik tombol buat laporan baru"]
+    clickNew --> inputForm["Masukan keterangan, rentang tanggal peminjaman, rentang tanggal pengembalian, dan tanggal pembuatan laporan"]
+    inputForm --> clickSave["Klik tombol simpan laporan"]
+    clickSave --> checkComplete{"Apakah seluruh kolom tanggal dan keterangan sudah lengkap?"}
+    checkComplete -->|"0 (Tidak)"| warnIncomplete["Tampilkan peringatan isian belum lengkap"]
+    warnIncomplete --> fixForm["Lengkapi kembali formulir laporan"]
+    fixForm --> inputForm
+    checkComplete -->|"1 (Ya)"| created["Tampilkan pesan laporan berhasil dibuat"]
+    created --> finish(["Selesai"])
