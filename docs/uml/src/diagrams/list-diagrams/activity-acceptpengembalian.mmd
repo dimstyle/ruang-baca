@@ -1,16 +1,22 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka daftar pengajuan pengembalian" as s1
-    state "Periksa fisik buku & pilih status kondisi buku" as s2
-    state "Klik tombol setujui pengembalian" as s3
-    state checkFound <<choice>>
-    state "Tampilkan pesan data peminjaman tidak ditemukan" as err
-    state "Catat pengembalian buku & tampilkan pesan berhasil disetujui" as ok
+flowchart TD
+    subgraph User["User"]
+        reqReturn["Mengajukan pengembalian buku"]
+        doneReturn["Peminjaman buku selesai dikembalikan"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    checkFound --> ok : 1 (Ditemukan)
-    err --> [*]
-    ok --> [*]
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openReq["Buka menu daftar pengajuan pengembalian"]
+        reqReturn -.-> openReq
+        openReq --> selectReq["Pilih pengajuan pengembalian dari anggota"]
+        selectReq --> checkCond["Periksa fisik buku & pilih kondisi (Baik, Rusak, atau Hilang)"]
+        checkCond --> clickApprove["Klik tombol setujui pengembalian"]
+    end
+
+    subgraph Sistem["Sistem"]
+        clickApprove --> checkFound{"Apakah data pengajuan pengembalian ditemukan?"}
+        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+        notFound --> finish
+        checkFound -->|"1 (Ya)"| saveReturn["Catat pengembalian resmi & hapus antrean"]
+        saveReturn --> msgOk["Tampilkan pesan pengembalian berhasil disetujui"]
+        msgOk --> doneReturn
+    end

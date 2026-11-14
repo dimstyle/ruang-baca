@@ -1,14 +1,14 @@
-stateDiagram-v2
-    state "Berada di halaman aplikasi (sudah masuk)" as s1
-    state "Klik tombol keluar pada menu profil" as s2
-    state confirmLogout <<choice>>
-    state "Tetap berada di halaman saat ini" as stay
-    state "Keluar dari akun dan diarahkan ke halaman masuk" as out
+flowchart TD
+    subgraph User["User / Admin"]
+        start(["Mulai"]) --> activePage["Berada di halaman aplikasi (sudah masuk)"]
+        activePage --> clickLogout["Klik tombol keluar pada menu profil"]
+        clickLogout --> confirmLogout{"Apakah yakin ingin keluar?"}
+        confirmLogout -->|"0 (Tidak)"| stayPage["Tetap berada di halaman saat ini"]
+        stayPage --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> confirmLogout
-    confirmLogout --> stay : 0 (Batal keluar)
-    confirmLogout --> out : 1 (Yakin keluar)
-    stay --> [*]
-    out --> [*]
+    subgraph Sistem["Sistem"]
+        confirmLogout -->|"1 (Ya)"| endSession["Akhiri sesi masuk pengguna"]
+        endSession --> toLogin["Arahkan kembali ke halaman masuk"]
+        toLogin --> finish
+    end

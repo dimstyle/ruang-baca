@@ -1,18 +1,18 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu laporan" as s1
-    state "Klik tombol buat laporan baru" as s2
-    state "Masukan keterangan dan rentang tanggal laporan" as s3
-    state "Klik tombol simpan laporan" as s4
-    state checkComplete <<choice>>
-    state "Tampilkan peringatan belum lengkap & lengkapi formulir" as fix
-    state "Tampilkan pesan laporan berhasil dibuat" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu laporan perpustakaan"]
+        openMenu --> clickNew["Klik tombol buat laporan baru"]
+        clickNew --> inputForm["Masukan keterangan & rentang tanggal laporan"]
+        inputForm --> clickSave["Klik tombol simpan laporan"]
+        fixForm["Lengkapi kembali formulir laporan"] --> inputForm
+        finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> s4
-    s4 --> checkComplete
-    checkComplete --> fix : 0 (Belum lengkap)
-    fix --> s3
-    checkComplete --> ok : 1 (Lengkap)
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        clickSave --> checkComplete{"Apakah seluruh kolom tanggal dan keterangan lengkap?"}
+        checkComplete -->|"0 (Tidak)"| warnIncomplete["Tampilkan peringatan isian belum lengkap"]
+        warnIncomplete --> fixForm
+        checkComplete -->|"1 (Ya)"| calcSave["Rekap total peminjam & total denda lalu simpan laporan"]
+        calcSave --> created["Tampilkan pesan laporan berhasil dibuat"]
+        created --> finish
+    end

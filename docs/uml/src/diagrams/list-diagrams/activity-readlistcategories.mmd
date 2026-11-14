@@ -1,12 +1,14 @@
-stateDiagram-v2
-    state "Buka halaman daftar kategori buku" as s1
-    state checkAvail <<choice>>
-    state "Tampilkan pesan belum ada kategori buku" as empty
-    state "Tampilkan seluruh daftar kategori beserta jenis bukunya" as list
+flowchart TD
+    subgraph UserAdmin["User / Admin"]
+        start(["Mulai"]) --> openMenu["Buka halaman daftar kategori buku"]
+        viewList["Lihat daftar seluruh kategori buku"] --> finish(["Selesai"])
+        finishEmpty(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> checkAvail
-    checkAvail --> empty : 0 (Belum tersedia)
-    checkAvail --> list : 1 (Tersedia)
-    empty --> [*]
-    list --> [*]
+    subgraph Sistem["Sistem"]
+        openMenu --> checkAvail{"Apakah data kategori buku tersedia?"}
+        checkAvail -->|"0 (Tidak)"| showEmpty["Tampilkan pesan belum ada kategori buku"]
+        showEmpty --> finishEmpty
+        checkAvail -->|"1 (Ya)"| showList["Tampilkan seluruh daftar kategori buku"]
+        showList --> viewList
+    end

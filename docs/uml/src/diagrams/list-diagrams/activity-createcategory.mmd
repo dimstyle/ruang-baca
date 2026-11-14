@@ -1,18 +1,18 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu kategori" as s1
-    state "Klik tombol tambah kategori" as s2
-    state "Masukan nama kategori dan jenis buku" as s3
-    state "Klik tombol simpan kategori" as s4
-    state checkFilled <<choice>>
-    state "Tampilkan peringatan kolom wajib diisi & lengkapi" as fix
-    state "Tampilkan pesan kategori berhasil dibuat" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu kategori buku"]
+        openMenu --> clickAdd["Klik tombol tambah kategori"]
+        clickAdd --> inputName["Masukan nama kategori baru"]
+        inputName --> clickSave["Klik tombol simpan kategori"]
+        fixName["Masukan kembali nama kategori"] --> inputName
+        finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> s4
-    s4 --> checkFilled
-    checkFilled --> fix : 0 (Belum diisi)
-    fix --> s3
-    checkFilled --> ok : 1 (Sudah diisi)
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        clickSave --> checkValid{"Apakah nama kategori sudah diisi?"}
+        checkValid -->|"0 (Tidak)"| warnInvalid["Tampilkan peringatan nama kategori wajib diisi"]
+        warnInvalid --> fixName
+        checkValid -->|"1 (Ya)"| saveCat["Simpan kategori buku baru"]
+        saveCat --> created["Tampilkan pesan kategori berhasil ditambahkan"]
+        created --> finish
+    end

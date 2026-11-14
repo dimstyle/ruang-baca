@@ -1,12 +1,14 @@
-stateDiagram-v2
-    state "Buka halaman katalog buku" as s1
-    state checkAvail <<choice>>
-    state "Tampilkan pesan belum ada koleksi buku" as empty
-    state "Tampilkan daftar buku lengkap" as list
+flowchart TD
+    subgraph UserAdmin["User / Admin"]
+        start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
+        viewBooks["Lihat daftar buku beserta stok & status ketersediaan"] --> finish(["Selesai"])
+        finishEmpty(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> checkAvail
-    checkAvail --> empty : 0 (Belum ada koleksi)
-    checkAvail --> list : 1 (Tersedia)
-    empty --> [*]
-    list --> [*]
+    subgraph Sistem["Sistem"]
+        openCatalog --> checkAvail{"Apakah koleksi buku tersedia di katalog?"}
+        checkAvail -->|"0 (Tidak)"| showEmpty["Tampilkan pesan belum ada koleksi buku"]
+        showEmpty --> finishEmpty
+        checkAvail -->|"1 (Ya)"| showBooks["Tampilkan daftar koleksi buku lengkap"]
+        showBooks --> viewBooks
+    end

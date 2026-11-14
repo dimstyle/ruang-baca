@@ -1,14 +1,16 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu katalog buku" as s1
-    state "Pilih buku & klik tombol hapus buku" as s2
-    state checkFound <<choice>>
-    state "Tampilkan pesan buku tidak ditemukan" as err
-    state "Hapus buku dan tampilkan pesan berhasil dihapus" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka daftar katalog buku"]
+        openMenu --> selectBook["Pilih buku yang ingin dihapus"]
+        selectBook --> confirmDel["Konfirmasi penghapusan buku"]
+        finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    checkFound --> ok : 1 (Ditemukan)
-    err --> [*]
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        confirmDel --> checkExist{"Apakah data buku ditemukan?"}
+        checkExist -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
+        notFound --> openMenu
+        checkExist -->|"1 (Ya)"| removeBook["Hapus koleksi buku dari katalog"]
+        removeBook --> deleted["Tampilkan pesan buku berhasil dihapus"]
+        deleted --> finish
+    end

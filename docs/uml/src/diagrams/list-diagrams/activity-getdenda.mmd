@@ -1,14 +1,13 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin" as s1
-    state "Buka menu daftar denda" as s2
-    state checkRecords <<choice>>
-    state "Tampilkan pesan belum ada catatan denda" as empty
-    state "Tampilkan daftar denda lengkap" as list
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu daftar denda"]
+        viewList["Melihat daftar seluruh tagihan denda"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> checkRecords
-    checkRecords --> empty : 0 (Belum ada denda)
-    checkRecords --> list : 1 (Ada denda)
-    empty --> [*]
-    list --> [*]
+    subgraph Sistem["Sistem"]
+        openMenu --> checkRecords{"Apakah ada catatan denda yang tersimpan?"}
+        checkRecords -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada catatan denda"]
+        emptyMsg --> finish
+        checkRecords -->|"1 (Ya)"| showList["Tampilkan daftar denda lengkap"]
+        showList --> viewList
+    end

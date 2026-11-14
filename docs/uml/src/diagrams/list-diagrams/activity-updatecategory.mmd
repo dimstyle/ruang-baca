@@ -1,16 +1,17 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu kategori" as s1
-    state "Pilih kategori & perbarui nama atau jenis buku" as s2
-    state "Klik tombol simpan perubahan" as s3
-    state checkFound <<choice>>
-    state "Tampilkan pesan kategori tidak ditemukan" as err
-    state "Tampilkan pesan kategori berhasil diperbarui" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka daftar kategori buku"]
+        openMenu --> selectCat["Pilih kategori yang ingin diubah"]
+        selectCat --> editName["Perbarui nama kategori"]
+        editName --> clickSave["Klik tombol simpan perubahan"]
+        finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    checkFound --> ok : 1 (Ditemukan)
-    err --> [*]
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        clickSave --> checkExist{"Apakah data kategori ditemukan?"}
+        checkExist -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+        notFound --> openMenu
+        checkExist -->|"1 (Ya)"| saveCat["Perbarui nama kategori buku"]
+        saveCat --> updated["Tampilkan pesan kategori berhasil diperbarui"]
+        updated --> finish
+    end

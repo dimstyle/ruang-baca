@@ -1,14 +1,14 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka daftar laporan" as s1
-    state "Pilih salah satu laporan untuk melihat rincian" as s2
-    state checkFound <<choice>>
-    state "Tampilkan pesan laporan tidak ditemukan" as err
-    state "Tampilkan rincian laporan lengkap" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu daftar laporan"]
+        openMenu --> selectReport["Pilih salah satu laporan untuk melihat rincian"]
+        viewReport["Membaca rincian laporan lengkap"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    checkFound --> ok : 1 (Ditemukan)
-    err --> [*]
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        selectReport --> checkFound{"Apakah laporan tersebut ditemukan?"}
+        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan laporan tidak ditemukan"]
+        notFound --> finish
+        checkFound -->|"1 (Ya)"| showDetail["Tampilkan identitas Admin, total denda, daftar peminjaman, dan pengembalian"]
+        showDetail --> viewReport
+    end

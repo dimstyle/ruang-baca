@@ -1,21 +1,24 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka daftar denda" as s1
-    state "Pilih catatan denda & masukan jumlah pembayaran" as s2
-    state "Klik tombol perbarui pembayaran" as s3
-    state checkFound <<choice>>
-    state "Tampilkan pesan data denda tidak ditemukan" as err
-    state checkPaidOff <<choice>>
-    state "Hapus dari daftar tagihan aktif & tampilkan pesan denda lunas" as lunas
-    state "Kurangi sisa tagihan & tampilkan pesan sisa denda diperbarui" as sisa
+flowchart TD
+    subgraph User["User"]
+        payCash["Melakukan pembayaran denda ke Admin"]
+        doneFine["Status denda anggota diperbarui / lunas"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    err --> [*]
-    checkFound --> checkPaidOff : 1 (Ditemukan)
-    checkPaidOff --> lunas : 1 (Sudah lunas)
-    checkPaidOff --> sisa : 0 (Belum lunas)
-    lunas --> [*]
-    sisa --> [*]
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu daftar denda"]
+        payCash -.-> openMenu
+        openMenu --> selectFine["Pilih catatan denda yang ingin dibayar"]
+        selectFine --> inputPay["Masukan jumlah uang pembayaran yang diterima"]
+        inputPay --> clickUpdate["Klik tombol perbarui pembayaran"]
+    end
+
+    subgraph Sistem["Sistem"]
+        clickUpdate --> checkFound{"Apakah catatan denda ditemukan?"}
+        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data denda tidak ditemukan"]
+        notFound --> finish
+        checkFound -->|"1 (Ya)"| checkPaidOff{"Apakah pembayaran melunasi seluruh tagihan?"}
+        checkPaidOff -->|"1 (Ya)"| paidOff["Hapus dari daftar tagihan aktif & tampilkan pesan lunas"]
+        checkPaidOff -->|"0 (Tidak)"| reduceFine["Kurangi sisa tagihan & tampilkan sisa denda terbaru"]
+        paidOff --> doneFine
+        reduceFine --> doneFine
+    end

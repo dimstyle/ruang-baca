@@ -1,22 +1,19 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu daftar laporan" as s1
-    state wantFilter <<choice>>
-    state "Isi tanggal awal dan tanggal akhir laporan" as s2
-    state checkDates <<choice>>
-    state "Tampilkan peringatan kedua tanggal harus diisi" as warnDate
-    state checkList <<choice>>
-    state "Tampilkan pesan belum ada laporan" as empty
-    state "Tampilkan daftar laporan beserta tanggal pembuatannya" as list
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka menu daftar laporan"]
+        openMenu --> wantFilter{"Ingin menyaring berdasarkan rentang tanggal?"}
+        wantFilter -->|"1 (Ya)"| inputDates["Isi tanggal awal dan tanggal akhir laporan"]
+        viewList["Melihat daftar laporan yang tersedia"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> wantFilter
-    wantFilter --> s2 : 1 (Saring tanggal)
-    s2 --> checkDates
-    checkDates --> warnDate : 0 (Tanggal belum lengkap)
-    warnDate --> s2
-    checkDates --> checkList : 1 (Tanggal lengkap)
-    wantFilter --> checkList : 0 (Tanpa saring tanggal)
-    checkList --> empty : 0 (Belum ada laporan)
-    checkList --> list : 1 (Ada laporan)
-    empty --> [*]
-    list --> [*]
+    subgraph Sistem["Sistem"]
+        inputDates --> checkDates{"Apakah kedua tanggal sudah diisi lengkap?"}
+        checkDates -->|"0 (Tidak)"| warnDates["Tampilkan peringatan kedua tanggal harus diisi"]
+        warnDates --> inputDates
+        checkDates -->|"1 (Ya)"| checkList{"Apakah ada laporan yang sesuai?"}
+        wantFilter -->|"0 (Tidak)"| checkList
+        checkList -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada laporan"]
+        emptyMsg --> finish
+        checkList -->|"1 (Ya)"| showList["Tampilkan daftar laporan beserta tanggal pembuatannya"]
+        showList --> viewList
+    end

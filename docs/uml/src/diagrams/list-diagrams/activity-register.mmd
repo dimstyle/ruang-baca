@@ -1,23 +1,24 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin" as s1
-    state "Buka halaman pendaftaran anggota" as s2
-    state "Masukan biodata dan akun anggota" as s3
-    state "Klik tombol daftarkan anggota" as s4
-    state checkValid <<choice>>
-    state "Tampilkan peringatan kolom belum sesuai & perbaiki isian" as s5
-    state checkDuplicate <<choice>>
-    state "Tampilkan pesan akun sudah terdaftar & ganti email/username" as s6
-    state "Tampilkan pesan akun anggota berhasil dibuat" as s7
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openPage["Buka halaman pendaftaran anggota"]
+        openPage --> inputData["Masukan biodata dan akun anggota"]
+        inputData --> clickSubmit["Klik tombol daftarkan anggota"]
+        fixForm["Perbaiki isian formulir"] --> inputData
+        changeAccount["Gunakan nama pengguna atau email lain"] --> inputData
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> s4
-    s4 --> checkValid
-    checkValid --> s5 : 0 (Kolom belum sesuai)
-    s5 --> s3
-    checkValid --> checkDuplicate : 1 (Kolom valid)
-    checkDuplicate --> s6 : 1 (Sudah terdaftar)
-    s6 --> s3
-    checkDuplicate --> s7 : 0 (Belum terdaftar)
-    s7 --> [*]
+    subgraph Sistem["Sistem"]
+        clickSubmit --> checkValid{"Apakah semua kolom diisi dengan benar?"}
+        checkValid -->|"0 (Tidak)"| warnInvalid["Tampilkan peringatan kolom belum sesuai"]
+        warnInvalid --> fixForm
+        checkValid -->|"1 (Ya)"| checkDuplicate{"Apakah nama pengguna atau email sudah terdaftar?"}
+        checkDuplicate -->|"1 (Ya)"| warnDup["Tampilkan pesan akun sudah terdaftar"]
+        warnDup --> changeAccount
+        checkDuplicate -->|"0 (Tidak)"| saveAccount["Buat akun anggota baru"]
+        saveAccount --> success["Tampilkan pesan akun anggota berhasil dibuat"]
+    end
+
+    subgraph User["User"]
+        success --> readyLogin["Akun siap digunakan anggota untuk masuk"]
+        readyLogin --> finish(["Selesai"])
+    end

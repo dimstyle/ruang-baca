@@ -1,16 +1,21 @@
-stateDiagram-v2
-    state "Buka halaman katalog buku & pilih buku" as s1
-    state "Masukan tanggal peminjaman" as s2
-    state "Klik tombol ajukan peminjaman" as s3
-    state checkLogged <<choice>>
-    state "Tampilkan peringatan harus masuk & arahkan ke halaman masuk" as login
-    state "Tampilkan pesan pengajuan berhasil & menunggu persetujuan Admin" as ok
+flowchart TD
+    subgraph User["User"]
+        start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
+        openCatalog --> selectBook["Pilih buku yang ingin dipinjam"]
+        selectBook --> inputDate["Masukan tanggal peminjaman"]
+        inputDate --> clickSubmit["Klik tombol ajukan peminjaman"]
+        toLogin["Masuk ke akun terlebih dahulu"] --> finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> checkLogged
-    checkLogged --> login : 0 (Belum masuk)
-    checkLogged --> ok : 1 (Sudah masuk)
-    login --> [*]
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        clickSubmit --> checkLogged{"Apakah sudah masuk ke akun?"}
+        checkLogged -->|"0 (Tidak)"| warnLogin["Tampilkan peringatan harus masuk terlebih dahulu"]
+        warnLogin --> toLogin
+        checkLogged -->|"1 (Ya)"| saveTemp["Catat pengajuan peminjaman sementara"]
+        saveTemp --> submitted["Tampilkan pesan menunggu persetujuan Admin"]
+    end
+
+    subgraph Admin["Admin"]
+        submitted --> waitApprove["Menerima daftar pengajuan peminjaman"]
+        waitApprove --> finish
+    end

@@ -1,16 +1,21 @@
-stateDiagram-v2
-    state "Masuk sebagai Admin & buka menu katalog buku" as s1
-    state "Pilih buku & ubah informasi atau jumlah stok" as s2
-    state "Klik tombol simpan perubahan" as s3
-    state checkFound <<choice>>
-    state "Tampilkan pesan buku tidak ditemukan" as err
-    state "Tampilkan pesan data buku berhasil diperbarui" as ok
+flowchart TD
+    subgraph Admin["Admin"]
+        start(["Mulai"]) --> openMenu["Buka daftar katalog buku"]
+        openMenu --> selectBook["Pilih buku yang ingin diperbarui"]
+        selectBook --> editBook["Ubah informasi buku atau kategori"]
+        editBook --> clickSave["Klik tombol simpan perubahan"]
+        fixCat["Pilih kategori buku yang tersedia"] --> editBook
+        finish(["Selesai"])
+    end
 
-    [*] --> s1
-    s1 --> s2
-    s2 --> s3
-    s3 --> checkFound
-    checkFound --> err : 0 (Tidak ditemukan)
-    checkFound --> ok : 1 (Ditemukan)
-    err --> [*]
-    ok --> [*]
+    subgraph Sistem["Sistem"]
+        clickSave --> checkBook{"Apakah data buku ditemukan?"}
+        checkBook -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
+        notFound --> openMenu
+        checkBook -->|"1 (Ya)"| checkCat{"Apakah kategori buku tersedia?"}
+        checkCat -->|"0 (Tidak)"| warnCat["Tampilkan pesan kategori buku tidak ditemukan"]
+        warnCat --> fixCat
+        checkCat -->|"1 (Ya)"| saveBook["Perbarui informasi buku di katalog"]
+        saveBook --> updated["Tampilkan pesan informasi buku berhasil diperbarui"]
+        updated --> finish
+    end
