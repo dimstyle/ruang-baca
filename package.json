@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "uml": "pnpm --filter @ruang-baca/uml dev",
     "uml:build": "pnpm --filter @ruang-baca/uml build",
+    "uml:drawio": "node ./scripts/generate-drawio.mjs",
     "db:build": "pnpm --filter @ruangbaca/database build",
     "db:migrate": "pnpm --filter @ruangbaca/database migrate",
     "db:reset": "node ./scripts/reset-db.mjs",

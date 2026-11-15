@@ -229,6 +229,7 @@ File [Dockerfile](file:///home/dimstyle/main/myProject/ruang-baca/Dockerfile) da
 | `pnpm test:e2e` | Jalankan end-to-end test Supertest |
 | `pnpm lint` | Jalankan ESLint pada seluruh source code |
 | `pnpm uml` / `pnpm uml:build` | Jalankan / build aplikasi dokumentasi diagram UML (`docs/uml`) |
+| `pnpm uml:drawio` | Generate seluruh 77 diagram `.mmd` ke format `.drawio` di `docs/diagrams/` (dipisahkan per jenis: `erd`, `use-case`, `sequence`, `flowchart`, `activity`) |
 
 ---
 
