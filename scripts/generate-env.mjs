@@ -26,15 +26,15 @@ export function buildEnvFromTemplate(template, { username }) {
   return template
     .split(/\r?\n/)
     .map((line) => {
-      const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+      const match = line.match(/^(#\s*)?([A-Z0-9_]+)=(.*)$/);
       if (!match) return line;
-      const [, key] = match;
+      const [, prefix = '', key] = match;
 
       if (key === 'POSTGRESS_USERNAME' || key === 'POSTGRES_USERNAME') {
-        return `${key}=${cleanUsername}`;
+        return `${prefix}${key}=${cleanUsername}`;
       }
       if (/(SECRET|PASSWORD)/i.test(key)) {
-        return `${key}=${generateHashedSecret()}`;
+        return `${prefix}${key}=${generateHashedSecret()}`;
       }
       return line;
     })

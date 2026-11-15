@@ -118,15 +118,17 @@ Package `@ruangbaca/database` memilih engine database secara otomatis berdasarka
 
 ---
 
-## 5. Membuat Akun Admin via CLI (`pnpm admin:create`)
+## 5. Membuat Akun Admin (`pnpm admin:create`) & Reset Database (`pnpm db:reset`)
 
 Karena endpoint `POST /api/auth/registration` hanya dapat diakses oleh Admin (`AdminGuard`), akun Admin pertama dibuat menggunakan script CLI `pnpm admin:create` ([scripts/create-admin.mjs](file:///home/dimstyle/main/myProject/ruang-baca/scripts/create-admin.mjs)) yang berinteraksi **langsung ke database aktif** (baik SQLite maupun PostgreSQL sesuai `.env`) tanpa melalui API.
+
+> **Catatan Validasi Password**: Password Admin wajib memiliki **minimal 8 karakter**. Jika kurang dari 8 karakter, CLI akan menolak dan meminta input ulang.
 
 **Cara 1 — Mode Interaktif:**
 ```bash
 pnpm admin:create
 ```
-Anda akan diminta mengisi `Username`, `Email`, `Password` (otomatis di-hash dengan `bcrypt`), `Nama Lengkap`, `Nomor HP`, dan `Alamat`.
+Anda akan diminta mengisi `Username`, `Email`, `Password` (minimal 8 karakter, otomatis di-hash dengan `bcrypt`), `Nama Lengkap`, `Nomor HP`, dan `Alamat`.
 
 **Cara 2 — Argumen CLI Langsung:**
 ```bash
@@ -137,6 +139,17 @@ pnpm admin:create \
   --nama-lengkap "Administrator Utama" \
   --no-hp 081234567890 \
   --alamat "Gedung Perpustakaan Lt. 1"
+```
+
+### Reset Seluruh Isi Database (`pnpm db:reset`)
+Untuk mengosongkan seluruh tabel (`accounts`, `admins`, `users`, `categories`, `books`, `temp_peminjaman`, `peminjaman`, `temp_pengembalian`, `pengembalian`, `daftar_denda`, `laporan`, `refresh_token`) beserta sequence auto-increment pada database aktif (SQLite maupun PostgreSQL):
+
+```bash
+# Dengan konfirmasi interaktif (y/N):
+pnpm db:reset
+
+# Langsung eksekusi tanpa prompt konfirmasi:
+pnpm db:reset -- --yes
 ```
 
 ---
@@ -204,7 +217,8 @@ File [Dockerfile](file:///home/dimstyle/main/myProject/ruang-baca/Dockerfile) da
 | Perintah | Deskripsi |
 | :--- | :--- |
 | `pnpm env:generate` | Generate `.env` dari `.env.example` dengan SHA-256 random secret/password & input username |
-| `pnpm admin:create` | Buat akun Admin baru langsung ke database aktif (SQLite / PostgreSQL) via CLI |
+| `pnpm admin:create` | Buat akun Admin baru langsung ke database aktif (validasi password min. 8 karakter) |
+| `pnpm db:reset` | Kosongkan seluruh tabel & reset sequence pada database aktif (SQLite / PostgreSQL) |
 | `pnpm db:migrate` | Jalankan migrasi Prisma pada `@ruangbaca/database` |
 | `pnpm db:build` | Generate Prisma Client & kompilasi TypeScript `@ruangbaca/database` |
 | `pnpm css:build` | Kompilasi & minifikasi `styles/tailwind.css` ke `public/css/style.css` |

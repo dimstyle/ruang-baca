@@ -11,6 +11,7 @@ const rootRequire = createRequire(resolve(process.cwd(), 'package.json'));
 const bcrypt = rootRequire('bcrypt');
 
 const SALT_ROUNDS = 10;
+export const MIN_PASSWORD_LENGTH = 8;
 
 export function parseAdminCliArgs(argv) {
   const opts = {
@@ -31,7 +32,10 @@ export function parseAdminCliArgs(argv) {
       opts.email = argv[++i];
     } else if ((arg === '--password' || arg === '-p') && next) {
       opts.password = argv[++i];
-    } else if ((arg === '--nama-lengkap' || arg === '--name' || arg === '-n') && next) {
+    } else if (
+      (arg === '--nama-lengkap' || arg === '--name' || arg === '-n') &&
+      next
+    ) {
       opts.nama_lengkap = argv[++i];
     } else if ((arg === '--no-hp' || arg === '--phone') && next) {
       opts.no_hp = argv[++i];
@@ -43,7 +47,7 @@ export function parseAdminCliArgs(argv) {
   return opts;
 }
 
-function loadEnvMap(envPath = resolve(process.cwd(), '.env')) {
+export function loadEnvMap(envPath = resolve(process.cwd(), '.env')) {
   const result = {};
   if (existsSync(envPath)) {
     const content = readFileSync(envPath, 'utf8');
@@ -114,7 +118,10 @@ export function resolveActiveDbFromEnv(env = loadEnvMap()) {
   );
 }
 
-export async function createAdminRecord(data, dbTarget = resolveActiveDbFromEnv()) {
+export async function createAdminRecord(
+  data,
+  dbTarget = resolveActiveDbFromEnv(),
+) {
   const username = (data.username ?? '').trim();
   const email = (data.email ?? '').trim();
   const password = data.password ?? '';
@@ -125,6 +132,12 @@ export async function createAdminRecord(data, dbTarget = resolveActiveDbFromEnv(
   if (!username || !email || !password || !nama_lengkap || !no_hp || !alamat) {
     throw new Error(
       'Seluruh field (username, email, password, nama_lengkap, no_hp, alamat) wajib diisi.',
+    );
+  }
+
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    throw new Error(
+      `Password minimal harus ${MIN_PASSWORD_LENGTH} karakter (saat ini ${password.length} karakter).`,
     );
   }
 
@@ -213,8 +226,17 @@ async function main() {
       if (!opts.email) {
         opts.email = (await rl.question('Email Admin         : ')).trim();
       }
-      if (!opts.password) {
-        opts.password = (await rl.question('Password Admin      : ')).trim();
+      while (!opts.password || opts.password.length < MIN_PASSWORD_LENGTH) {
+        if (opts.password && opts.password.length < MIN_PASSWORD_LENGTH) {
+          console.error(
+            `[!] Password terlalu pendek (${opts.password.length} karakter). Minimal ${MIN_PASSWORD_LENGTH} karakter!`,
+          );
+        }
+        opts.password = (
+          await rl.question(
+            `Password Admin (min ${MIN_PASSWORD_LENGTH} karakter): `,
+          )
+        ).trim();
       }
       if (!opts.nama_lengkap) {
         opts.nama_lengkap = (

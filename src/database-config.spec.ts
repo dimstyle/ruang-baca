@@ -37,15 +37,15 @@ describe('Environment Generator, Dual Database System & Admin CLI', () => {
       expect(generated).toMatch(/^PORT=3000$/m);
       expect(generated).toMatch(/^JWT_SECRET_KEY=[a-f0-9]{64}$/m);
       expect(generated).toMatch(/^SQLITE_PATH=database\/database\.sqlite$/m);
-      expect(generated).toMatch(/^POSTGRESS_HOST=localhost$/m);
-      expect(generated).toMatch(/^POSTGRESS_PORT=5432$/m);
-      expect(generated).toMatch(/^POSTGRESS_PASSWORD=[a-f0-9]{64}$/m);
-      expect(generated).toMatch(/^POSTGRESS_USERNAME=dimas_admin$/m);
-      expect(generated).toMatch(/^POSTGRESS_DATABASE=perpustakaan$/m);
+      expect(generated).toMatch(/^(#\s*)?POSTGRESS_HOST=localhost$/m);
+      expect(generated).toMatch(/^(#\s*)?POSTGRESS_PORT=5432$/m);
+      expect(generated).toMatch(/^(#\s*)?POSTGRESS_PASSWORD=[a-f0-9]{64}$/m);
+      expect(generated).toMatch(/^(#\s*)?POSTGRESS_USERNAME=dimas_admin$/m);
+      expect(generated).toMatch(/^(#\s*)?POSTGRESS_DATABASE=perpustakaan$/m);
 
       const jwtMatch = generated.match(/^JWT_SECRET_KEY=([a-f0-9]{64})$/m);
       const pgPassMatch = generated.match(
-        /^POSTGRESS_PASSWORD=([a-f0-9]{64})$/m,
+        /^(?:#\s*)?POSTGRESS_PASSWORD=([a-f0-9]{64})$/m,
       );
       expect(jwtMatch?.[1]).not.toEqual(pgPassMatch?.[1]);
     });
@@ -318,6 +318,99 @@ describe('Environment Generator, Dual Database System & Admin CLI', () => {
         no_hp: '081234567890',
         alamat: 'Jl. Perpustakaan No. 1',
       });
+    });
+
+    it('rejects password shorter than 8 characters in create-admin.mjs', () => {
+      const dbPath = join(tempDir, 'test-short-pass.sqlite');
+      const scriptPath = resolve(process.cwd(), 'scripts', 'create-admin.mjs');
+
+      expect(() =>
+        execFileSync(
+          process.execPath,
+          [
+            scriptPath,
+            '--username',
+            'superadmin',
+            '--email',
+            'admin@ruangbaca.id',
+            '--password',
+            '1234567',
+            '--nama-lengkap',
+            'Admin Perpustakaan',
+            '--no-hp',
+            '081234567890',
+            '--alamat',
+            'Jl. Perpustakaan No. 1',
+          ],
+          {
+            cwd: process.cwd(),
+            env: {
+              ...process.env,
+              SQLITE_PATH: dbPath,
+            },
+            stdio: 'pipe',
+          },
+        ),
+      ).toThrow(/Password minimal harus 8 karakter/);
+    });
+
+    it('clears all database tables and resets sequences via scripts/reset-db.mjs', () => {
+      const dbPath = join(tempDir, 'test-reset.sqlite');
+      const rootReq = createRequire(resolve(process.cwd(), 'package.json'));
+      const adapterEntry = rootReq.resolve('@prisma/adapter-better-sqlite3', {
+        paths: [resolve(process.cwd(), 'database')],
+      });
+      const adapterReq = createRequire(adapterEntry);
+      const Database = adapterReq('better-sqlite3') as new (
+        filename: string,
+      ) => {
+        exec: (sql: string) => void;
+        prepare: (sql: string) => {
+          get: (...args: unknown[]) => Record<string, unknown> | undefined;
+        };
+        close: () => void;
+      };
+
+      const db = new Database(dbPath);
+      db.exec(`
+        CREATE TABLE accounts (
+          id TEXT PRIMARY KEY,
+          username TEXT NOT NULL UNIQUE,
+          email TEXT NOT NULL UNIQUE,
+          password TEXT NOT NULL,
+          role TEXT NOT NULL,
+          created_at DATETIME NOT NULL
+        );
+        CREATE TABLE categories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nama_kategori TEXT NOT NULL,
+          jenis_buku TEXT NOT NULL
+        );
+        INSERT INTO accounts VALUES ('acc-1', 'u1', 'u1@x.id', 'pass', 'user', '2026-01-01');
+        INSERT INTO categories (nama_kategori, jenis_buku) VALUES ('Sains', 'Non-Fiksi');
+      `);
+      db.close();
+
+      const resetScriptPath = resolve(process.cwd(), 'scripts', 'reset-db.mjs');
+      execFileSync(process.execPath, [resetScriptPath, '--yes'], {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          SQLITE_PATH: dbPath,
+        },
+      });
+
+      const verifyDb = new Database(dbPath);
+      const accCount = verifyDb
+        .prepare('SELECT COUNT(*) AS cnt FROM accounts')
+        .get() as { cnt: number };
+      const catCount = verifyDb
+        .prepare('SELECT COUNT(*) AS cnt FROM categories')
+        .get() as { cnt: number };
+      verifyDb.close();
+
+      expect(accCount.cnt).toBe(0);
+      expect(catCount.cnt).toBe(0);
     });
   });
 });
