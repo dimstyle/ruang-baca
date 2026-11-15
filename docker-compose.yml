@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: ruangbaca-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRESS_USERNAME:?POSTGRESS_USERNAME wajib diisi pada .env (jalankan pnpm env:generate)}
+      POSTGRES_PASSWORD: ${POSTGRESS_PASSWORD:?POSTGRESS_PASSWORD wajib diisi pada .env (jalankan pnpm env:generate)}
+      POSTGRES_DB: ${POSTGRESS_DATABASE:-perpustakaan}
+    ports:
+      - "${POSTGRESS_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-postgres.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ruangbaca-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3000}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY wajib diisi pada .env (jalankan pnpm env:generate)}
+      SQLITE_PATH: ""
+      POSTGRESS_HOST: postgres
+      POSTGRESS_PORT: 5432
+      POSTGRESS_USERNAME: ${POSTGRESS_USERNAME}
+      POSTGRESS_PASSWORD: ${POSTGRESS_PASSWORD}
+      POSTGRESS_DATABASE: ${POSTGRESS_DATABASE:-perpustakaan}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+
+volumes:
+  postgres_data:

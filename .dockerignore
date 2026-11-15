@@ -1,0 +1,13 @@
+node_modules
+database/node_modules
+docs/uml/node_modules
+dist
+database/dist
+docs/uml/dist
+coverage
+.git
+.gitignore
+*.sqlite
+*.sqlite-journal
+*.log
+.env

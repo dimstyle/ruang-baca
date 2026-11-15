@@ -22,6 +22,8 @@
     "uml:build": "pnpm --filter @ruang-baca/uml build",
     "db:build": "pnpm --filter @ruangbaca/database build",
     "db:migrate": "pnpm --filter @ruangbaca/database migrate",
+    "env:generate": "node ./scripts/generate-env.mjs",
+    "admin:create": "node ./scripts/create-admin.mjs",
     "css:build": "tailwindcss -i ./styles/tailwind.css -o ./public/css/style.css --minify",
     "css:watch": "tailwindcss -i ./styles/tailwind.css -o ./public/css/style.css --watch",
     "prebuild": "pnpm db:build && pnpm css:build",
