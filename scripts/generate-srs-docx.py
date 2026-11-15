@@ -349,47 +349,52 @@ def build_body_content() -> list[str]:
     els.append(
         p_heading(
             3,
-            "2.2 Metodologi Rekayasa Perangkat Lunak & Tahapan Detailnya",
+            "2.2 Metodologi Rekayasa Perangkat Lunak (Metode Agile) & Tahapan Detailnya",
         )
     )
     els.append(
         p_text(
-            "Pengembangan aplikasi Ruang Baca menerapkan metodologi Iterative & Incremental Software Development Life Cycle (SDLC) yang dipadukan dengan pendekatan Spec-Driven / Contract-First Development dan Object-Oriented Programming (OOP). Metodologi ini dipilih karena kebutuhan sistem didefinisikan secara presisi terlebih dahulu melalui kontrak spesifikasi (API Contract, Database Contract, User Flow, dan UI Specification), kemudian dibangun dan diuji secara bertahap per modul (Auth, Admins, Books, Peminjaman, dan SSR UI)."
+            "Pengembangan aplikasi Ruang Baca menerapkan metodologi Agile Software Development (Metode Agile). Metode Agile dipilih karena mengutamakan pengembangan perangkat lunak secara iteratif (berulang dalam siklus Sprint pendek), inkremental (fitur dibangun dan dikirimkan per modul secara bertahap), kolaboratif, serta sangat adaptif terhadap perubahan kebutuhan (seperti penyesuaian alur pencatatan denda yang diintegrasikan langsung sebagai <<extend>> pada penerimaan pengembalian buku)."
+        )
+    )
+    els.append(
+        p_text(
+            "Setiap siklus iterasi (Sprint) pada metode Agile dalam pembangunan aplikasi Ruang Baca meliputi 6 tahapan utama yang dijelaskan secara detail pada tabel berikut:"
         )
     )
     els.append(
         table_xml(
-            ["Tahap SDLC", "Nama Tahapan", "Penjelasan Detail Aktivitas & Artefak yang Dihasilkan"],
+            ["Tahap Agile", "Nama Tahapan", "Penjelasan Detail Aktivitas & Artefak yang Dihasilkan"],
             [
                 [
                     "Tahap 1",
-                    "Requirement Analysis (Analisis Kebutuhan)",
-                    "Mengidentifikasi permasalahan kurangnya minat baca generasi Z, menentukan dua aktor utama (Anggota & Admin), merumuskan kebutuhan fungsional (REQ-F-001 s/d REQ-F-025) dan non-fungsional (REQ-NF-001 s/d REQ-NF-008), serta menyusun dokumen kontrak di direktori specs/ (api-spec.md, database-contracts.md, dan users-flow-spec/).",
+                    "Requirements & Sprint Planning (Perencanaan & Product Backlog)",
+                    "Mengidentifikasi permasalahan kurangnya minat baca generasi Z, menentukan dua aktor utama (Anggota & Admin), menyusun daftar prioritas fitur (Product Backlog & tasks.md), merumuskan kebutuhan fungsional (REQ-F-001 s/d REQ-F-025) dan non-fungsional (REQ-NF-001 s/d REQ-NF-008), serta menyusun kontrak spesifikasi di direktori specs/ (api-spec.md, database-contracts.md, dan users-flow-spec/).",
                 ],
                 [
                     "Tahap 2",
-                    "System & Database Modeling (Pemodelan UML & Basis Data)",
-                    "Merancang arsitektur basis data relasional 12 tabel dalam bentuk ERD (erd.mmd & erd.drawio), memetakan hak akses dalam Use Case Diagram (use-case.mmd & use-case.drawio) beserta relasi <<extend>>, serta menyusun 25 Activity Diagram (Swimlane User/Admin/Sistem), 25 Flowchart, dan 25 Sequence Diagram.",
+                    "System, Database & UI/UX Design (Perancangan Sistem & Prototipe)",
+                    "Merancang skema basis data relasional 12 tabel dalam ERD (erd.mmd & erd.drawio), memetakan hak akses dalam Use Case Diagram (use-case.mmd & use-case.drawio) beserta relasi <<extend>>, menyusun 25 Activity Diagram, 25 Flowchart, dan 25 Sequence Diagram, serta merancang sistem desain Gmail-Style UI (aturan warna 60-30-10) di specs/ui-specs.md dan prototipe visual 10 halaman di Framer.",
                 ],
                 [
                     "Tahap 3",
-                    "UI/UX Design System & Prototyping",
-                    "Merancang sistem desain bergaya Gmail (Gmail-Style UI) dengan aturan komposisi warna 60-30-10 (#F6F8FC, #E9EEF6/#D3E3FD, #0B57D0), Avatar Inisial dan Book Tile sebagai pengganti gambar, mendokumentasikan spesifikasi komponen di specs/ui-specs.md, serta membangun prototipe visual 10 halaman di Framer (Project ID: SB3xpkK3lxFmxG3OZDKv).",
+                    "Iterative Development / Coding (Pengembangan Inkremental Berbasis OOP)",
+                    "Membangun fitur secara bertahap per Sprint modul (Sprint 1: Auth & Users, Sprint 2: Denda & Laporan, Sprint 3: Books & Categories, Sprint 4: Peminjaman & Pengembalian, Sprint 5: SSR Gmail-Style UI) menggunakan NestJS 11 (TypeScript) dengan prinsip Object-Oriented Programming (Controller, Service, Guard, Strategy, DTO, dan Dual-Engine PrismaService untuk SQLite & PostgreSQL 18) serta query SQL eksplisit di src/*/sql/*.queries.sql.",
                 ],
                 [
                     "Tahap 4",
-                    "Object-Oriented Implementation (Pengembangan Kode Berbasis Objek)",
-                    "Mengimplementasikan backend modular dengan NestJS 11 (TypeScript) menggunakan prinsip OOP (Controller, Service, Guard, Strategy, DTO Validation, dan Dual-Engine PrismaService untuk SQLite & PostgreSQL 18), menulis query SQL eksplisit di src/*/sql/*.queries.sql, serta membangun antarmuka SSR menggunakan EJS dan Tailwind CSS v4.",
+                    "Testing & Debugging (Pengujian Berkelanjutan & Real-Time Testing)",
+                    "Melakukan pengujian otomatis dan pendeteksian bug (debugging) pada setiap akhir Sprint melalui validasi DTO (ValidationPipe), pemetaan kode error database (P2002 Unique Constraint -> 409 Conflict, P2003 Foreign Key -> 409 Conflict), pencatatan log terstruktur (NestJS Logger), serta menjalankan 100 unit test (Jest) di 7 test suite dan 2 e2e test (Supertest).",
                 ],
                 [
                     "Tahap 5",
-                    "Debugging, Unit Testing & Real-Time E2E Verification",
-                    "Melakukan pendeteksian kesalahan (debugging) melalui validasi DTO otomatis (ValidationPipe), pemetaan kode error database (P2002 Unique Constraint -> 409 Conflict, P2003 Foreign Key -> 409 Conflict), pencatatan log terstruktur (NestJS Logger), serta menjalankan 100 unit test (Jest) di 7 test suite dan 2 e2e test (Supertest).",
+                    "Deployment & Release (Rilis & Otomasi Infrastruktur)",
+                    "Menyediakan CLI runner untuk otomasi operasional (pnpm env:generate dengan hash acak SHA-256, pnpm admin:create dengan validasi password minimal 8 karakter, pnpm db:reset, dan pnpm uml:drawio), serta menyiapkan rilis produksi menggunakan multi-stage Dockerfile dan docker-compose.yml berbasis PostgreSQL 18.",
                 ],
                 [
                     "Tahap 6",
-                    "Containerization, CLI Tooling & Deployment",
-                    "Menyediakan CLI runner untuk otomasi operasional (pnpm env:generate dengan hash acak SHA-256, pnpm admin:create dengan validasi password minimal 8 karakter, pnpm db:reset, dan pnpm uml:drawio), serta menyiapkan infrastruktur produksi menggunakan multi-stage Dockerfile dan docker-compose.yml berbasis PostgreSQL 18.",
+                    "Review & Retrospective (Evaluasi & Adaptasi Perubahan Kebutuhan)",
+                    "Mengevaluasi hasil inkremen bersama pengguna/penguji pada setiap akhir iterasi dan menindaklanjuti umpan balik perubahan secara cepat (Agile adaptation), seperti penyatuan fitur Create Denda menjadi <<extend>> pada Accept Pengembalian serta pembaruan sinkron pada kode UI, kanvas Framer, diagram UML/Draw.io, dan dokumen spesifikasi.",
                 ],
             ],
             [1100, 2200, 5700],
