@@ -22,6 +22,7 @@ describe('ViewsController', () => {
   const adminsService = {
     listUser: jest.fn(),
     getUser: jest.fn(),
+    getDenda: jest.fn(),
     readListLaporan: jest.fn(),
     readLaporan: jest.fn(),
   };

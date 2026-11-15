@@ -3,9 +3,7 @@
 <% if (!report) { %>
   <div class="p-4"><a href="/app/admin/laporan" class="btn-text"><%- include('partials/icon', { n: 'back', cls: 'size-4' }) %> Kembali</a></div>
   <%- include('partials/empty', { icon: 'report', text: 'Laporan tidak ditemukan' }) %>
-<% } else {
-  const jumlahDenda = report.pengembalian.filter((p) => Number(p.denda || 0) > 0).length;
-%>
+<% } else { %>
   <!-- header -->
   <div class="flex items-center gap-3 border-b border-line px-4 py-3">
     <a href="/app/admin/laporan" class="icon-btn" title="Kembali ke daftar laporan"><%- include('partials/icon', { n: 'back' }) %></a>
@@ -18,12 +16,8 @@
         <p class="text-[11px] text-accent">Total Peminjam</p>
         <p class="text-base font-bold text-accent"><%= report.total_peminjam ?? report.peminjaman.length %></p>
       </div>
-      <div class="rounded-xl bg-[#FCE8E6]/60 px-4 py-2 text-right">
-        <p class="text-[11px] text-danger">Banyak Denda</p>
-        <p class="text-base font-bold text-danger"><%= jumlahDenda %> denda</p>
-      </div>
       <div class="rounded-xl bg-[#FCE8E6] px-4 py-2 text-right">
-        <p class="text-[11px] text-danger">Total Nominal Denda</p>
+        <p class="text-[11px] text-danger">Total Denda</p>
         <p class="text-base font-bold text-danger"><%= rupiah(report.total_denda) %></p>
       </div>
     </div>

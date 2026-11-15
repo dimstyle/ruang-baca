@@ -6,7 +6,7 @@ sequenceDiagram
     participant PS as PeminjamanService
     participant DB as Database
 
-    C->>G: POST /api/peminjaman/acceptpengembalian {temp_pengembalian_id, status_buku} (cookie access_token)
+    C->>G: POST /api/peminjaman/acceptpengembalian {temp_pengembalian_id, status_buku, denda?, keterangan?} (cookie access_token)
     G->>G: verify access_token dari cookie
     alt access_token tidak ada / tidak valid
         G-->>C: 401 "Unauthorized"
@@ -28,7 +28,10 @@ sequenceDiagram
                     PS-->>PC: NotFoundException
                     PC-->>C: 404 "Peminjaman not found"
                 else temp_pengembalian ditemukan
-                    PS->>DB: INSERT INTO pengembalian (peminjaman_id, tanggal_dikembalikan, status_buku)
+                    PS->>DB: INSERT INTO pengembalian (peminjaman_id, tanggal_dikembalikan, status_buku) RETURNING id
+                    opt <<extend>> Create Denda (Telat / Rusak / Hilang & denda > 0)
+                        PS->>DB: INSERT INTO daftar_denda (pengembalian_id, denda, keterangan)
+                    end
                     PS->>DB: DELETE FROM temp_pengembalian WHERE id = temp_pengembalian_id
                     alt error database
                         PS-->>PC: InternalServerErrorException

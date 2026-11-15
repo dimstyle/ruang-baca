@@ -1,20 +1,23 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu pengembalian buku atau daftar denda"]
-        openMenu --> selectReturn["Pilih catatan pengembalian buku yang terkena denda"]
-        selectReturn --> inputFine["Masukan nominal denda dan keterangan alasan"]
-        inputFine --> clickSave["Klik tombol simpan denda"]
+        start(["Mulai (<<extend>> dari Accept Pengembalian)"]) --> openDialog["Buka dialog Terima pada Permintaan Pengembalian"]
+        openDialog --> selectStatus["Pilih kondisi buku (Baik, Rusak, atau Hilang)"]
+        selectStatus --> evalFine{"Apakah status Telat atau buku Rusak/Hilang?"}
+        evalFine -->|"0 (Tidak: Baik & belum telat)"| hideInput["Input denda disembunyikan"]
+        evalFine -->|"1 (Ya)"| inputFine["Wajib isi Nominal Denda (Rp) dan Keterangan Denda"]
+        inputFine --> clickSave["Klik tombol Terima pengembalian"]
     end
 
     subgraph Sistem["Sistem"]
-        clickSave --> checkFound{"Apakah data pengembalian ditemukan?"}
+        hideInput --> finish(["Selesai"])
+        clickSave --> checkFound{"Apakah data pengajuan pengembalian ditemukan?"}
         checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjam tidak ditemukan"]
-        checkFound -->|"1 (Ya)"| saveFine["Simpan catatan tagihan denda baru"]
-        saveFine --> created["Tampilkan pesan denda berhasil dicatat"]
+        checkFound -->|"1 (Ya)"| saveFine["Simpan pengembalian & catat tagihan denda baru ke daftar_denda"]
+        saveFine --> created["Tampilkan pesan pengembalian & denda berhasil dicatat"]
     end
 
     subgraph User["User"]
-        notFound --> finish(["Selesai"])
-        created --> hasFine["Anggota memiliki tagihan denda tercatat"]
+        notFound --> finish
+        created --> hasFine["Anggota memiliki tagihan denda tercatat pada menu Denda"]
         hasFine --> finish
     end

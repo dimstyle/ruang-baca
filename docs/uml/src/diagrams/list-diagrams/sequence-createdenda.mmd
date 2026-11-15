@@ -2,11 +2,12 @@ sequenceDiagram
     autonumber
     actor C as Client (Admin)
     participant G as JwtStrategy + AdminGuard
-    participant AC as AdminsController
-    participant AS as AdminsService
+    participant PC as PeminjamanController / AdminsController
+    participant PS as PeminjamanService / AdminsService
     participant DB as Database
 
-    C->>G: POST /api/admins/createdenda {id_pengembalian, denda, keterangan} (cookie access_token)
+    Note over C,DB: <<extend>> dari Accept Pengembalian saat status Telat atau kondisi buku Rusak/Hilang
+    C->>G: POST /api/peminjaman/acceptpengembalian {temp_pengembalian_id, status_buku, denda, keterangan} (atau POST /api/admins/createdenda)
     G->>G: verify access_token dari cookie
     alt access_token tidak ada / tidak valid
         G-->>C: 401 "Unauthorized"
@@ -15,26 +16,26 @@ sequenceDiagram
         alt bukan role admin
             G-->>C: 401 "Unauthorized"
         else admin
-            G->>AC: lanjut
-            AC->>AC: ValidationPipe (CreateDendaDto)
+            G->>PC: lanjut
+            PC->>PC: ValidationPipe (dto dengan nominal denda & keterangan)
             alt body tidak valid
-                AC-->>C: 400 Bad Request
+                PC-->>C: 400 Bad Request
             else body valid
-                AC->>AS: createDenda(adminId, dto)
-                AS->>DB: find pengembalian by id = id_pengembalian
+                PC->>PS: proses pengembalian & pencatatan denda
+                PS->>DB: pastikan data pengembalian valid / INSERT INTO pengembalian RETURNING id
                 alt pengembalian tidak ditemukan
-                    DB-->>AS: null
-                    AS-->>AC: NotFoundException
-                    AC-->>C: 404 "User not found"
-                else pengembalian ditemukan
-                    AS->>DB: insert daftar_denda {pengembalian_id: id_pengembalian, denda, keterangan}
+                    DB-->>PS: null
+                    PS-->>PC: NotFoundException
+                    PC-->>C: 404 "Peminjaman / User not found"
+                else pengembalian ditemukan / berhasil dicatat
+                    PS->>DB: INSERT INTO daftar_denda (pengembalian_id, denda, keterangan)
                     alt error
-                        AS-->>AC: InternalServerErrorException
-                        AC-->>C: 500 "Internal server error"
+                        PS-->>PC: InternalServerErrorException
+                        PC-->>C: 500 "Internal server error"
                     else sukses
-                        DB-->>AS: denda record
-                        AS-->>AC: ok
-                        AC-->>C: 201 {message: "Denda created"}
+                        DB-->>PS: denda record
+                        PS-->>PC: ok
+                        PC-->>C: 200/201 Pengembalian & Denda tercatat
                     end
                 end
             end

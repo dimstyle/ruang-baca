@@ -1,0 +1,67 @@
+<%- include('partials/shell-top') %>
+<%
+  const totalDenda = fines.reduce((sum, f) => sum + Number(f.denda || 0), 0);
+%>
+<div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+  <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+  <span class="text-sm font-medium">Daftar Denda</span>
+  <span class="ml-auto text-xs text-muted"><%= fines.length %> denda belum lunas</span>
+</div>
+
+<!-- summary-card -->
+<div class="mx-4 mt-4 flex items-center justify-between rounded-2xl bg-[#FCE8E6] px-6 py-4">
+  <div>
+    <p class="text-xs font-medium text-[#C5221F]">Total Denda Belum Lunas</p>
+    <p class="text-2xl font-bold text-[#C5221F]"><%= rupiah(totalDenda) %></p>
+  </div>
+  <span class="text-xs text-[#C5221F]"><%= fines.length %> anggota memiliki tunggakan</span>
+</div>
+
+<div class="mt-2 flex-1 overflow-y-auto">
+  <% if (!fines.length) { %>
+    <%- include('partials/empty', {
+      icon: 'receipt',
+      text: 'Tidak ada denda',
+    }) %>
+  <% } %>
+  <% fines.forEach((f) => { %>
+    <div class="list-row" data-row>
+      <%- include('partials/avatar', { name: f.nama_lengkap }) %>
+      <span class="w-48 shrink-0 truncate font-bold"><%= f.nama_lengkap %> <span class="font-normal text-muted">(@<%= f.username %>)</span></span>
+      <span class="flex-1 truncate text-muted">
+        <span class="font-medium text-ink"><%= f.judul_buku || 'Buku' %></span> — <%= f.keterangan_buku %> · Dikembalikan <%= date(f.tanggal_dikembalikan) %>
+      </span>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="w-28 text-right font-bold text-danger"><%= rupiah(f.denda) %></span>
+        <%- include('partials/chip', { label: f.status_buku }) %>
+        <button class="btn-secondary h-8 px-3 text-xs"
+          data-open="#dialog-bayar"
+          data-fill="<%= JSON.stringify({ id_daftar_denda: f.id_denda, sisa_denda: f.denda, info: `${f.nama_lengkap} — Sisa ${rupiah(f.denda)}`, uang_masuk: f.denda }) %>">
+          Catat Pembayaran
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- dialog-pembayaran -->
+<dialog id="dialog-bayar" class="dialog">
+  <form data-api="PUT /api/admins/updatedenda" data-success="Pembayaran denda tercatat" class="flex flex-col gap-4">
+    <h2 class="text-lg font-medium">Catat Pembayaran Denda</h2>
+    <input type="hidden" name="id_daftar_denda" data-num>
+    <input type="hidden" name="sisa_denda" data-skip>
+    <div><label class="label">Sisa Denda</label><input name="info" disabled class="field bg-bg"></div>
+    <div>
+      <label class="label">Uang Masuk (Rp)</label>
+      <input name="uang_masuk" type="number" min="1" step="500" data-num required class="field">
+    </div>
+    <p class="rounded-lg bg-secondary px-3 py-2 text-xs text-muted">Denda lunas akan otomatis dihapus dari daftar</p>
+    <p class="hidden text-sm text-danger" data-error></p>
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" class="btn-text" data-close>Batal</button>
+      <button type="submit" class="btn-primary">Simpan Pembayaran</button>
+    </div>
+  </form>
+</dialog>
+
+<%- include('partials/shell-bottom') %>

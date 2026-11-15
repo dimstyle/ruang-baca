@@ -1,11 +1,13 @@
 flowchart TD
-    start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
-    loginAdmin --> openMenu["Buka menu pengembalian buku atau daftar denda"]
-    openMenu --> selectReturn["Pilih catatan pengembalian buku yang terkena denda"]
-    selectReturn --> inputFine["Masukan nominal denda dan keterangan alasan denda"]
-    inputFine --> clickSave["Klik tombol simpan denda"]
-    clickSave --> checkFound{"Apakah data pengembalian ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjam tidak ditemukan"]
-    notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| created["Tampilkan pesan denda berhasil dicatat"]
+    start(["Mulai (<<extend>> dari Accept Pengembalian)"]) --> openDialog["Admin membuka dialog Terima pada Permintaan Pengembalian"]
+    openDialog --> evalCond{"Apakah pengembalian Telat atau kondisi buku dipilih Rusak/Hilang?"}
+    evalCond -->|"0 (Tidak: Baik & belum telat)"| noFine["Input denda disembunyikan (tidak ada denda)"]
+    noFine --> finish(["Selesai"])
+    evalCond -->|"1 (Ya)"| showFine["Tampilkan form input Nominal Denda (Rp) & Keterangan Denda"]
+    showFine --> inputFine["Admin mengisi nominal denda dan keterangan alasan denda"]
+    inputFine --> clickAccept["Klik tombol Terima pengembalian"]
+    clickAccept --> checkFound{"Apakah data pengembalian valid?"}
+    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+    notFound --> finish
+    checkFound -->|"1 (Ya)"| created["Simpan pengembalian beserta tagihan denda baru ke daftar_denda"]
     created --> finish

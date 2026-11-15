@@ -47,7 +47,6 @@ flowchart LR
     admin --> updateUser
     admin --> deleteUser
     admin --> getUser
-    admin --> createDenda
     admin --> updateDenda
     admin --> readDenda
     admin --> createLaporan
@@ -66,6 +65,7 @@ flowchart LR
     admin --> acceptPengembalian
 
     createUser -. "<<extend>>" .-> register
+    createDenda -. "<<extend>>" .-> acceptPengembalian
     deleteDenda -. "<<extend>>" .-> updateDenda
     readLaporan -. "<<extend>>" .-> readListLaporan
 
