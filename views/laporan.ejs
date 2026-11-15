@@ -2,6 +2,12 @@
   compose: { open: '#compose-laporan', title: 'Laporan Baru', api: 'POST /api/admins/createlaporan', label: 'Buat Laporan' }
 }) %>
 
+<%
+  const totalDendaRange = reports.reduce((s, r) => s + Number(r.total_denda || 0), 0);
+  const jumlahDendaRange = reports.filter((r) => Number(r.total_denda || 0) > 0).length;
+  const totalPeminjamRange = reports.reduce((s, r) => s + Number(r.total_peminjam || 0), 0);
+  const rangeLabel = filter.awal && filter.akhir ? `${date(filter.awal)} – ${date(filter.akhir)}` : 'Semua Waktu';
+%>
 <!-- filter-bar -->
 <form method="get" action="/app/admin/laporan" class="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5">
   <span class="text-xs font-medium text-muted">Filter Tanggal Laporan:</span>
@@ -13,6 +19,28 @@
   <% if (error) { %><span class="text-xs font-medium text-danger"><%= error %></span><% } %>
   <span class="ml-auto text-xs text-muted"><%= reports.length %> laporan</span>
 </form>
+
+<!-- summary-denda-range -->
+<div class="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-[#FCE8E6]/35 px-5 py-3">
+  <div>
+    <p class="text-xs font-medium text-danger">Ringkasan Denda (<%= rangeLabel %>)</p>
+    <p class="text-xs text-muted">Akumulasi denda dan peminjaman berdasarkan rentang waktu laporan yang ditampilkan</p>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="rounded-xl bg-surface px-3.5 py-2 text-right shadow-xs">
+      <p class="text-[11px] text-muted">Banyak Denda</p>
+      <p class="text-sm font-bold text-danger"><%= jumlahDendaRange %> laporan berdenda</p>
+    </div>
+    <div class="rounded-xl bg-[#FCE8E6] px-3.5 py-2 text-right">
+      <p class="text-[11px] text-danger">Total Nominal Denda</p>
+      <p class="text-base font-bold text-danger"><%= rupiah(totalDendaRange) %></p>
+    </div>
+    <div class="rounded-xl bg-active px-3.5 py-2 text-right">
+      <p class="text-[11px] text-accent">Total Peminjam</p>
+      <p class="text-sm font-bold text-accent"><%= totalPeminjamRange %> peminjam</p>
+    </div>
+  </div>
+</div>
 
 <div class="flex-1 overflow-y-auto">
   <% if (!reports.length) { %>

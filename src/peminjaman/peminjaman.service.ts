@@ -168,12 +168,22 @@ export class PeminjamanService {
     }
 
     try {
-      await this.prisma.$executeRawUnsafe(
+      const [pengembalian] = await this.prisma.$queryRawUnsafe<
+        Array<{ id: number | bigint }>
+      >(
         queries.insertPengembalian,
         temp.peminjaman_id,
         new Date(temp.tanggal_dikembalikan),
         dto.status_buku,
       );
+      if (dto.denda && dto.denda > 0 && pengembalian?.id !== undefined) {
+        await this.prisma.$executeRawUnsafe(
+          queries.insertDendaOnAccept,
+          Number(pengembalian.id),
+          dto.denda,
+          dto.keterangan?.trim() || `Denda pengembalian (${dto.status_buku})`,
+        );
+      }
       await this.prisma.$executeRawUnsafe(
         queries.deleteTempPengembalianById,
         temp.id,

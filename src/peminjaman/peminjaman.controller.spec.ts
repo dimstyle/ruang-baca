@@ -201,6 +201,24 @@ describe('PeminjamanController', () => {
       );
     });
 
+    it('admits pengembalian with optional denda when Telat/Rusak/Hilang', async () => {
+      const dtoWithDenda = {
+        temp_pengembalian_id: 7,
+        status_buku: 'Rusak',
+        denda: 15000,
+        keterangan: 'Sampul buku robek',
+      };
+      await expect(
+        controller.acceptPengembalian(adminReq, dtoWithDenda),
+      ).resolves.toEqual({
+        message: 'Pengembalian admission success',
+      });
+      expect(peminjamanService.acceptPengembalian).toHaveBeenCalledWith(
+        'acc-admin',
+        dtoWithDenda,
+      );
+    });
+
     it('propagates 404 Peminjaman not found', async () => {
       peminjamanService.acceptPengembalian.mockRejectedValue(
         new NotFoundException('Peminjaman not found'),

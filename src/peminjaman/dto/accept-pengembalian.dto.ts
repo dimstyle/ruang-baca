@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class AcceptPengembalianDto {
   @IsInt()
@@ -8,4 +15,13 @@ export class AcceptPengembalianDto {
   @IsString()
   @IsNotEmpty()
   status_buku!: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  denda?: number;
+
+  @IsOptional()
+  @IsString()
+  keterangan?: string;
 }

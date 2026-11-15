@@ -76,16 +76,4 @@ export class ViewsService {
       pengembalian: Number(row?.pengembalian ?? 0),
     };
   }
-
-  async pengembalianOptions() {
-    return this.prisma.$queryRawUnsafe<
-      Array<{
-        id: number;
-        nama_lengkap: string;
-        judul_buku: string;
-        status_buku: string;
-        tanggal_dikembalikan: Date;
-      }>
-    >(queries.findAllPengembalianOptions);
-  }
 }

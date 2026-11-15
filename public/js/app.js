@@ -46,20 +46,52 @@
     return data;
   }
 
+  function syncDendaFields(form) {
+    if (!form) return;
+    const box = form.querySelector('#denda-fields');
+    if (!box) return;
+    const isLate = form.elements.namedItem('is_late')?.value === '1';
+    const status = form.elements.namedItem('status_buku')?.value || 'Baik';
+    const needsDenda = isLate || status === 'Rusak' || status === 'Hilang';
+    box.hidden = !needsDenda;
+    const reason = box.querySelector('[data-denda-reason]');
+    if (reason) {
+      const reasons = [];
+      if (isLate) reasons.push('Telat');
+      if (status === 'Rusak' || status === 'Hilang') reasons.push(`Buku ${status}`);
+      reason.textContent = reasons.join(' · ') || 'Wajib diisi';
+    }
+    for (const name of ['denda', 'keterangan']) {
+      const input = form.elements.namedItem(name);
+      if (!input) continue;
+      input.disabled = !needsDenda;
+      input.required = needsDenda;
+      if (!needsDenda) input.value = '';
+    }
+  }
+
   function fillForm(container, values) {
     const form = container.tagName === 'FORM' ? container : container.querySelector('form');
     if (!form) return;
     form.reset();
     const err = form.querySelector('[data-error]');
     if (err) err.classList.add('hidden');
-    if (!values) return;
-    for (const [k, v] of Object.entries(values)) {
-      const el = form.elements.namedItem(k);
-      if (!el) continue;
-      if (el instanceof RadioNodeList) el.value = String(v ?? '');
-      else el.value = v ?? '';
+    if (values) {
+      for (const [k, v] of Object.entries(values)) {
+        const el = form.elements.namedItem(k);
+        if (!el) continue;
+        if (el instanceof RadioNodeList) el.value = String(v ?? '');
+        else el.value = v ?? '';
+      }
     }
+    syncDendaFields(form);
   }
+
+  document.addEventListener('change', (e) => {
+    if (e.target.name === 'status_buku' && e.target.form) {
+      syncDendaFields(e.target.form);
+    }
+  });
 
   document.addEventListener('click', async (e) => {
     const btn = e.target.closest(

@@ -140,19 +140,6 @@ export class ViewsController {
     );
   }
 
-  @Get('app/admin/denda')
-  denda(@Req() req: Request, @Res() res: Response) {
-    return this.page(
-      req,
-      res,
-      { view: 'denda', title: 'Denda', admin: true },
-      async (s) => ({
-        fines: await orEmpty(this.admins.getDenda(s.id)),
-        pengembalianList: await this.views.pengembalianOptions(),
-      }),
-    );
-  }
-
   @Get('app/admin/laporan')
   laporan(
     @Req() req: Request,
