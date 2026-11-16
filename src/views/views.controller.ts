@@ -42,6 +42,29 @@ export class ViewsController {
     res.redirect('/app/katalog');
   }
 
+  @Get('buku')
+  async buku(@Req() req: Request, @Res() res: Response) {
+    const session = await this.views.session(req, res);
+    const [books, categories] = await Promise.all([
+      orEmpty(this.books.getBook()),
+      orEmpty(this.books.readListCategories()),
+    ]);
+    res.render('buku', {
+      ...helpers,
+      title: 'Daftar Buku',
+      books,
+      categories,
+      session,
+      isAdmin: session?.role === 'admin',
+      path: '/buku',
+    });
+  }
+
+  @Get('daftar-buku')
+  daftarBuku(@Res() res: Response) {
+    res.redirect('/buku');
+  }
+
   @Get('login')
   async login(@Req() req: Request, @Res() res: Response) {
     if (await this.views.session(req, res)) return res.redirect('/app/katalog');

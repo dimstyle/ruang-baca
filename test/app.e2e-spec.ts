@@ -37,4 +37,12 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect(/Ruang Baca/);
   });
+
+  it('/buku (GET) renders public book catalog for non-login user', () => {
+    return request(app.getHttpServer())
+      .get('/buku')
+      .expect(200)
+      .expect(/Daftar Buku/)
+      .expect(/Masuk/);
+  });
 });

@@ -60,6 +60,53 @@ describe('ViewsController', () => {
     expect(redirect).toHaveBeenCalledWith('/app/katalog');
   });
 
+  it('renders public buku page for unauthenticated (non-login) user', async () => {
+    const { res, render } = mockRes();
+    viewsService.session.mockResolvedValue(null);
+    booksService.getBook.mockResolvedValue([{ id: 1, judul_buku: 'Buku A' }]);
+    booksService.readListCategories.mockResolvedValue([
+      { id: 1, nama_kategori: 'Fiksi' },
+    ]);
+
+    await controller.buku(req, res);
+    expect(render).toHaveBeenCalledWith(
+      'buku',
+      expect.objectContaining({
+        title: 'Daftar Buku',
+        books: [{ id: 1, judul_buku: 'Buku A' }],
+        categories: [{ id: 1, nama_kategori: 'Fiksi' }],
+        session: null,
+        isAdmin: false,
+        path: '/buku',
+      }),
+    );
+  });
+
+  it('renders public buku page with empty arrays when books/categories throw 404', async () => {
+    const { res, render } = mockRes();
+    viewsService.session.mockResolvedValue(null);
+    booksService.getBook.mockRejectedValue(new NotFoundException());
+    booksService.readListCategories.mockRejectedValue(new NotFoundException());
+
+    await controller.buku(req, res);
+    expect(render).toHaveBeenCalledWith(
+      'buku',
+      expect.objectContaining({
+        title: 'Daftar Buku',
+        books: [],
+        categories: [],
+        session: null,
+        isAdmin: false,
+      }),
+    );
+  });
+
+  it('redirects /daftar-buku to /buku', () => {
+    const { res, redirect } = mockRes();
+    controller.daftarBuku(res);
+    expect(redirect).toHaveBeenCalledWith('/buku');
+  });
+
   it('redirects unauthenticated requests on /app/katalog to /login', async () => {
     const { res, redirect } = mockRes();
     viewsService.session.mockResolvedValue(null);

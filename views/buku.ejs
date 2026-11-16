@@ -1,0 +1,167 @@
+<%- include('partials/head') %>
+<body class="bg-bg text-ink font-sans antialiased">
+<div class="flex h-screen flex-col">
+  <!-- top-bar -->
+  <header class="flex h-16 shrink-0 items-center gap-2 px-2 pr-4">
+    <button class="icon-btn" data-toggle-sidebar title="Menu utama"><%- include('partials/icon', { n: 'menu' }) %></button>
+    <a href="/buku" class="flex w-52 items-center gap-2 pl-1 text-[22px] text-muted">
+      <span class="text-accent"><%- include('partials/icon', { n: 'book', cls: 'size-8' }) %></span>
+      <span><span class="font-medium text-accent">Ruang</span> Baca</span>
+    </a>
+    <label class="flex h-12 max-w-3xl flex-1 items-center gap-2 rounded-full bg-secondary px-2 focus-within:bg-surface focus-within:shadow-md">
+      <span class="icon-btn" title="Cari"><%- include('partials/icon', { n: 'search' }) %></span>
+      <input id="search" type="search" class="h-full flex-1 bg-transparent text-base outline-none placeholder:text-muted" placeholder="Cari buku, kategori, penulis…" autocomplete="off">
+      <button type="button" class="icon-btn" title="Filter pencarian" onclick="document.getElementById('search').focus()"><%- include('partials/icon', { n: 'tune' }) %></button>
+    </label>
+    <div class="ml-auto flex items-center gap-2">
+      <% if (session) { %>
+        <div class="relative">
+          <button class="rounded-full p-1 hover:bg-secondary" data-toggle="#account-popover" title="Akun: <%= session.nama_lengkap %>">
+            <%- include('partials/avatar', { name: session.nama_lengkap }) %>
+          </button>
+          <div id="account-popover" hidden class="absolute right-0 top-12 z-50 w-80 rounded-3xl bg-[#E9EEF6] p-4 shadow-xl">
+            <div class="flex flex-col items-center gap-2 rounded-2xl bg-surface p-5 text-center">
+              <%- include('partials/avatar', { name: session.nama_lengkap, size: 'lg' }) %>
+              <p class="text-lg font-medium">Halo, <%= session.nama_lengkap %>!</p>
+              <p class="text-sm text-muted"><%= session.email %></p>
+              <%- include('partials/chip', { label: isAdmin ? 'Admin' : 'Anggota' }) %>
+            </div>
+            <a href="/app/katalog" class="btn-secondary mt-3 w-full bg-surface text-center block">Buka Aplikasi</a>
+            <button class="btn-secondary mt-2 w-full bg-surface" data-call="POST /api/auth/logout" data-redirect="/buku">
+              <%- include('partials/icon', { n: 'logout', cls: 'size-4' }) %> Keluar
+            </button>
+          </div>
+        </div>
+      <% } else { %>
+        <a href="/login" class="btn-primary inline-flex items-center gap-2 px-5 py-2 text-sm font-medium">
+          <%- include('partials/icon', { n: 'people', cls: 'size-4' }) %>
+          <span>Masuk</span>
+        </a>
+      <% } %>
+    </div>
+  </header>
+
+  <div class="flex min-h-0 flex-1">
+    <!-- sidebar -->
+    <aside class="flex w-64 shrink-0 flex-col gap-1 overflow-y-auto pr-3 transition-all">
+      <div class="mb-3 pl-2 pt-1">
+        <a href="<%= session ? '/app/katalog' : '/login' %>" class="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-compose px-5 text-sm font-medium hover:shadow-md text-ink">
+          <%- include('partials/icon', { n: 'book', cls: 'size-5 text-accent' }) %>
+          <span class="compose-label"><%= session ? 'Ke Dashboard' : 'Pinjam Buku' %></span>
+        </a>
+      </div>
+      <nav class="flex flex-col">
+        <a href="/buku" class="nav-item active" title="Daftar Buku">
+          <%- include('partials/icon', { n: 'book' }) %>
+          <span class="nav-label flex-1 truncate font-medium">Daftar Buku</span>
+        </a>
+        <% if (!session) { %>
+          <a href="/login" class="nav-item" title="Masuk">
+            <%- include('partials/icon', { n: 'people' }) %>
+            <span class="nav-label flex-1 truncate">Masuk ke Akun</span>
+          </a>
+        <% } else { %>
+          <a href="/app/katalog" class="nav-item" title="Dashboard">
+            <%- include('partials/icon', { n: 'inbox' }) %>
+            <span class="nav-label flex-1 truncate">Aplikasi Utama</span>
+          </a>
+        <% } %>
+      </nav>
+
+      <div class="mt-auto m-2 rounded-2xl bg-surface/80 p-4 border border-line text-xs text-muted flex flex-col gap-2">
+        <div class="font-medium text-ink flex items-center gap-1.5">
+          <%- include('partials/icon', { n: 'book', cls: 'size-4 text-accent' }) %>
+          <span>Katalog Publik</span>
+        </div>
+        <p class="leading-relaxed">Halaman ini menampilkan seluruh koleksi buku perpustakaan untuk umum tanpa perlu masuk.</p>
+        <% if (!session) { %>
+          <a href="/login" class="font-medium text-accent hover:underline mt-1">Masuk untuk meminjam →</a>
+        <% } %>
+      </div>
+    </aside>
+
+    <!-- content-area -->
+    <main class="mb-4 mr-4 flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-surface">
+      <!-- toolbar -->
+      <div class="flex h-12 shrink-0 items-center gap-2 border-b border-line px-4">
+        <button class="icon-btn" onclick="location.reload()" title="Muat ulang"><%- include('partials/icon', { n: 'refresh' }) %></button>
+        <select class="field h-8 w-auto py-0 text-xs" data-filter-cat aria-label="Filter kategori">
+          <option value="">Semua kategori</option>
+          <% categories.forEach((c) => { %><option value="<%= c.nama_kategori %>"><%= c.nama_kategori %> (<%= c.jenis_buku %>)</option><% }) %>
+        </select>
+        <%- include('partials/pagination', { count: books.length }) %>
+      </div>
+
+      <!-- tab-kategori -->
+      <% if (categories.length) { %>
+      <div class="flex shrink-0 overflow-x-auto border-b border-line px-2">
+        <button class="border-b-2 border-accent px-5 py-3 text-sm font-medium text-accent whitespace-nowrap" data-cat-tab="">Semua</button>
+        <% categories.forEach((c) => { %>
+          <button class="border-b-2 border-transparent px-5 py-3 text-sm font-medium text-muted hover:bg-secondary/50 whitespace-nowrap" data-cat-tab="<%= c.nama_kategori %>"><%= c.nama_kategori %></button>
+        <% }) %>
+      </div>
+      <% } %>
+
+      <div class="flex min-h-0 flex-1 overflow-hidden">
+        <!-- book list -->
+        <div class="flex-1 overflow-y-auto" id="book-list">
+          <% if (!books.length) { %>
+            <%- include('partials/empty', {
+              icon: 'book',
+              text: 'Belum ada koleksi buku',
+            }) %>
+          <% } %>
+          <% books.forEach((b) => { %>
+            <div class="list-row cursor-pointer" data-row data-cat="<%= b.nama_kategori %>" data-book="<%= JSON.stringify(b) %>">
+              <%- include('partials/tile', { key: b.nama_kategori, text: b.judul_buku }) %>
+              <span class="w-56 shrink-0 truncate font-bold"><%= b.judul_buku %></span>
+              <span class="min-w-0 flex-1 truncate text-muted">
+                <%= b.penulis_buku %> · <%= b.penerbit %> — <span class="text-ink/80"><%= b.sinopsis %></span>
+              </span>
+              <div class="ml-auto flex shrink-0 items-center gap-3">
+                <%- include('partials/chip', { kind: b.stok > 0 ? 'Tersedia' : 'Habis', label: b.stok > 0 ? `Tersedia ${b.stok}` : 'Habis' }) %>
+                <span class="w-24 text-right text-xs text-muted"><%= date(b.tanggal_rilis) %></span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <!-- Detail Buku Panel -->
+        <section id="book-detail" hidden class="w-96 shrink-0 overflow-y-auto border-l border-line p-6 flex flex-col gap-4">
+          <div class="flex items-center gap-2">
+            <button class="icon-btn size-8" data-close-detail title="Tutup detail"><%- include('partials/icon', { n: 'back', cls: 'size-4' }) %></button>
+            <span class="chip chip-info" data-d-cat></span>
+            <span class="chip chip-lost" data-d-jenis></span>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="inline-flex size-24 shrink-0 items-center justify-center rounded-2xl text-4xl font-medium text-white" data-d-tile></span>
+            <div class="min-w-0">
+              <h2 class="text-xl font-medium leading-snug" data-d-judul></h2>
+              <p class="mt-1 text-sm text-muted" data-d-penulis></p>
+            </div>
+          </div>
+          <dl class="grid grid-cols-2 gap-2 rounded-xl bg-bg p-3 text-xs">
+            <div><dt class="text-muted">Penerbit</dt><dd class="font-medium" data-d-penerbit></dd></div>
+            <div><dt class="text-muted">Tanggal Rilis</dt><dd class="font-medium" data-d-rilis></dd></div>
+            <div><dt class="text-muted">Stok</dt><dd class="font-medium" data-d-stok></dd></div>
+          </dl>
+          <div>
+            <h3 class="text-xs font-medium text-muted mb-1">Sinopsis</h3>
+            <p class="text-sm leading-relaxed whitespace-pre-line" data-d-sinopsis></p>
+          </div>
+          <div class="mt-auto pt-4 flex gap-2">
+            <% if (session) { %>
+              <a href="/app/katalog" class="btn-primary w-full text-center py-2.5 block">Buka di Aplikasi untuk Meminjam</a>
+            <% } else { %>
+              <a href="/login" id="btn-pinjam-detail" class="btn-primary w-full text-center py-2.5 block">Masuk untuk Meminjam</a>
+            <% } %>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('partials/snackbar') %>
+</body>
+</html>

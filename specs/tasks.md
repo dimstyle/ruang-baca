@@ -1,0 +1,46 @@
+# Task for Agent
+read specs/
+
+- [ok] buatkan semua fitur auth sesuai dengan yang ada di specs/*
+- [ok] pastikan berikan logging dengan benar pada fitur auth
+- [ok] berikan test code pada setiap controller pada fitur auth
+- [ok] buatkan CRUD users di fitur admin sesuai dengan yang ada di specs/*
+- [ok] pastikan berikan logging dengan benar pada CRUD users di fitur admin
+- [ok] berikan test code pada CRUD users di controller fitur admin
+- [ok] buatkan CRUD denda di fitur admin
+- [ok] pastikan berikan loggin dengan benar pada CRUD denda di fitur admin
+- [ok] berikan test code pada CRUD denda di controller fitur admin
+- [ok] hapus /api/admins/createuser , sesuaikan /api/auth/register, sesuai dengan flow dan contract
+- [ok] sesuaikan migrate database sesuai dengan contract di database contract, lalu migrate
+- [ok] hapus use case create user dan profile management, lalu gabungkan registration dan create user dengan extend di /docs/uml/src/diagrams/list-diagrams/use-case.mmd
+- [ok] buatkan laporan di fitur admins sesuai api contract dan flow nya 
+- [ok] pastikan berikan logging dengan benar di setiap laporan di fitur admins
+- [ok] berikan test code pada laporan di controller fitur admin
+- [ok] buat use-case di docs/uml/src/diagrams/list-diagram (catatan: hanya yang readlaporan -> (extend) readlistlaporan)
+- [ok] buat juga sequence diagram nya
+- [ok] buatkan category crud di fitur books, sesuai dengan api contract dan flow nya
+- [ok] berikan logging pada setiap task category crud di fitur books
+- [ok] berikan test code pada setiap task category crud di fitur books
+- [ok] buatkan juga use-case dan sequence diagram di docs/uml/src/diagrams/list-diagrams
+- [ok] update migrasi , sudah saya tambahkan atribut sinopsis di specs/database-contract.md
+- [ok] pastikan erd di docs/uml/src/diagrams/list-diagrams/erd.mmd itu sesuai dengan specs/database-contract.md
+- [ok] buatkan book crud tasks di fitur books
+- [ok] berikan code test untuk setiap book crud tasks di fitur books
+- [ok] buatkan use-case dan sequence diagramnya di docs/uml/src/diagrams/list-diagrams/
+- [ok] tambahkan migrasi untuk table temp_peminjaman dan temp_pengembalian, serta atribut total_peminjam di table laporan, tambahkan juga di erd
+- [ok] buatkan peminjaman/pengembalian tasks di fitur peminjaman, sesuai dengan api contract dan flow nya
+- [ok] berikan logging pada setiap peminjaman/pengembalian tasks di fitur peminjaman
+- [ok] berikan test code pada setiap peminjaman/pengembalian tasks di fitur peminjaman
+- [ok] aku sudah tambahkan specs/users-flow-spec (aku izinkan kamu menulis hanya specs/users-flow-spec/ saja, lainnya pastikan jangan ada yang diubah!) buatkan flow user di direktori tersebut, format penamaan file nya <nomor_feat>-<nama_feat>-flows.md, di users-flows jangan kasih alur teknis, contoh nya ada di specs/00-example-flows.md
+- [ok] buatkan juga flowchart dan activity diagram berdasarkan user flow tadi dengan nama flowchart-<nama_task>.mmd dan activity-<nama_task>.mmd di docs/uml/src/diagrams/list-diagrams/
+- [ok] baca specs/flows-spec/*, kemudian tulis spesification setiap komponen ui di specs/ui-specs.md (jangan ubah apapun selain ui-specs.md!) target yang lihat adalah siswa, mahasiswa. tugasnya tulis spec tampilan gmail style, karena tidak ada gambar profile dan gambar buku, berikan juga pallete color nya, contoh format sudah ada di ui-specs yaitu login , tinggal diganti aja. tidak perlu buat ui hanya component nya aja sesuai deskripsi
+- [ok] baca specs/ui-specs.md sebagai acuan pembuatan ui. buat ui sesuai dengan ui-specs.md tersebut yaitu gmail style ui, lalu sesuaikan API dan endpoint nya dengan api-spec, ui juga wajib dibuat ke framer melalui mcp. 
+- [ok] commit perubahan
+- [ok] check .env.example.com tambahkan pnpm runner untuk generate menggunakan data acak yang di hash untuk setiap password atau secret key, lalu 
+menggunakan username input 
+- [ok] buatkan juga system kalau .env ada sqlite_path pakai sqlite kalau tidak berarti harus pakai posgresql, kalau ga ada kasih pesan ke developer pakai salah satu
+- [ok] buatkan docker compose dan dockerfile untuk setup production nestjs + postgresql
+- [ok] buat juga docs di readme.md supaya developer bisa pakai juga 
+- [ok] buat file dari semua docs/uml/src/diagrams/list-diagrams/file.mmd itu ke docs/diagrams dengan format .drawio pisahkan sesuai dengan jenis nya kayak erd sendiri, sequence sendiri dll
+- [ok] buat isi docx/SRS_and_System_Design_Master_Planning.docx sesuai dengan docs/soal.pdf, itu udah ada templatenya tinggal diisi aja
+- [ok] buat kan page untuk daftar buku saja untuk non login user, buat di framer juga
