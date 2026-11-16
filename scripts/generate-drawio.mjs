@@ -526,6 +526,17 @@ function parseFlowGraph(source) {
       });
       return id;
     }
+    const mPara = token.match(/^([a-zA-Z0-9_]+)\[\/"([^"]+)"\/\]$/);
+    if (mPara) {
+      const id = mPara[1];
+      nodes.set(id, {
+        id,
+        label: mPara[2],
+        shape: 'io',
+        lane: nodes.get(id)?.lane ?? lane,
+      });
+      return id;
+    }
     const mRect = token.match(/^([a-zA-Z0-9_]+)\["([^"]+)"\]$/);
     if (mRect) {
       const id = mRect[1];
@@ -650,7 +661,14 @@ function buildFlowchartDiagram(name, source) {
     ids.forEach((id, idx) => {
       const n = nodes.get(id);
       const offset = (idx - (ids.length - 1) / 2) * 320;
-      const w = n.shape === 'decision' ? 240 : n.shape === 'terminator' ? 160 : 240;
+      const w =
+        n.shape === 'decision'
+          ? 240
+          : n.shape === 'terminator'
+            ? 160
+            : n.shape === 'io'
+              ? 260
+              : 240;
       const h = n.shape === 'decision' ? 76 : n.shape === 'terminator' ? 46 : 56;
       const x = Math.round(centerX + offset - w / 2);
 
@@ -662,6 +680,9 @@ function buildFlowchartDiagram(name, source) {
       } else if (n.shape === 'decision') {
         style =
           'rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;';
+      } else if (n.shape === 'io') {
+        style =
+          'shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;';
       }
 
       cells.push(
@@ -746,7 +767,14 @@ function buildActivityDiagram(name, source) {
     const idxInSlot = slotSeen.get(key) ?? 0;
     slotSeen.set(key, idxInSlot + 1);
 
-    const w = n.shape === 'decision' ? 230 : n.shape === 'terminator' ? 150 : 230;
+    const w =
+      n.shape === 'decision'
+        ? 230
+        : n.shape === 'terminator'
+          ? 150
+          : n.shape === 'io'
+            ? 250
+            : 230;
     const h = n.shape === 'decision' ? 72 : n.shape === 'terminator' ? 44 : 54;
     const x = Math.round((laneW - w) / 2 + idxInSlot * 24);
     const y = 60 + row * rowGap + idxInSlot * 28;
@@ -759,6 +787,9 @@ function buildActivityDiagram(name, source) {
     } else if (n.shape === 'decision') {
       style =
         'rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;';
+    } else if (n.shape === 'io') {
+      style =
+        'shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;';
     }
 
     cells.push(

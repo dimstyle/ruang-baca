@@ -1,11 +1,11 @@
 flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai (<<extend>> dari Accept Pengembalian)"]) --> openDialog["Buka dialog Terima pada Permintaan Pengembalian"]
-        openDialog --> selectStatus["Pilih kondisi buku (Baik, Rusak, atau Hilang)"]
+        openDialog --> selectStatus[/"Pilih kondisi buku (Baik, Rusak, atau Hilang)"/]
         selectStatus --> evalFine{"Apakah status Telat atau buku Rusak/Hilang?"}
         evalFine -->|"0 (Tidak: Baik & belum telat)"| hideInput["Input denda disembunyikan"]
-        evalFine -->|"1 (Ya)"| inputFine["Wajib isi Nominal Denda (Rp) dan Keterangan Denda"]
-        inputFine --> clickSave["Klik tombol Terima pengembalian"]
+        evalFine -->|"1 (Ya)"| inputFine[/"Wajib isi Nominal Denda (Rp) dan Keterangan Denda"/]
+        inputFine --> clickSave[/"Klik tombol Terima pengembalian"/]
     end
 
     subgraph Sistem["Sistem"]

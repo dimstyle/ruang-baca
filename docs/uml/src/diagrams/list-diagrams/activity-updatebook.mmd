@@ -2,9 +2,9 @@ flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai"]) --> openMenu["Buka daftar katalog buku"]
         openMenu --> selectBook["Pilih buku yang ingin diperbarui"]
-        selectBook --> editBook["Ubah informasi buku atau kategori"]
-        editBook --> clickSave["Klik tombol simpan perubahan"]
-        fixCat["Pilih kategori buku yang tersedia"] --> editBook
+        selectBook --> editBook[/"Ubah informasi buku atau kategori"/]
+        editBook --> clickSave[/"Klik tombol simpan perubahan"/]
+        fixCat[/"Pilih kategori buku yang tersedia"/] --> editBook
         finish(["Selesai"])
     end
 

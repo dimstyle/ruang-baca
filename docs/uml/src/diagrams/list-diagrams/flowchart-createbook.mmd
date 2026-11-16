@@ -1,12 +1,12 @@
 flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu katalog buku"]
-    openMenu --> clickAdd["Klik tombol tambah buku baru"]
-    clickAdd --> inputForm["Pilih kategori buku serta masukan judul, penulis, penerbit, sinopsis, tanggal rilis, dan jumlah stok"]
-    inputForm --> clickSave["Klik tombol simpan buku"]
+    openMenu --> clickAdd[/"Klik tombol tambah buku baru"/]
+    clickAdd --> inputForm[/"Pilih kategori buku serta masukan judul, penulis, penerbit, sinopsis, tanggal rilis, dan jumlah stok"/]
+    inputForm --> clickSave[/"Klik tombol simpan buku"/]
     clickSave --> checkCat{"Apakah kategori buku yang dipilih tersedia?"}
     checkCat -->|"0 (Tidak)"| warnCat["Tampilkan pesan kategori buku tidak ditemukan"]
-    warnCat --> selectCat["Pilih kategori buku yang tersedia"]
+    warnCat --> selectCat[/"Pilih kategori buku yang tersedia"/]
     selectCat --> inputForm
     checkCat -->|"1 (Ya)"| created["Tampilkan pesan buku baru berhasil ditambahkan ke katalog"]
     created --> finish(["Selesai"])

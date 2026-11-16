@@ -2,8 +2,8 @@ flowchart TD
     subgraph User["User"]
         start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
         openCatalog --> selectBook["Pilih buku yang ingin dipinjam"]
-        selectBook --> inputDate["Masukan tanggal peminjaman"]
-        inputDate --> clickSubmit["Klik tombol ajukan peminjaman"]
+        selectBook --> inputDate[/"Masukan tanggal peminjaman"/]
+        inputDate --> clickSubmit[/"Klik tombol ajukan peminjaman"/]
         toLogin["Masuk ke akun terlebih dahulu"] --> finish(["Selesai"])
     end
 

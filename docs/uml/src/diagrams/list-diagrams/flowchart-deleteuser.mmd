@@ -2,7 +2,7 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu daftar anggota"]
     openMenu --> selectUser["Pilih anggota yang ingin dihapus"]
-    selectUser --> clickDelete["Klik tombol hapus anggota"]
+    selectUser --> clickDelete[/"Klik tombol hapus anggota"/]
     clickDelete --> checkActive{"Apakah anggota masih memiliki peminjaman aktif atau tanggungan denda?"}
     checkActive -->|"1 (Ya)"| warnConflict["Tampilkan peringatan anggota masih memiliki peminjaman atau denda"]
     warnConflict --> cancelDel["Batalkan penghapusan anggota"]

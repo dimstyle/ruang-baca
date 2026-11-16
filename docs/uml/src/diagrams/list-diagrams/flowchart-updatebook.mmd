@@ -2,8 +2,8 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu katalog buku"]
     openMenu --> selectBook["Pilih buku yang ingin diperbarui"]
-    selectBook --> editBook["Ubah informasi buku atau jumlah stok"]
-    editBook --> clickSave["Klik tombol simpan perubahan"]
+    selectBook --> editBook[/"Ubah informasi buku atau jumlah stok"/]
+    editBook --> clickSave[/"Klik tombol simpan perubahan"/]
     clickSave --> checkFound{"Apakah buku yang dipilih ditemukan?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
     notFound --> finish(["Selesai"])

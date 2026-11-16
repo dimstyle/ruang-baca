@@ -1,10 +1,10 @@
 flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai"]) --> openPage["Buka halaman pendaftaran anggota"]
-        openPage --> inputData["Masukan biodata dan akun anggota"]
-        inputData --> clickSubmit["Klik tombol daftarkan anggota"]
-        fixForm["Perbaiki isian formulir"] --> inputData
-        changeAccount["Gunakan nama pengguna atau email lain"] --> inputData
+        openPage --> inputData[/"Masukan biodata dan akun anggota"/]
+        inputData --> clickSubmit[/"Klik tombol daftarkan anggota"/]
+        fixForm[/"Perbaiki isian formulir"/] --> inputData
+        changeAccount[/"Gunakan nama pengguna atau email lain"/] --> inputData
     end
 
     subgraph Sistem["Sistem"]

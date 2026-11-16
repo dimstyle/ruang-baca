@@ -1,7 +1,7 @@
 flowchart TD
     subgraph User["User / Admin"]
         start(["Mulai"]) --> activePage["Berada di halaman aplikasi (sudah masuk)"]
-        activePage --> clickLogout["Klik tombol keluar pada menu profil"]
+        activePage --> clickLogout[/"Klik tombol keluar pada menu profil"/]
         clickLogout --> confirmLogout{"Apakah yakin ingin keluar?"}
         confirmLogout -->|"0 (Tidak)"| stayPage["Tetap berada di halaman saat ini"]
         stayPage --> finish(["Selesai"])

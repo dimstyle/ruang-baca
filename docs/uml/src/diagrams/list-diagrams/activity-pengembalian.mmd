@@ -2,8 +2,8 @@ flowchart TD
     subgraph User["User"]
         start(["Mulai"]) --> openActive["Buka menu daftar peminjaman aktif"]
         openActive --> selectBook["Pilih buku yang ingin dikembalikan"]
-        selectBook --> inputDate["Masukan tanggal pengembalian buku"]
-        inputDate --> clickReturn["Klik tombol ajukan pengembalian"]
+        selectBook --> inputDate[/"Masukan tanggal pengembalian buku"/]
+        inputDate --> clickReturn[/"Klik tombol ajukan pengembalian"/]
         finish(["Selesai"])
     end
 

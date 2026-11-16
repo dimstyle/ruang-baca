@@ -2,8 +2,8 @@ flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai"]) --> openMenu["Buka menu daftar anggota"]
         openMenu --> selectUser["Pilih anggota yang ingin diubah datanya"]
-        selectUser --> editData["Ubah nama lengkap, nomor HP, atau alamat"]
-        editData --> clickSave["Klik tombol simpan perubahan"]
+        selectUser --> editData[/"Ubah nama lengkap, nomor HP, atau alamat"/]
+        editData --> clickSave[/"Klik tombol simpan perubahan"/]
     end
 
     subgraph Sistem["Sistem"]

@@ -1,10 +1,10 @@
 flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai"]) --> openMenu["Buka menu katalog buku"]
-        openMenu --> clickAdd["Klik tombol tambah buku baru"]
-        clickAdd --> inputBook["Pilih kategori & masukan informasi lengkap buku"]
-        inputBook --> clickSave["Klik tombol simpan buku"]
-        fixCat["Pilih kategori buku lain yang tersedia"] --> inputBook
+        openMenu --> clickAdd[/"Klik tombol tambah buku baru"/]
+        clickAdd --> inputBook[/"Pilih kategori & masukan informasi lengkap buku"/]
+        inputBook --> clickSave[/"Klik tombol simpan buku"/]
+        fixCat[/"Pilih kategori buku lain yang tersedia"/] --> inputBook
     end
 
     subgraph Sistem["Sistem"]

@@ -2,7 +2,7 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu daftar laporan"]
     openMenu --> wantFilter{"Apakah ingin menyaring laporan berdasarkan rentang tanggal?"}
-    wantFilter -->|"1 (Ya)"| inputDates["Isi tanggal awal dan tanggal akhir laporan"]
+    wantFilter -->|"1 (Ya)"| inputDates[/"Isi tanggal awal dan tanggal akhir laporan"/]
     inputDates --> checkDates{"Apakah kedua tanggal sudah diisi lengkap?"}
     checkDates -->|"0 (Tidak)"| warnDates["Tampilkan peringatan tanggal awal dan akhir harus diisi keduanya"]
     warnDates --> inputDates

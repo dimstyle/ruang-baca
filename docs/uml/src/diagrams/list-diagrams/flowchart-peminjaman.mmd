@@ -1,8 +1,8 @@
 flowchart TD
     start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
     openCatalog --> selectBook["Pilih buku yang ingin dipinjam"]
-    selectBook --> inputDate["Masukan tanggal peminjaman"]
-    inputDate --> clickSubmit["Klik tombol ajukan peminjaman"]
+    selectBook --> inputDate[/"Masukan tanggal peminjaman"/]
+    inputDate --> clickSubmit[/"Klik tombol ajukan peminjaman"/]
     clickSubmit --> checkLogged{"Apakah sudah masuk ke akun?"}
     checkLogged -->|"0 (Tidak)"| warnLogin["Tampilkan peringatan harus masuk terlebih dahulu"]
     warnLogin --> toLogin["Diarahkan ke halaman masuk"]

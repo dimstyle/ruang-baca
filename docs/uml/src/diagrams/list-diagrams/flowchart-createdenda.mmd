@@ -4,8 +4,8 @@ flowchart TD
     evalCond -->|"0 (Tidak: Baik & belum telat)"| noFine["Input denda disembunyikan (tidak ada denda)"]
     noFine --> finish(["Selesai"])
     evalCond -->|"1 (Ya)"| showFine["Tampilkan form input Nominal Denda (Rp) & Keterangan Denda"]
-    showFine --> inputFine["Admin mengisi nominal denda dan keterangan alasan denda"]
-    inputFine --> clickAccept["Klik tombol Terima pengembalian"]
+    showFine --> inputFine[/"Admin mengisi nominal denda dan keterangan alasan denda"/]
+    inputFine --> clickAccept[/"Klik tombol Terima pengembalian"/]
     clickAccept --> checkFound{"Apakah data pengembalian valid?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
     notFound --> finish

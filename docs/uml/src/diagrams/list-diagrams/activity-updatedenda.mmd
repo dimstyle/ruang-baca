@@ -8,8 +8,8 @@ flowchart TD
         start(["Mulai"]) --> openMenu["Buka menu daftar denda"]
         payCash -.-> openMenu
         openMenu --> selectFine["Pilih catatan denda yang ingin dibayar"]
-        selectFine --> inputPay["Masukan jumlah uang pembayaran yang diterima"]
-        inputPay --> clickUpdate["Klik tombol perbarui pembayaran"]
+        selectFine --> inputPay[/"Masukan jumlah uang pembayaran yang diterima"/]
+        inputPay --> clickUpdate[/"Klik tombol perbarui pembayaran"/]
     end
 
     subgraph Sistem["Sistem"]

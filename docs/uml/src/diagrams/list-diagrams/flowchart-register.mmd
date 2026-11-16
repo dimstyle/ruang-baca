@@ -1,15 +1,15 @@
 flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openPage["Buka halaman pendaftaran anggota"]
-    openPage --> inputData["Masukan nama pengguna, email, kata sandi, nama lengkap, nomor HP, dan alamat"]
-    inputData --> clickSubmit["Klik tombol daftarkan anggota"]
+    openPage --> inputData[/"Masukan nama pengguna, email, kata sandi, nama lengkap, nomor HP, dan alamat"/]
+    inputData --> clickSubmit[/"Klik tombol daftarkan anggota"/]
     clickSubmit --> checkValid{"Apakah semua kolom diisi dengan benar?"}
     checkValid -->|"0 (Tidak)"| warnInvalid["Tampilkan peringatan kolom belum sesuai"]
-    warnInvalid --> fixForm["Perbaiki isian formulir"]
+    warnInvalid --> fixForm[/"Perbaiki isian formulir"/]
     fixForm --> inputData
     checkValid -->|"1 (Ya)"| checkDuplicate{"Apakah nama pengguna atau email sudah terdaftar?"}
     checkDuplicate -->|"1 (Ya)"| warnDup["Tampilkan pesan akun sudah terdaftar"]
-    warnDup --> changeAccount["Gunakan nama pengguna atau email lain"]
+    warnDup --> changeAccount[/"Gunakan nama pengguna atau email lain"/]
     changeAccount --> inputData
     checkDuplicate -->|"0 (Tidak)"| success["Tampilkan pesan akun anggota berhasil dibuat"]
     success --> finish(["Selesai"])

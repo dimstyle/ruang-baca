@@ -1,12 +1,12 @@
 flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu kategori buku"]
-    openMenu --> clickAdd["Klik tombol tambah kategori"]
-    clickAdd --> inputForm["Masukan nama kategori dan jenis buku"]
-    inputForm --> clickSave["Klik tombol simpan kategori"]
+    openMenu --> clickAdd[/"Klik tombol tambah kategori"/]
+    clickAdd --> inputForm[/"Masukan nama kategori dan jenis buku"/]
+    inputForm --> clickSave[/"Klik tombol simpan kategori"/]
     clickSave --> checkFilled{"Apakah nama kategori dan jenis buku sudah diisi?"}
     checkFilled -->|"0 (Tidak)"| warnEmpty["Tampilkan peringatan kolom wajib diisi"]
-    warnEmpty --> fixInput["Lengkapi nama kategori dan jenis buku"]
+    warnEmpty --> fixInput[/"Lengkapi nama kategori dan jenis buku"/]
     fixInput --> inputForm
     checkFilled -->|"1 (Ya)"| created["Tampilkan pesan kategori berhasil dibuat"]
     created --> finish(["Selesai"])

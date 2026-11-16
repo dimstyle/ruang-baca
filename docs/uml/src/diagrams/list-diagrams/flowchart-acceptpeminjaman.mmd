@@ -2,8 +2,8 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openReq["Buka menu daftar pengajuan peminjaman"]
     openReq --> selectReq["Pilih pengajuan peminjaman dari anggota"]
-    selectReq --> inputLimit["Tentukan tanggal batas pengembalian buku"]
-    inputLimit --> clickApprove["Klik tombol setujui peminjaman"]
+    selectReq --> inputLimit[/"Tentukan tanggal batas pengembalian buku"/]
+    inputLimit --> clickApprove[/"Klik tombol setujui peminjaman"/]
     clickApprove --> checkFound{"Apakah pengajuan peminjaman tersebut masih ada?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan pengajuan peminjaman tidak ditemukan"]
     notFound --> finish(["Selesai"])

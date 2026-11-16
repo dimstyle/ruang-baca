@@ -2,8 +2,8 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu daftar denda"]
     openMenu --> selectFine["Pilih catatan denda yang ingin dibayar"]
-    selectFine --> inputPay["Masukan jumlah uang pembayaran yang diterima"]
-    inputPay --> clickUpdate["Klik tombol perbarui pembayaran"]
+    selectFine --> inputPay[/"Masukan jumlah uang pembayaran yang diterima"/]
+    inputPay --> clickUpdate[/"Klik tombol perbarui pembayaran"/]
     clickUpdate --> checkFound{"Apakah catatan denda ditemukan?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data denda tidak ditemukan"]
     notFound --> finish(["Selesai"])

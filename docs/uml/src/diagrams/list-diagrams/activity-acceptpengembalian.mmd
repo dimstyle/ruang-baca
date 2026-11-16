@@ -7,12 +7,12 @@ flowchart TD
     subgraph Admin["Admin"]
         start(["Mulai"]) --> openReq["Buka menu Permintaan Pengembalian"]
         reqReturn -.-> openReq
-        openReq --> selectReq["Pilih pengajuan pengembalian & klik Terima"]
-        selectReq --> checkCond["Periksa fisik buku & pilih kondisi (Baik, Rusak, atau Hilang)"]
+        openReq --> selectReq[/"Pilih pengajuan pengembalian & klik Terima"/]
+        selectReq --> checkCond[/"Periksa fisik buku & pilih kondisi (Baik, Rusak, atau Hilang)"/]
         checkCond --> needFine{"Apakah status Telat atau kondisi Rusak/Hilang?"}
-        needFine -->|"1 (Ya: <<extend>> Create Denda)"| fillFine["Isi Nominal Denda (Rp) & Keterangan Denda"]
+        needFine -->|"1 (Ya: <<extend>> Create Denda)"| fillFine[/"Isi Nominal Denda (Rp) & Keterangan Denda"/]
         needFine -->|"0 (Tidak: Baik & belum telat)"| skipFine["Input denda disembunyikan"]
-        fillFine --> clickApprove["Klik tombol Terima"]
+        fillFine --> clickApprove[/"Klik tombol Terima"/]
         skipFine --> clickApprove
     end
 

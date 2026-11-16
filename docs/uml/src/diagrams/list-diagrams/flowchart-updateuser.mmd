@@ -2,8 +2,8 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu daftar anggota"]
     openMenu --> selectUser["Pilih anggota yang ingin diubah datanya"]
-    selectUser --> editData["Ubah informasi nama lengkap, nomor HP, atau alamat"]
-    editData --> clickSave["Klik tombol simpan perubahan"]
+    selectUser --> editData[/"Ubah informasi nama lengkap, nomor HP, atau alamat"/]
+    editData --> clickSave[/"Klik tombol simpan perubahan"/]
     clickSave --> checkFound{"Apakah anggota tersebut ditemukan?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan anggota tidak ditemukan"]
     notFound --> finish(["Selesai"])

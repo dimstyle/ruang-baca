@@ -2,7 +2,7 @@ flowchart TD
     start(["Mulai"]) --> loginAdmin["Masuk sebagai Admin"]
     loginAdmin --> openMenu["Buka menu katalog buku"]
     openMenu --> selectBook["Pilih buku yang ingin dihapus dari katalog"]
-    selectBook --> clickDel["Klik tombol hapus buku"]
+    selectBook --> clickDel[/"Klik tombol hapus buku"/]
     clickDel --> checkFound{"Apakah buku tersebut ditemukan?"}
     checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
     notFound --> finish(["Selesai"])
