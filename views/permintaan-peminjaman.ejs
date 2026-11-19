@@ -21,7 +21,7 @@
         <%- include('partials/chip', { label: 'Menunggu' }) %>
         <button class="btn-primary h-8 px-4 text-xs"
           data-open="#dialog-setujui"
-          data-fill="<%= JSON.stringify({ temp_peminjaman_id: r.temp_peminjaman_id, info: `${r.nama_lengkap} — ${r.judul_buku}`, tanggal_batas_peminjaman: defaultDue }) %>">
+          data-fill="<%= JSON.stringify({ temp_peminjaman_id: r.temp_peminjaman_id, info: `${r.nama_lengkap} - ${r.judul_buku}`, tanggal_batas_peminjaman: defaultDue }) %>">
           Setujui
         </button>
       </div>

@@ -44,7 +44,7 @@
         <%- include('partials/tile', { key: b.nama_kategori, text: b.judul_buku }) %>
         <span class="w-56 shrink-0 truncate font-bold"><%= b.judul_buku %></span>
         <span class="min-w-0 flex-1 truncate text-muted">
-          <%= b.penulis_buku %> · <%= b.penerbit %> — <span class="text-ink/80"><%= b.sinopsis %></span>
+          <%= b.penulis_buku %> · <%= b.penerbit %> - <span class="text-ink/80"><%= b.sinopsis %></span>
         </span>
         <div class="ml-auto flex shrink-0 items-center gap-3">
           <%- include('partials/chip', { kind: b.stok > 0 ? 'Tersedia' : 'Habis', label: b.stok > 0 ? `Tersedia ${b.stok}` : 'Habis' }) %>
@@ -112,7 +112,7 @@
       <label class="label">Kategori</label>
       <select name="kategori_id" data-num required class="field">
         <option value="">Pilih kategori…</option>
-        <% categories.forEach((c) => { %><option value="<%= c.id %>"><%= c.nama_kategori %> — <%= c.jenis_buku %></option><% }) %>
+        <% categories.forEach((c) => { %><option value="<%= c.id %>"><%= c.nama_kategori %> - <%= c.jenis_buku %></option><% }) %>
       </select>
     </div>
     <div><label class="label">Judul Buku</label><input name="judul" required class="field"></div>
@@ -133,7 +133,7 @@
       <label class="label">Pilih Buku</label>
       <select name="book_id" data-num required class="field">
         <% books.filter((b) => b.stok > 0).forEach((b) => { %>
-          <option value="<%= b.id %>"><%= b.judul_buku %> — <%= b.penulis_buku %> (stok <%= b.stok %>)</option>
+          <option value="<%= b.id %>"><%= b.judul_buku %> - <%= b.penulis_buku %> (stok <%= b.stok %>)</option>
         <% }) %>
       </select>
     </div>

@@ -66,3 +66,9 @@ g.label.attribute-comment text,
 g.label.name text {
   fill: #ffffff !important;
 }
+
+/* Activity Diagram Initial Node (Start) */
+.node circle.state-start {
+  fill: #D552A3 !important;
+  stroke: #D552A3 !important;
+}

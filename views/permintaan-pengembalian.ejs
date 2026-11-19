@@ -25,7 +25,7 @@
         <% if (late) { %><%- include('partials/chip', { label: 'Telat' }) %><% } else { %><%- include('partials/chip', { label: 'Menunggu' }) %><% } %>
         <button class="btn-primary h-8 px-4 text-xs"
           data-open="#dialog-terima"
-          data-fill="<%= JSON.stringify({ temp_pengembalian_id: r.temp_pengembalian_id, info: `${r.nama_lengkap} — ${r.judul_buku}`, status_buku: 'Baik', is_late: late ? '1' : '0' }) %>">
+          data-fill="<%= JSON.stringify({ temp_pengembalian_id: r.temp_pengembalian_id, info: `${r.nama_lengkap} - ${r.judul_buku}`, status_buku: 'Baik', is_late: late ? '1' : '0' }) %>">
           Terima
         </button>
       </div>

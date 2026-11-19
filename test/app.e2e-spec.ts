@@ -15,6 +15,9 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestExpressApplication>();
+    app.setGlobalPrefix('api', {
+      exclude: ['/', 'login', 'buku', 'daftar-buku', 'app/*path'],
+    });
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
     app.setViewEngine('ejs');
     await app.init();
@@ -36,6 +39,13 @@ describe('AppController (e2e)', () => {
       .get('/login')
       .expect(200)
       .expect(/Ruang Baca/);
+  });
+
+  it('/daftar-buku (GET) redirects to /buku', () => {
+    return request(app.getHttpServer())
+      .get('/daftar-buku')
+      .expect(302)
+      .expect('Location', '/buku');
   });
 
   it('/buku (GET) renders public book catalog for non-login user', () => {

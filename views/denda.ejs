@@ -29,14 +29,14 @@
       <%- include('partials/avatar', { name: f.nama_lengkap }) %>
       <span class="w-48 shrink-0 truncate font-bold"><%= f.nama_lengkap %> <span class="font-normal text-muted">(@<%= f.username %>)</span></span>
       <span class="flex-1 truncate text-muted">
-        <span class="font-medium text-ink"><%= f.judul_buku || 'Buku' %></span> — <%= f.keterangan_buku %> · Dikembalikan <%= date(f.tanggal_dikembalikan) %>
+        <span class="font-medium text-ink"><%= f.judul_buku || 'Buku' %></span> - <%= f.keterangan_buku %> · Dikembalikan <%= date(f.tanggal_dikembalikan) %>
       </span>
       <div class="ml-auto flex items-center gap-3">
         <span class="w-28 text-right font-bold text-danger"><%= rupiah(f.denda) %></span>
         <%- include('partials/chip', { label: f.status_buku }) %>
         <button class="btn-secondary h-8 px-3 text-xs"
           data-open="#dialog-bayar"
-          data-fill="<%= JSON.stringify({ id_daftar_denda: f.id_denda, sisa_denda: f.denda, info: `${f.nama_lengkap} — Sisa ${rupiah(f.denda)}`, uang_masuk: f.denda }) %>">
+          data-fill="<%= JSON.stringify({ id_daftar_denda: f.id_denda, sisa_denda: f.denda, info: `${f.nama_lengkap} - Sisa ${rupiah(f.denda)}`, uang_masuk: f.denda }) %>">
           Catat Pembayaran
         </button>
       </div>

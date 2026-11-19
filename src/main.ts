@@ -11,7 +11,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api', {
-    exclude: ['/', 'login', 'app/*path'],
+    exclude: ['/', 'login', 'buku', 'daftar-buku', 'app/*path'],
   });
   app.useStaticAssets(join(process.cwd(), 'public'));
   app.setBaseViewsDir(join(process.cwd(), 'views'));
