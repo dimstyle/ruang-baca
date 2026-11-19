@@ -1,4 +1,4 @@
-# Ruang Baca — Sistem Informasi Perpustakaan
+# Ruang Baca - Sistem Informasi Perpustakaan
 
 Aplikasi manajemen perpustakaan berbasis **NestJS 11**, **Server-Side Rendering (EJS + Tailwind CSS v4)** bergaya Gmail, serta **Dual-Database Engine (`@ruangbaca/database`)** yang mendukung **SQLite** untuk development lokal dan **PostgreSQL 18** untuk deployment production.
 
@@ -76,13 +76,13 @@ Gunakan runner `pnpm env:generate` untuk membuat file `.env` dari `.env.example`
 - Menghasilkan nilai acak (`crypto.randomBytes(32)`) yang di-hash dengan **SHA-256 (64 karakter hex)** untuk setiap secret key dan password (`JWT_SECRET_KEY` serta `POSTGRESS_PASSWORD`).
 - Meminta input `username` untuk mengisi `POSTGRESS_USERNAME`.
 
-**Cara 1 — Mode Interaktif:**
+**Cara 1 (Mode Interaktif):**
 ```bash
 pnpm env:generate
 # Masukkan username database (POSTGRESS_USERNAME): dimas
 ```
 
-**Cara 2 — Argumen CLI Langsung:**
+**Cara 2 (Argumen CLI Langsung):**
 ```bash
 pnpm env:generate dimas
 # atau:
@@ -124,13 +124,13 @@ Karena endpoint `POST /api/auth/registration` hanya dapat diakses oleh Admin (`A
 
 > **Catatan Validasi Password**: Password Admin wajib memiliki **minimal 8 karakter**. Jika kurang dari 8 karakter, CLI akan menolak dan meminta input ulang.
 
-**Cara 1 — Mode Interaktif:**
+**Cara 1 (Mode Interaktif):**
 ```bash
 pnpm admin:create
 ```
 Anda akan diminta mengisi `Username`, `Email`, `Password` (minimal 8 karakter, otomatis di-hash dengan `bcrypt`), `Nama Lengkap`, `Nomor HP`, dan `Alamat`.
 
-**Cara 2 — Argumen CLI Langsung:**
+**Cara 2 (Argumen CLI Langsung):**
 ```bash
 pnpm admin:create \
   --username admin \
@@ -236,15 +236,15 @@ File [Dockerfile](file:///home/dimstyle/main/myProject/ruang-baca/Dockerfile) da
 ## 9. Rute Halaman UI & Endpoint API
 
 ### Halaman SSR UI (Gmail-Style)
-- `GET /login` — Halaman Login
-- `GET /app/katalog` — Katalog Buku (Publik, Anggota, Admin)
-- `GET /app/kategori` — Daftar Kategori Buku (Publik, Anggota, Admin)
-- `GET /app/peminjaman-saya` — Daftar Peminjaman & Pengajuan Pengembalian (Anggota)
-- `GET /app/admin/permintaan-peminjaman` — Verifikasi Permintaan Peminjaman (Admin)
-- `GET /app/admin/permintaan-pengembalian` — Verifikasi Permintaan Pengembalian (Admin)
-- `GET /app/admin/anggota` — Manajemen Anggota / Registrasi User (Admin)
-- `GET /app/admin/denda` — Manajemen & Pembayaran Denda (Admin)
-- `GET /app/admin/laporan` & `GET /app/admin/laporan/:id` — Laporan & Detail Laporan (Admin)
+- `GET /login`: Halaman Login
+- `GET /app/katalog`: Katalog Buku (Publik, Anggota, Admin)
+- `GET /app/kategori`: Daftar Kategori Buku (Publik, Anggota, Admin)
+- `GET /app/peminjaman-saya`: Daftar Peminjaman & Pengajuan Pengembalian (Anggota)
+- `GET /app/admin/permintaan-peminjaman`: Verifikasi Permintaan Peminjaman (Admin)
+- `GET /app/admin/permintaan-pengembalian`: Verifikasi Permintaan Pengembalian (Admin)
+- `GET /app/admin/anggota`: Manajemen Anggota / Registrasi User (Admin)
+- `GET /app/admin/denda`: Manajemen & Pembayaran Denda (Admin)
+- `GET /app/admin/laporan` & `GET /app/admin/laporan/:id`: Laporan & Detail Laporan (Admin)
 
 ### Endpoint REST API (`/api/*`)
 - **Auth**: `POST /api/auth/registration`, `POST /api/auth/login`, `POST /api/auth/logout`, `POST /api/auth/refresh_token`
