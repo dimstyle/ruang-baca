@@ -5,7 +5,7 @@ flowchart TD
     selectReq --> inputLimit[/"Tentukan tanggal batas pengembalian buku"/]
     inputLimit --> clickApprove[/"Klik tombol setujui peminjaman"/]
     clickApprove --> checkFound{"Apakah pengajuan peminjaman tersebut masih ada?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan pengajuan peminjaman tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan pengajuan peminjaman tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| approved["Pindahkan ke daftar peminjaman aktif dan tampilkan pesan peminjaman berhasil disetujui"]
+    checkFound -->|"Ya"| approved["Pindahkan ke daftar peminjaman aktif dan tampilkan pesan peminjaman berhasil disetujui"]
     approved --> finish

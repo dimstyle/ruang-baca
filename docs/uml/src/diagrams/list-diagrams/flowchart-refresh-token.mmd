@@ -1,9 +1,9 @@
 flowchart TD
     start(["Mulai"]) --> openPage["Membuka halaman saat waktu akses sedang habis"]
     openPage --> checkActive{"Apakah masa aktif masuk masih berlaku?"}
-    checkActive -->|"1 (Ya)"| renewSession["Perpanjang akses masuk secara otomatis"]
+    checkActive -->|"Ya"| renewSession["Perpanjang akses masuk secara otomatis"]
     renewSession --> continueWork["Tetap melanjutkan aktivitas di halaman"]
     continueWork --> finish(["Selesai"])
-    checkActive -->|"0 (Tidak)"| warnExpired["Tampilkan pesan sesi telah berakhir"]
+    checkActive -->|"Tidak"| warnExpired["Tampilkan pesan sesi telah berakhir"]
     warnExpired --> toLogin["Diarahkan kembali ke halaman masuk"]
     toLogin --> finish

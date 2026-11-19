@@ -1,14 +1,14 @@
 flowchart TD
     subgraph UserAdmin["User / Admin"]
-        start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
-        viewBooks["Lihat daftar buku beserta stok & status ketersediaan"] --> finish(["Selesai"])
-        finishEmpty(["Selesai"])
+        start@{ shape: sm-circ } --> openCatalog["Buka halaman katalog buku"]
+        viewBooks["Lihat daftar buku beserta stok & status ketersediaan"] --> finish@{ shape: fr-circ }
+        finishEmpty@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         openCatalog --> checkAvail{"Apakah koleksi buku tersedia di katalog?"}
-        checkAvail -->|"0 (Tidak)"| showEmpty["Tampilkan pesan belum ada koleksi buku"]
+        checkAvail -->|"Tidak"| showEmpty[/"Tampilkan pesan belum ada koleksi buku"/]
         showEmpty --> finishEmpty
-        checkAvail -->|"1 (Ya)"| showBooks["Tampilkan daftar koleksi buku lengkap"]
+        checkAvail -->|"Ya"| showBooks[/"Tampilkan daftar koleksi buku lengkap"/]
         showBooks --> viewBooks
     end

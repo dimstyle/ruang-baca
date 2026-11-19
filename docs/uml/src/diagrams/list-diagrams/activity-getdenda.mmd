@@ -1,13 +1,13 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu daftar denda"]
-        viewList["Melihat daftar seluruh tagihan denda"] --> finish(["Selesai"])
+        start@{ shape: sm-circ } --> openMenu["Buka menu daftar denda"]
+        viewList["Melihat daftar seluruh tagihan denda"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         openMenu --> checkRecords{"Apakah ada catatan denda yang tersimpan?"}
-        checkRecords -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada catatan denda"]
+        checkRecords -->|"Tidak"| emptyMsg[/"Tampilkan pesan belum ada catatan denda"/]
         emptyMsg --> finish
-        checkRecords -->|"1 (Ya)"| showList["Tampilkan daftar denda lengkap"]
+        checkRecords -->|"Ya"| showList[/"Tampilkan daftar denda lengkap"/]
         showList --> viewList
     end

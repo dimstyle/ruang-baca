@@ -1,6 +1,6 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu katalog buku"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu katalog buku"]
         openMenu --> clickAdd[/"Klik tombol tambah buku baru"/]
         clickAdd --> inputBook[/"Pilih kategori & masukan informasi lengkap buku"/]
         inputBook --> clickSave[/"Klik tombol simpan buku"/]
@@ -9,13 +9,13 @@ flowchart TD
 
     subgraph Sistem["Sistem"]
         clickSave --> checkCat{"Apakah kategori buku yang dipilih tersedia?"}
-        checkCat -->|"0 (Tidak)"| warnCat["Tampilkan pesan kategori buku tidak ditemukan"]
+        checkCat -->|"Tidak"| warnCat[/"Tampilkan pesan kategori buku tidak ditemukan"/]
         warnCat --> fixCat
-        checkCat -->|"1 (Ya)"| saveBook["Simpan koleksi buku baru ke katalog"]
-        saveBook --> created["Tampilkan pesan buku baru berhasil ditambahkan"]
+        checkCat -->|"Ya"| saveBook["Simpan koleksi buku baru ke katalog"]
+        saveBook --> created[/"Tampilkan pesan buku baru berhasil ditambahkan"/]
     end
 
     subgraph User["User"]
         created --> viewCatalog["Koleksi buku baru tampil di katalog untuk anggota"]
-        viewCatalog --> finish(["Selesai"])
+        viewCatalog --> finish@{ shape: fr-circ }
     end

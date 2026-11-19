@@ -1,26 +1,26 @@
 flowchart TD
     subgraph User["User"]
         reqReturn["Mengajukan pengembalian buku"]
-        doneReturn["Peminjaman buku selesai dikembalikan (dan denda tercatat bila terlambat/rusak/hilang)"] --> finish(["Selesai"])
+        doneReturn["Peminjaman buku selesai dikembalikan (dan denda tercatat bila terlambat/rusak/hilang)"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openReq["Buka menu Permintaan Pengembalian"]
+        start@{ shape: sm-circ } --> openReq["Buka menu Permintaan Pengembalian"]
         reqReturn -.-> openReq
         openReq --> selectReq[/"Pilih pengajuan pengembalian & klik Terima"/]
         selectReq --> checkCond[/"Periksa fisik buku & pilih kondisi (Baik, Rusak, atau Hilang)"/]
         checkCond --> needFine{"Apakah status Telat atau kondisi Rusak/Hilang?"}
-        needFine -->|"1 (Ya: <<extend>> Create Denda)"| fillFine[/"Isi Nominal Denda (Rp) & Keterangan Denda"/]
-        needFine -->|"0 (Tidak: Baik & belum telat)"| skipFine["Input denda disembunyikan"]
+        needFine -->|"Ya"| fillFine[/"Isi Nominal Denda (Rp) & Keterangan Denda"/]
+        needFine -->|"Tidak"| skipFine["Input denda disembunyikan"]
         fillFine --> clickApprove[/"Klik tombol Terima"/]
         skipFine --> clickApprove
     end
 
     subgraph Sistem["Sistem"]
         clickApprove --> checkFound{"Apakah data pengajuan pengembalian ditemukan?"}
-        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+        checkFound -->|"Tidak"| notFound[/"Tampilkan pesan data peminjaman tidak ditemukan"/]
         notFound --> finish
-        checkFound -->|"1 (Ya)"| saveReturn["Catat pengembalian resmi, simpan daftar_denda bila ada denda, & hapus antrean temp_pengembalian"]
-        saveReturn --> msgOk["Tampilkan pesan pengembalian buku diterima"]
+        checkFound -->|"Ya"| saveReturn["Catat pengembalian resmi, simpan daftar_denda bila ada denda, & hapus antrean temp_pengembalian"]
+        saveReturn --> msgOk[/"Tampilkan pesan pengembalian buku diterima"/]
         msgOk --> doneReturn
     end

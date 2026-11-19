@@ -1,14 +1,14 @@
 flowchart TD
     subgraph User["User / Admin"]
-        start(["Mulai"]) --> activePage["Berada di halaman aplikasi (sudah masuk)"]
+        start@{ shape: sm-circ } --> activePage["Berada di halaman aplikasi (sudah masuk)"]
         activePage --> clickLogout[/"Klik tombol keluar pada menu profil"/]
         clickLogout --> confirmLogout{"Apakah yakin ingin keluar?"}
-        confirmLogout -->|"0 (Tidak)"| stayPage["Tetap berada di halaman saat ini"]
-        stayPage --> finish(["Selesai"])
+        confirmLogout -->|"Tidak"| stayPage["Tetap berada di halaman saat ini"]
+        stayPage --> finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
-        confirmLogout -->|"1 (Ya)"| endSession["Akhiri sesi masuk pengguna"]
+        confirmLogout -->|"Ya"| endSession["Akhiri sesi masuk pengguna"]
         endSession --> toLogin["Arahkan kembali ke halaman masuk"]
         toLogin --> finish
     end

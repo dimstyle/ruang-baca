@@ -1,18 +1,18 @@
 flowchart TD
     subgraph User["User"]
-        start(["Mulai"]) --> openCatalog["Buka halaman katalog buku"]
-        openCatalog --> selectBook["Pilih buku yang ingin dipinjam"]
+        start@{ shape: sm-circ } --> openCatalog["Buka halaman katalog buku"]
+        openCatalog --> selectBook[/"Pilih buku yang ingin dipinjam"/]
         selectBook --> inputDate[/"Masukan tanggal peminjaman"/]
         inputDate --> clickSubmit[/"Klik tombol ajukan peminjaman"/]
-        toLogin["Masuk ke akun terlebih dahulu"] --> finish(["Selesai"])
+        toLogin["Masuk ke akun terlebih dahulu"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         clickSubmit --> checkLogged{"Apakah sudah masuk ke akun?"}
-        checkLogged -->|"0 (Tidak)"| warnLogin["Tampilkan peringatan harus masuk terlebih dahulu"]
+        checkLogged -->|"Tidak"| warnLogin[/"Tampilkan peringatan harus masuk terlebih dahulu"/]
         warnLogin --> toLogin
-        checkLogged -->|"1 (Ya)"| saveTemp["Catat pengajuan peminjaman sementara"]
-        saveTemp --> submitted["Tampilkan pesan menunggu persetujuan Admin"]
+        checkLogged -->|"Ya"| saveTemp["Catat pengajuan peminjaman sementara"]
+        saveTemp --> submitted[/"Tampilkan pesan menunggu persetujuan Admin"/]
     end
 
     subgraph Admin["Admin"]

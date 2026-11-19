@@ -5,8 +5,8 @@ flowchart TD
     clickAdd --> inputForm[/"Masukan nama kategori dan jenis buku"/]
     inputForm --> clickSave[/"Klik tombol simpan kategori"/]
     clickSave --> checkFilled{"Apakah nama kategori dan jenis buku sudah diisi?"}
-    checkFilled -->|"0 (Tidak)"| warnEmpty["Tampilkan peringatan kolom wajib diisi"]
+    checkFilled -->|"Tidak"| warnEmpty["Tampilkan peringatan kolom wajib diisi"]
     warnEmpty --> fixInput[/"Lengkapi nama kategori dan jenis buku"/]
     fixInput --> inputForm
-    checkFilled -->|"1 (Ya)"| created["Tampilkan pesan kategori berhasil dibuat"]
+    checkFilled -->|"Ya"| created["Tampilkan pesan kategori berhasil dibuat"]
     created --> finish(["Selesai"])

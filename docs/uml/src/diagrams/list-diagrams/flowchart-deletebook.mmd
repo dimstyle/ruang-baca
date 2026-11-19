@@ -4,7 +4,7 @@ flowchart TD
     openMenu --> selectBook["Pilih buku yang ingin dihapus dari katalog"]
     selectBook --> clickDel[/"Klik tombol hapus buku"/]
     clickDel --> checkFound{"Apakah buku tersebut ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan buku tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| deleted["Hapus buku dan tampilkan pesan buku berhasil dihapus"]
+    checkFound -->|"Ya"| deleted["Hapus buku dan tampilkan pesan buku berhasil dihapus"]
     deleted --> finish

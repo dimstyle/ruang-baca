@@ -4,8 +4,8 @@ flowchart TD
     selectBook --> inputDate[/"Masukan tanggal peminjaman"/]
     inputDate --> clickSubmit[/"Klik tombol ajukan peminjaman"/]
     clickSubmit --> checkLogged{"Apakah sudah masuk ke akun?"}
-    checkLogged -->|"0 (Tidak)"| warnLogin["Tampilkan peringatan harus masuk terlebih dahulu"]
+    checkLogged -->|"Tidak"| warnLogin["Tampilkan peringatan harus masuk terlebih dahulu"]
     warnLogin --> toLogin["Diarahkan ke halaman masuk"]
     toLogin --> finish(["Selesai"])
-    checkLogged -->|"1 (Ya)"| submitted["Tampilkan pesan pengajuan peminjaman berhasil dikirim dan menunggu persetujuan Admin"]
+    checkLogged -->|"Ya"| submitted["Tampilkan pesan pengajuan peminjaman berhasil dikirim dan menunggu persetujuan Admin"]
     submitted --> finish

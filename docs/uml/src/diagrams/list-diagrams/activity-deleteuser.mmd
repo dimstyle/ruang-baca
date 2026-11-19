@@ -1,20 +1,20 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu daftar anggota"]
-        openMenu --> selectUser["Pilih anggota yang ingin dihapus"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu daftar anggota"]
+        openMenu --> selectUser[/"Pilih anggota yang ingin dihapus"/]
         selectUser --> clickDelete[/"Klik tombol hapus anggota"/]
     end
 
     subgraph Sistem["Sistem"]
         clickDelete --> checkActive{"Apakah anggota masih memiliki peminjaman atau denda?"}
-        checkActive -->|"1 (Ya)"| warnConflict["Tampilkan peringatan masih ada peminjaman atau denda"]
+        checkActive -->|"Ya"| warnConflict[/"Tampilkan peringatan masih ada peminjaman atau denda"/]
         warnConflict --> cancelDel["Batalkan penghapusan anggota"]
-        checkActive -->|"0 (Tidak)"| deleteAcc["Hapus akun dan data anggota"]
-        deleteAcc --> deleted["Tampilkan pesan data anggota berhasil dihapus"]
+        checkActive -->|"Tidak"| deleteAcc["Hapus akun dan data anggota"]
+        deleteAcc --> deleted[/"Tampilkan pesan data anggota berhasil dihapus"/]
     end
 
     subgraph User["User"]
-        cancelDel --> finish(["Selesai"])
+        cancelDel --> finish@{ shape: fr-circ }
         deleted --> accRemoved["Akun anggota tidak lagi aktif"]
         accRemoved --> finish
     end

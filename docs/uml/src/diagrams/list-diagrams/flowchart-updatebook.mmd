@@ -5,7 +5,7 @@ flowchart TD
     selectBook --> editBook[/"Ubah informasi buku atau jumlah stok"/]
     editBook --> clickSave[/"Klik tombol simpan perubahan"/]
     clickSave --> checkFound{"Apakah buku yang dipilih ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan buku tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| updated["Tampilkan pesan data buku berhasil diperbarui"]
+    checkFound -->|"Ya"| updated["Tampilkan pesan data buku berhasil diperbarui"]
     updated --> finish

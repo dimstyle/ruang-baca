@@ -3,7 +3,7 @@ flowchart TD
     loginAdmin --> openMenu["Buka menu daftar anggota"]
     openMenu --> searchUser["Cari dan pilih anggota yang ingin dilihat"]
     searchUser --> checkFound{"Apakah data anggota ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan anggota tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan anggota tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| showDetail["Tampilkan informasi lengkap anggota (nama lengkap, nomor HP, alamat, nama pengguna, email)"]
+    checkFound -->|"Ya"| showDetail["Tampilkan informasi lengkap anggota (nama lengkap, nomor HP, alamat, nama pengguna, email)"]
     showDetail --> finish

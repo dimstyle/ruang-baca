@@ -4,11 +4,11 @@ flowchart TD
     openMenu --> selectCat["Pilih kategori yang ingin dihapus"]
     selectCat --> clickDel[/"Klik tombol hapus kategori"/]
     clickDel --> checkFound{"Apakah kategori tersebut ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan kategori tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| checkBooks{"Apakah kategori masih digunakan oleh koleksi buku?"}
-    checkBooks -->|"1 (Ya)"| warnUsed["Tampilkan peringatan kategori masih memiliki koleksi buku"]
+    checkFound -->|"Ya"| checkBooks{"Apakah kategori masih digunakan oleh koleksi buku?"}
+    checkBooks -->|"Ya"| warnUsed["Tampilkan peringatan kategori masih memiliki koleksi buku"]
     warnUsed --> cancelDel["Batalkan penghapusan kategori"]
     cancelDel --> finish
-    checkBooks -->|"0 (Tidak)"| deleted["Hapus kategori dan tampilkan pesan kategori berhasil dihapus"]
+    checkBooks -->|"Tidak"| deleted["Hapus kategori dan tampilkan pesan kategori berhasil dihapus"]
     deleted --> finish

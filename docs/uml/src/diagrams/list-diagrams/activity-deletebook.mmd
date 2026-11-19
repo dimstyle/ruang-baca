@@ -1,16 +1,16 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka daftar katalog buku"]
-        openMenu --> selectBook["Pilih buku yang ingin dihapus"]
+        start@{ shape: sm-circ } --> openMenu["Buka daftar katalog buku"]
+        openMenu --> selectBook[/"Pilih buku yang ingin dihapus"/]
         selectBook --> confirmDel[/"Konfirmasi penghapusan buku"/]
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         confirmDel --> checkExist{"Apakah data buku ditemukan?"}
-        checkExist -->|"0 (Tidak)"| notFound["Tampilkan pesan buku tidak ditemukan"]
+        checkExist -->|"Tidak"| notFound[/"Tampilkan pesan buku tidak ditemukan"/]
         notFound --> openMenu
-        checkExist -->|"1 (Ya)"| removeBook["Hapus koleksi buku dari katalog"]
-        removeBook --> deleted["Tampilkan pesan buku berhasil dihapus"]
+        checkExist -->|"Ya"| removeBook["Hapus koleksi buku dari katalog"]
+        removeBook --> deleted[/"Tampilkan pesan buku berhasil dihapus"/]
         deleted --> finish
     end

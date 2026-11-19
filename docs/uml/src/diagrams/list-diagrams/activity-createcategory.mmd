@@ -1,18 +1,18 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu kategori buku"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu kategori buku"]
         openMenu --> clickAdd[/"Klik tombol tambah kategori"/]
         clickAdd --> inputName[/"Masukan nama kategori baru"/]
         inputName --> clickSave[/"Klik tombol simpan kategori"/]
         fixName[/"Masukan kembali nama kategori"/] --> inputName
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         clickSave --> checkValid{"Apakah nama kategori sudah diisi?"}
-        checkValid -->|"0 (Tidak)"| warnInvalid["Tampilkan peringatan nama kategori wajib diisi"]
+        checkValid -->|"Tidak"| warnInvalid[/"Tampilkan peringatan nama kategori wajib diisi"/]
         warnInvalid --> fixName
-        checkValid -->|"1 (Ya)"| saveCat["Simpan kategori buku baru"]
-        saveCat --> created["Tampilkan pesan kategori berhasil ditambahkan"]
+        checkValid -->|"Ya"| saveCat["Simpan kategori buku baru"]
+        saveCat --> created[/"Tampilkan pesan kategori berhasil ditambahkan"/]
         created --> finish
     end

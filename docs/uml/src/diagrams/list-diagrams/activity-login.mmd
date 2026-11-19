@@ -1,12 +1,12 @@
 flowchart TD
     subgraph User["User"]
-        start(["Mulai"]) --> hasAccount{"Sudah punya akun anggota?"}
-        hasAccount -->|"0 (Tidak)"| askAdmin["Minta pendaftaran akun ke Admin"]
+        start@{ shape: sm-circ } --> hasAccount{"Sudah punya akun anggota?"}
+        hasAccount -->|"Tidak"| askAdmin["Minta pendaftaran akun ke Admin"]
         backLogin["Kembali ke halaman masuk"] --> inputAuth[/"Masukan email dan kata sandi"/]
-        hasAccount -->|"1 (Ya)"| inputAuth
+        hasAccount -->|"Ya"| inputAuth
         inputAuth --> clickLogin[/"Klik tombol masuk"/]
         retryPass[/"Coba masukan kembali kata sandi"/] --> inputAuth
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Admin["Admin"]
@@ -16,8 +16,8 @@ flowchart TD
 
     subgraph Sistem["Sistem"]
         clickLogin --> checkMatch{"Apakah email dan kata sandi sesuai?"}
-        checkMatch -->|"0 (Tidak)"| warnWrong["Tampilkan pesan email atau kata sandi salah"]
+        checkMatch -->|"Tidak"| warnWrong[/"Tampilkan pesan email atau kata sandi salah"/]
         warnWrong --> retryPass
-        checkMatch -->|"1 (Ya)"| toDashboard["Arahkan ke halaman dashboard"]
+        checkMatch -->|"Ya"| toDashboard["Arahkan ke halaman dashboard"]
         toDashboard --> finish
     end

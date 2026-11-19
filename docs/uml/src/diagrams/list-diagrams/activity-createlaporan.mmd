@@ -1,18 +1,18 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu laporan perpustakaan"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu laporan perpustakaan"]
         openMenu --> clickNew[/"Klik tombol buat laporan baru"/]
         clickNew --> inputForm[/"Masukan keterangan & rentang tanggal laporan"/]
         inputForm --> clickSave[/"Klik tombol simpan laporan"/]
         fixForm[/"Lengkapi kembali formulir laporan"/] --> inputForm
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         clickSave --> checkComplete{"Apakah seluruh kolom tanggal dan keterangan lengkap?"}
-        checkComplete -->|"0 (Tidak)"| warnIncomplete["Tampilkan peringatan isian belum lengkap"]
+        checkComplete -->|"Tidak"| warnIncomplete[/"Tampilkan peringatan isian belum lengkap"/]
         warnIncomplete --> fixForm
-        checkComplete -->|"1 (Ya)"| calcSave["Rekap total peminjam & total denda lalu simpan laporan"]
-        calcSave --> created["Tampilkan pesan laporan berhasil dibuat"]
+        checkComplete -->|"Ya"| calcSave["Rekap total peminjam & total denda lalu simpan laporan"]
+        calcSave --> created[/"Tampilkan pesan laporan berhasil dibuat"/]
         created --> finish
     end

@@ -1,17 +1,17 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka daftar kategori buku"]
-        openMenu --> selectCat["Pilih kategori yang ingin diubah"]
+        start@{ shape: sm-circ } --> openMenu["Buka daftar kategori buku"]
+        openMenu --> selectCat[/"Pilih kategori yang ingin diubah"/]
         selectCat --> editName[/"Perbarui nama kategori"/]
         editName --> clickSave[/"Klik tombol simpan perubahan"/]
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         clickSave --> checkExist{"Apakah data kategori ditemukan?"}
-        checkExist -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+        checkExist -->|"Tidak"| notFound[/"Tampilkan pesan kategori tidak ditemukan"/]
         notFound --> openMenu
-        checkExist -->|"1 (Ya)"| saveCat["Perbarui nama kategori buku"]
-        saveCat --> updated["Tampilkan pesan kategori berhasil diperbarui"]
+        checkExist -->|"Ya"| saveCat["Perbarui nama kategori buku"]
+        saveCat --> updated[/"Tampilkan pesan kategori berhasil diperbarui"/]
         updated --> finish
     end

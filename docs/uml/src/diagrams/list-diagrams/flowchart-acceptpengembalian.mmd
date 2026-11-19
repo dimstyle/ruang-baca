@@ -4,12 +4,12 @@ flowchart TD
     openReq --> selectReq[/"Pilih pengajuan pengembalian buku & klik Terima"/]
     selectReq --> checkCond[/"Periksa fisik buku dan pilih kondisi buku (Baik, Rusak, atau Hilang)"/]
     checkCond --> checkNeedFine{"Apakah status pengembalian Telat atau kondisi buku Rusak/Hilang?"}
-    checkNeedFine -->|"1 (Ya)"| inputFine[/"Tampilkan & wajibkan isi Nominal Denda (Rp) dan Keterangan Denda (<<extend>> Create Denda)"/]
-    checkNeedFine -->|"0 (Tidak: Baik & belum telat)"| hideFine["Sembunyikan input denda"]
+    checkNeedFine -->|"Ya"| inputFine[/"Tampilkan & wajibkan isi Nominal Denda (Rp) dan Keterangan Denda (<<extend>> Create Denda)"/]
+    checkNeedFine -->|"Tidak"| hideFine["Sembunyikan input denda"]
     inputFine --> clickApprove[/"Klik tombol Terima pengembalian"/]
     hideFine --> clickApprove
     clickApprove --> checkFound{"Apakah data pengajuan pengembalian ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| approved["Catat pengembalian buku (beserta denda jika ada) dan tampilkan pesan pengembalian diterima"]
+    checkFound -->|"Ya"| approved["Catat pengembalian buku (beserta denda jika ada) dan tampilkan pesan pengembalian diterima"]
     approved --> finish

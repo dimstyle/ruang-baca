@@ -1,14 +1,14 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu daftar anggota"]
-        openMenu --> searchUser["Cari dan pilih anggota yang ingin dilihat"]
-        viewDetail["Melihat rincian profil anggota"] --> finish(["Selesai"])
+        start@{ shape: sm-circ } --> openMenu["Buka menu daftar anggota"]
+        openMenu --> searchUser[/"Cari dan pilih anggota yang ingin dilihat"/]
+        viewDetail["Melihat rincian profil anggota"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         searchUser --> checkFound{"Apakah data anggota ditemukan?"}
-        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan anggota tidak ditemukan"]
+        checkFound -->|"Tidak"| notFound[/"Tampilkan pesan anggota tidak ditemukan"/]
         notFound --> finish
-        checkFound -->|"1 (Ya)"| showDetail["Tampilkan informasi lengkap anggota"]
+        checkFound -->|"Ya"| showDetail[/"Tampilkan informasi lengkap anggota"/]
         showDetail --> viewDetail
     end

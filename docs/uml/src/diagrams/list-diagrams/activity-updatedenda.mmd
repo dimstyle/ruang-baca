@@ -1,24 +1,26 @@
 flowchart TD
     subgraph User["User"]
         payCash["Melakukan pembayaran denda ke Admin"]
-        doneFine["Status denda anggota diperbarui / lunas"] --> finish(["Selesai"])
+        doneFine["Status denda anggota diperbarui / lunas"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu daftar denda"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu daftar denda"]
         payCash -.-> openMenu
-        openMenu --> selectFine["Pilih catatan denda yang ingin dibayar"]
+        openMenu --> selectFine[/"Pilih catatan denda yang ingin dibayar"/]
         selectFine --> inputPay[/"Masukan jumlah uang pembayaran yang diterima"/]
         inputPay --> clickUpdate[/"Klik tombol perbarui pembayaran"/]
     end
 
     subgraph Sistem["Sistem"]
         clickUpdate --> checkFound{"Apakah catatan denda ditemukan?"}
-        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data denda tidak ditemukan"]
+        checkFound -->|"Tidak"| notFound[/"Tampilkan pesan data denda tidak ditemukan"/]
         notFound --> finish
-        checkFound -->|"1 (Ya)"| checkPaidOff{"Apakah pembayaran melunasi seluruh tagihan?"}
-        checkPaidOff -->|"1 (Ya)"| paidOff["Hapus dari daftar tagihan aktif & tampilkan pesan lunas"]
-        checkPaidOff -->|"0 (Tidak)"| reduceFine["Kurangi sisa tagihan & tampilkan sisa denda terbaru"]
-        paidOff --> doneFine
-        reduceFine --> doneFine
+        checkFound -->|"Ya"| checkPaidOff{"Apakah pembayaran melunasi seluruh tagihan?"}
+        checkPaidOff -->|"Ya"| paidOff["Hapus denda dari daftar tagihan aktif"]
+        paidOff --> msgPaid[/"Tampilkan pesan denda telah lunas"/]
+        checkPaidOff -->|"Tidak"| reduceFine["Kurangi sisa tagihan denda"]
+        reduceFine --> msgReduced[/"Tampilkan pesan sisa denda terbaru"/]
+        msgPaid --> doneFine
+        msgReduced --> doneFine
     end

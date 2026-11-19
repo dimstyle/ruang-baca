@@ -1,14 +1,14 @@
 flowchart TD
     subgraph User["User / Admin"]
-        start(["Mulai"]) --> openPage["Membuka halaman saat waktu akses sedang habis"]
-        continueWork["Tetap melanjutkan aktivitas di halaman"] --> finish(["Selesai"])
+        start@{ shape: sm-circ } --> openPage["Membuka halaman saat waktu akses sedang habis"]
+        continueWork["Tetap melanjutkan aktivitas di halaman"] --> finish@{ shape: fr-circ }
         reLogin["Masuk kembali di halaman masuk"] --> finish
     end
 
     subgraph Sistem["Sistem"]
         openPage --> checkActive{"Apakah masa aktif masuk masih berlaku?"}
-        checkActive -->|"1 (Ya)"| renewSession["Perpanjang akses masuk secara otomatis"]
+        checkActive -->|"Ya"| renewSession["Perpanjang akses masuk secara otomatis"]
         renewSession --> continueWork
-        checkActive -->|"0 (Tidak)"| warnExpired["Tampilkan pesan sesi telah berakhir"]
+        checkActive -->|"Tidak"| warnExpired[/"Tampilkan pesan sesi telah berakhir"/]
         warnExpired --> reLogin
     end

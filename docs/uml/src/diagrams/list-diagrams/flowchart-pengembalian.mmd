@@ -5,7 +5,7 @@ flowchart TD
     selectBook --> inputDate[/"Masukan tanggal pengembalian buku"/]
     inputDate --> clickReturn[/"Klik tombol ajukan pengembalian"/]
     clickReturn --> checkFound{"Apakah data peminjaman buku tersebut ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| submitted["Tampilkan pesan pengajuan pengembalian berhasil dikirim dan menunggu persetujuan Admin"]
+    checkFound -->|"Ya"| submitted["Tampilkan pesan pengajuan pengembalian berhasil dikirim dan menunggu persetujuan Admin"]
     submitted --> finish

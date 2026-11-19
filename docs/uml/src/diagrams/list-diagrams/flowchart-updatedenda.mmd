@@ -5,12 +5,12 @@ flowchart TD
     selectFine --> inputPay[/"Masukan jumlah uang pembayaran yang diterima"/]
     inputPay --> clickUpdate[/"Klik tombol perbarui pembayaran"/]
     clickUpdate --> checkFound{"Apakah catatan denda ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data denda tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan data denda tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| checkPaidOff{"Apakah pembayaran sudah melunasi seluruh tagihan denda?"}
-    checkPaidOff -->|"1 (Ya)"| paidOff["Tandai denda lunas dan hapus dari daftar tagihan aktif"]
+    checkFound -->|"Ya"| checkPaidOff{"Apakah pembayaran sudah melunasi seluruh tagihan denda?"}
+    checkPaidOff -->|"Ya"| paidOff["Tandai denda lunas dan hapus dari daftar tagihan aktif"]
     paidOff --> msgPaid["Tampilkan pesan denda telah lunas"]
     msgPaid --> finish
-    checkPaidOff -->|"0 (Tidak)"| reduceFine["Kurangi sisa tagihan denda sesuai uang masuk"]
+    checkPaidOff -->|"Tidak"| reduceFine["Kurangi sisa tagihan denda sesuai uang masuk"]
     reduceFine --> msgUpdated["Tampilkan pesan sisa denda berhasil diperbarui"]
     msgUpdated --> finish

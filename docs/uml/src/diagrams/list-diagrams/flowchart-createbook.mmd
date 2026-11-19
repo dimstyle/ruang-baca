@@ -5,8 +5,8 @@ flowchart TD
     clickAdd --> inputForm[/"Pilih kategori buku serta masukan judul, penulis, penerbit, sinopsis, tanggal rilis, dan jumlah stok"/]
     inputForm --> clickSave[/"Klik tombol simpan buku"/]
     clickSave --> checkCat{"Apakah kategori buku yang dipilih tersedia?"}
-    checkCat -->|"0 (Tidak)"| warnCat["Tampilkan pesan kategori buku tidak ditemukan"]
+    checkCat -->|"Tidak"| warnCat["Tampilkan pesan kategori buku tidak ditemukan"]
     warnCat --> selectCat[/"Pilih kategori buku yang tersedia"/]
     selectCat --> inputForm
-    checkCat -->|"1 (Ya)"| created["Tampilkan pesan buku baru berhasil ditambahkan ke katalog"]
+    checkCat -->|"Ya"| created["Tampilkan pesan buku baru berhasil ditambahkan ke katalog"]
     created --> finish(["Selesai"])

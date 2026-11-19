@@ -1,6 +1,6 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openPage["Buka halaman pendaftaran anggota"]
+        start@{ shape: sm-circ } --> openPage["Buka halaman pendaftaran anggota"]
         openPage --> inputData[/"Masukan biodata dan akun anggota"/]
         inputData --> clickSubmit[/"Klik tombol daftarkan anggota"/]
         fixForm[/"Perbaiki isian formulir"/] --> inputData
@@ -9,16 +9,16 @@ flowchart TD
 
     subgraph Sistem["Sistem"]
         clickSubmit --> checkValid{"Apakah semua kolom diisi dengan benar?"}
-        checkValid -->|"0 (Tidak)"| warnInvalid["Tampilkan peringatan kolom belum sesuai"]
+        checkValid -->|"Tidak"| warnInvalid[/"Tampilkan peringatan kolom belum sesuai"/]
         warnInvalid --> fixForm
-        checkValid -->|"1 (Ya)"| checkDuplicate{"Apakah nama pengguna atau email sudah terdaftar?"}
-        checkDuplicate -->|"1 (Ya)"| warnDup["Tampilkan pesan akun sudah terdaftar"]
+        checkValid -->|"Ya"| checkDuplicate{"Apakah nama pengguna atau email sudah terdaftar?"}
+        checkDuplicate -->|"Ya"| warnDup[/"Tampilkan pesan akun sudah terdaftar"/]
         warnDup --> changeAccount
-        checkDuplicate -->|"0 (Tidak)"| saveAccount["Buat akun anggota baru"]
-        saveAccount --> success["Tampilkan pesan akun anggota berhasil dibuat"]
+        checkDuplicate -->|"Tidak"| saveAccount["Buat akun anggota baru"]
+        saveAccount --> success[/"Tampilkan pesan akun anggota berhasil dibuat"/]
     end
 
     subgraph User["User"]
         success --> readyLogin["Akun siap digunakan anggota untuk masuk"]
-        readyLogin --> finish(["Selesai"])
+        readyLogin --> finish@{ shape: fr-circ }
     end

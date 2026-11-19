@@ -1,18 +1,18 @@
 flowchart TD
     subgraph User["User"]
-        start(["Mulai"]) --> openActive["Buka menu daftar peminjaman aktif"]
-        openActive --> selectBook["Pilih buku yang ingin dikembalikan"]
+        start@{ shape: sm-circ } --> openActive["Buka menu daftar peminjaman aktif"]
+        openActive --> selectBook[/"Pilih buku yang ingin dikembalikan"/]
         selectBook --> inputDate[/"Masukan tanggal pengembalian buku"/]
         inputDate --> clickReturn[/"Klik tombol ajukan pengembalian"/]
-        finish(["Selesai"])
+        finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         clickReturn --> checkFound{"Apakah data peminjaman buku ditemukan?"}
-        checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan data peminjaman tidak ditemukan"]
+        checkFound -->|"Tidak"| notFound[/"Tampilkan pesan data peminjaman tidak ditemukan"/]
         notFound --> finish
-        checkFound -->|"1 (Ya)"| saveTemp["Catat pengajuan pengembalian sementara"]
-        saveTemp --> submitted["Tampilkan pesan menunggu persetujuan Admin"]
+        checkFound -->|"Ya"| saveTemp["Catat pengajuan pengembalian sementara"]
+        saveTemp --> submitted[/"Tampilkan pesan menunggu persetujuan Admin"/]
     end
 
     subgraph Admin["Admin"]

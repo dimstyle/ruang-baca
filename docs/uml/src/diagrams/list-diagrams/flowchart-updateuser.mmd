@@ -5,7 +5,7 @@ flowchart TD
     selectUser --> editData[/"Ubah informasi nama lengkap, nomor HP, atau alamat"/]
     editData --> clickSave[/"Klik tombol simpan perubahan"/]
     clickSave --> checkFound{"Apakah anggota tersebut ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan anggota tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan anggota tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| updated["Tampilkan pesan data anggota berhasil diperbarui"]
+    checkFound -->|"Ya"| updated["Tampilkan pesan data anggota berhasil diperbarui"]
     updated --> finish

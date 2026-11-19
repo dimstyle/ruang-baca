@@ -1,19 +1,19 @@
 flowchart TD
     subgraph Admin["Admin"]
-        start(["Mulai"]) --> openMenu["Buka menu daftar laporan"]
+        start@{ shape: sm-circ } --> openMenu["Buka menu daftar laporan"]
         openMenu --> wantFilter{"Ingin menyaring berdasarkan rentang tanggal?"}
-        wantFilter -->|"1 (Ya)"| inputDates[/"Isi tanggal awal dan tanggal akhir laporan"/]
-        viewList["Melihat daftar laporan yang tersedia"] --> finish(["Selesai"])
+        wantFilter -->|"Ya"| inputDates[/"Isi tanggal awal dan tanggal akhir laporan"/]
+        viewList["Melihat daftar laporan yang tersedia"] --> finish@{ shape: fr-circ }
     end
 
     subgraph Sistem["Sistem"]
         inputDates --> checkDates{"Apakah kedua tanggal sudah diisi lengkap?"}
-        checkDates -->|"0 (Tidak)"| warnDates["Tampilkan peringatan kedua tanggal harus diisi"]
+        checkDates -->|"Tidak"| warnDates[/"Tampilkan peringatan kedua tanggal harus diisi"/]
         warnDates --> inputDates
-        checkDates -->|"1 (Ya)"| checkList{"Apakah ada laporan yang sesuai?"}
-        wantFilter -->|"0 (Tidak)"| checkList
-        checkList -->|"0 (Tidak)"| emptyMsg["Tampilkan pesan belum ada laporan"]
+        checkDates -->|"Ya"| checkList{"Apakah ada laporan yang sesuai?"}
+        wantFilter -->|"Tidak"| checkList
+        checkList -->|"Tidak"| emptyMsg[/"Tampilkan pesan belum ada laporan"/]
         emptyMsg --> finish
-        checkList -->|"1 (Ya)"| showList["Tampilkan daftar laporan beserta tanggal pembuatannya"]
+        checkList -->|"Ya"| showList[/"Tampilkan daftar laporan beserta tanggal pembuatannya"/]
         showList --> viewList
     end

@@ -5,7 +5,7 @@ flowchart TD
     selectCat --> editCat[/"Perbarui nama kategori atau jenis buku"/]
     editCat --> clickSave[/"Klik tombol simpan perubahan"/]
     clickSave --> checkFound{"Apakah kategori tersebut ditemukan?"}
-    checkFound -->|"0 (Tidak)"| notFound["Tampilkan pesan kategori tidak ditemukan"]
+    checkFound -->|"Tidak"| notFound["Tampilkan pesan kategori tidak ditemukan"]
     notFound --> finish(["Selesai"])
-    checkFound -->|"1 (Ya)"| updated["Tampilkan pesan kategori berhasil diperbarui"]
+    checkFound -->|"Ya"| updated["Tampilkan pesan kategori berhasil diperbarui"]
     updated --> finish
